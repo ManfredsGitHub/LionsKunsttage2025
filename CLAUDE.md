@@ -7,15 +7,41 @@ Jahreliche Benefizveranstaltung der Lions Villa Ludwigshöhe — digitales Kunst
 - **Frontend**: Next.js (`/frontend`)
 - **Python**: 3.11+
 
-## Backend starten
+## Server starten
+
+**Backend** (Terminal 1):
 ```bash
 cd backend
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # E-Mail-Daten eintragen
+cp .env.example .env        # SMTP-Zugangsdaten eintragen
 uvicorn main:app --reload
 ```
-API läuft auf http://localhost:8000 — Docs unter http://localhost:8000/docs
+API: http://localhost:8000 · Docs: http://localhost:8000/docs
+
+**Frontend** (Terminal 2):
+```bash
+cd frontend
+npm install
+npm run dev
+```
+App: http://localhost:3000
+
+**Testdaten anlegen** (einmalig, nach Backend-Start):
+```bash
+cd backend && source .venv/bin/activate
+python seed.py
+```
+Legt 3 Künstler und 10 freigegebene Bilder an (idempotent).
+
+## Ports & URLs
+| Dienst | URL |
+|--------|-----|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:8000 |
+| API-Docs (Swagger) | http://localhost:8000/docs |
+| Admin-Dashboard | http://localhost:3000/admin |
+| Bilder-Uploads | http://localhost:8000/uploads/ |
 
 ## Kernlogik
 - Preisformel: `AUFRUNDEN(Einlieferungspreis × 1,80 ; 10)` → `services/price_service.py`
