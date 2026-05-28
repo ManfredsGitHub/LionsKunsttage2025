@@ -29,9 +29,12 @@ def reservieren(data: ReservierungCreate, session: Session = Depends(get_session
     name = f"{data.vorname} {data.name}"
     try:
         email_service.send_reservierung_besucher(data.email, name, bild.bildtitel, bild.bild_nr)
+    except Exception as exc:
+        logger.warning("Besucher-Mail fehlgeschlagen: %s", exc)
+    try:
         email_service.send_reservierung_admin(bild.bild_nr, bild.bildtitel, name, data.email, data.telefon or "")
     except Exception as exc:
-        logger.warning("E-Mail-Versand fehlgeschlagen: %s", exc)
+        logger.warning("Admin-Mail fehlgeschlagen: %s", exc)
 
     return {"id": reservierung.id, "status": "reserviert"}
 
