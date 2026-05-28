@@ -4,6 +4,115 @@ import { useParams } from "next/navigation";
 import { getBild, reservieren } from "@/lib/api";
 import { Bild } from "@/lib/types";
 
+const API = process.env.NEXT_PUBLIC_API_URL;
+
+// ---------------------------------------------------------------------------
+// Maßstabgerechte Wandansicht
+// ---------------------------------------------------------------------------
+function WandVorschau({ bild }: { bild: Bild }) {
+  const h = bild.hoehe_rahmen_cm ?? 0;
+  const w = bild.breite_rahmen_cm ?? 0;
+  if (h === 0 && w === 0) return null;
+
+  const SCENE_W = 600;
+  const SCENE_H = 380;
+  const FLOOR_PX = 44;
+  const floor_y = SCENE_H - FLOOR_PX;
+
+  // Raumhöhe dynamisch: Tür (200cm) oder Bild — was größer ist, plus Luft
+  const DOOR_H_CM = 200, DOOR_W_CM = 90;
+  const roomH_cm = Math.max(240, h + 60);
+  const scale = (floor_y - 10) / roomH_cm;
+
+  const door_h = DOOR_H_CM * scale;
+  const door_w = DOOR_W_CM * scale;
+  const door_x = SCENE_W - door_w - 50;
+  const door_y = floor_y - door_h;
+
+  const img_h = h * scale;
+  const img_w = w * scale;
+
+  // Bild bei Augenhöhe (155 cm) zentriert hängen
+  const hang_y = floor_y - 155 * scale;
+  const img_y = hang_y - img_h / 2;
+  // Horizontal mittig im Wandbereich links der Tür
+  const img_x = (door_x - img_w) / 2;
+
+  const imgSrc = bild.bild_url_web ? `${API}${bild.bild_url_web}` : null;
+
+  return (
+    <div className="mt-4">
+      <p className="text-xs text-gray-400 mb-1.5 text-center">
+        Wandansicht (maßstabgerecht) · Tür als Referenz: 200 × 90 cm
+      </p>
+      <svg
+        viewBox={`0 0 ${SCENE_W} ${SCENE_H}`}
+        className="w-full rounded-lg overflow-hidden border border-gray-100"
+        style={{ background: "#f5f0eb" }}
+      >
+        {/* Wand */}
+        <rect x={0} y={0} width={SCENE_W} height={floor_y} fill="#f5f0eb" />
+        {/* Boden */}
+        <rect x={0} y={floor_y} width={SCENE_W} height={FLOOR_PX} fill="#d9cfc3" />
+        {/* Sockelleiste */}
+        <rect x={0} y={floor_y} width={SCENE_W} height={5} fill="#c8bdb0" />
+
+        {/* Bildschatten */}
+        <rect x={img_x + 5} y={img_y + 5} width={img_w} height={img_h}
+          fill="rgba(0,0,0,0.12)" rx={2} />
+        {/* Rahmen */}
+        <rect x={img_x} y={img_y} width={img_w} height={img_h}
+          fill="#7a5c2e" rx={2} />
+        {/* Passepartout */}
+        <rect x={img_x + 5} y={img_y + 5} width={img_w - 10} height={img_h - 10}
+          fill="#ede8e0" />
+        {/* Bild-URL oder leere Fläche */}
+        {imgSrc ? (
+          <image href={imgSrc}
+            x={img_x + 5} y={img_y + 5}
+            width={img_w - 10} height={img_h - 10}
+            preserveAspectRatio="xMidYMid meet" />
+        ) : (
+          <text x={img_x + img_w / 2} y={img_y + img_h / 2}
+            textAnchor="middle" dominantBaseline="middle"
+            fontSize={10} fill="#bbb">Kein Foto</text>
+        )}
+        {/* Nagel */}
+        <line x1={img_x + img_w / 2} y1={img_y} x2={img_x + img_w / 2} y2={img_y - 6}
+          stroke="#888" strokeWidth={1.5} />
+        <circle cx={img_x + img_w / 2} cy={img_y - 7} r={2.5} fill="#999" />
+
+        {/* Maß-Beschriftung Bild */}
+        <text x={img_x + img_w / 2} y={Math.min(img_y + img_h + 16, floor_y - 4)}
+          textAnchor="middle" fontSize={11} fill="#666" fontFamily="sans-serif">
+          {w} × {h} cm
+        </text>
+
+        {/* Türzarge */}
+        <rect x={door_x - 7} y={door_y - 4} width={door_w + 14} height={door_h + 4}
+          fill="#c4b5a2" rx={2} />
+        {/* Türblatt */}
+        <rect x={door_x} y={door_y} width={door_w} height={door_h}
+          fill="#e4d9cc" />
+        {/* Türfüllungen */}
+        <rect x={door_x + 7} y={door_y + 10} width={door_w - 14} height={door_h * 0.42}
+          fill="none" stroke="#cfc3b4" strokeWidth={1.5} rx={2} />
+        <rect x={door_x + 7} y={door_y + door_h * 0.52} width={door_w - 14} height={door_h * 0.38}
+          fill="none" stroke="#cfc3b4" strokeWidth={1.5} rx={2} />
+        {/* Türknauf */}
+        <circle cx={door_x + 14} cy={door_y + door_h * 0.55} r={4} fill="#b0a090" />
+        <circle cx={door_x + 14} cy={door_y + door_h * 0.55} r={2} fill="#c8b8a4" />
+
+        {/* Tür-Beschriftung */}
+        <text x={door_x + door_w / 2} y={door_y - 11}
+          textAnchor="middle" fontSize={10} fill="#aaa" fontFamily="sans-serif">
+          200 × 90 cm
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 export default function BildDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [bild, setBild] = useState<Bild | null>(null);
@@ -36,12 +145,12 @@ export default function BildDetailPage() {
   if (!bild) return <p className="text-gray-400 animate-pulse">Laden…</p>;
 
   const imgSrc = bild.bild_url_web
-    ? `${process.env.NEXT_PUBLIC_API_URL}${bild.bild_url_web}`
+    ? `${API}${bild.bild_url_web}`
     : "/placeholder.jpg";
 
   return (
     <div className="grid md:grid-cols-2 gap-10">
-      {/* Bild */}
+      {/* Bild + Wandansicht */}
       <div>
         <img
           src={imgSrc}
@@ -49,6 +158,7 @@ export default function BildDetailPage() {
           className="w-full rounded-lg shadow-lg object-contain max-h-[600px]"
           onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.jpg"; }}
         />
+        <WandVorschau bild={bild} />
       </div>
 
       {/* Details */}
