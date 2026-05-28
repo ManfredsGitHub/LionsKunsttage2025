@@ -70,6 +70,11 @@ export const preisSetzen = (id: number, preis: number) =>
   req(`/admin/bilder/${id}/preis?verkaufspreis=${preis}`, { method: "PATCH" });
 export const getAlleReservierungen = () => req("/admin/reservierungen");
 export const getAlleKaeufe = () => req("/admin/kaeufe");
+export const getAlleKuenstler = () => req<Kuenstler[]>("/admin/kuenstler/alle");
+export const bildNeuAnlegen = (data: {
+  kuenstler_id: number; bildtitel: string; bildtechnik: string; genre: string;
+  breite_rahmen_cm: number; hoehe_rahmen_cm: number; einlieferungspreis?: number;
+}) => req<Bild>("/admin/bilder/neu", { method: "POST", body: JSON.stringify(data) });
 
 // --- Merkliste ---
 export const merklisteAnmelden = (email?: string, telefon?: string) =>

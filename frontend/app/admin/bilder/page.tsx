@@ -1,9 +1,99 @@
 "use client";
 import { useEffect, useState, useMemo, useRef } from "react";
-import { getAlleBilder, massenFreigeben, bilderFreigeben, preisSetzen, fotoHochladen } from "@/lib/api";
-import { Bild } from "@/lib/types";
+import { getAlleBilder, massenFreigeben, bilderFreigeben, preisSetzen, fotoHochladen, getAlleKuenstler, bildNeuAnlegen } from "@/lib/api";
+import { Bild, Kuenstler } from "@/lib/types";
 
+const GENRES = ["Abstrakt","Akt","Landschaft","Menschen","Pfalz","Portrait","Städte","Stilleben","Sonstiges"];
 type Filter = "alle" | "offen" | "mit_foto" | "ohne_foto";
+
+function NeuModal({ onClose, onCreated }: { onClose: () => void; onCreated: (b: Bild) => void }) {
+  const [kuenstler, setKuenstler] = useState<Kuenstler[]>([]);
+  const [form, setForm] = useState({
+    kuenstler_id: "", bildtitel: "", bildtechnik: "", genre: "Abstrakt",
+    breite_rahmen_cm: "", hoehe_rahmen_cm: "", einlieferungspreis: "",
+  });
+  const [laden, setLaden] = useState(false);
+  const [fehler, setFehler] = useState("");
+
+  useEffect(() => { getAlleKuenstler().then(setKuenstler); }, []);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setLaden(true); setFehler("");
+    try {
+      const bild = await bildNeuAnlegen({
+        kuenstler_id: Number(form.kuenstler_id),
+        bildtitel: form.bildtitel,
+        bildtechnik: form.bildtechnik,
+        genre: form.genre,
+        breite_rahmen_cm: Number(form.breite_rahmen_cm) || 0,
+        hoehe_rahmen_cm: Number(form.hoehe_rahmen_cm) || 0,
+        einlieferungspreis: form.einlieferungspreis ? Number(form.einlieferungspreis) : undefined,
+      });
+      onCreated(bild);
+    } catch (err: any) { setFehler(err.message); }
+    finally { setLaden(false); }
+  }
+
+  const inp = "w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue";
+
+  return (
+    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6" onClick={e => e.stopPropagation()}>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-bold text-gray-800">Neues Bild anlegen</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">×</button>
+        </div>
+        <form onSubmit={submit} className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Künstler *</label>
+            <select required value={form.kuenstler_id} onChange={e => setForm({...form, kuenstler_id: e.target.value})} className={inp}>
+              <option value="">— bitte wählen —</option>
+              {kuenstler.map(k => (
+                <option key={k.id} value={k.id}>{k.db_vorname} {k.db_name} ({k.kuenstlertyp})</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Bildtitel *</label>
+            <input required value={form.bildtitel} onChange={e => setForm({...form, bildtitel: e.target.value})} className={inp} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Technik *</label>
+              <input required value={form.bildtechnik} onChange={e => setForm({...form, bildtechnik: e.target.value})} placeholder="z.B. Acryl auf Leinwand" className={inp} />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Genre *</label>
+              <select required value={form.genre} onChange={e => setForm({...form, genre: e.target.value})} className={inp}>
+                {GENRES.map(g => <option key={g}>{g}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Breite (cm)</label>
+              <input type="number" value={form.breite_rahmen_cm} onChange={e => setForm({...form, breite_rahmen_cm: e.target.value})} className={inp} />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Höhe (cm)</label>
+              <input type="number" value={form.hoehe_rahmen_cm} onChange={e => setForm({...form, hoehe_rahmen_cm: e.target.value})} className={inp} />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Einlief.-Preis (€)</label>
+              <input type="number" value={form.einlieferungspreis} onChange={e => setForm({...form, einlieferungspreis: e.target.value})} className={inp} />
+            </div>
+          </div>
+          {fehler && <p className="text-red-600 text-sm">{fehler}</p>}
+          <button type="submit" disabled={laden}
+            className="w-full bg-lions-blue text-white py-2.5 rounded-md font-medium hover:bg-blue-900 transition-colors disabled:opacity-50 mt-2">
+            {laden ? "Wird angelegt…" : "Bild anlegen"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminBilderPage() {
   const [bilder, setBilder] = useState<Bild[]>([]);
@@ -13,6 +103,7 @@ export default function AdminBilderPage() {
   const [laden, setLaden] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingId, setUploadingId] = useState<number | null>(null);
+  const [showNeu, setShowNeu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -89,6 +180,12 @@ export default function AdminBilderPage() {
   const freigegebenCount = bilder.filter(b => b.freigegeben).length;
   const mitFotoCount = bilder.filter(b => !!b.bild_url_web).length;
 
+  function handleCreated(b: Bild) {
+    setBilder(prev => [b, ...prev]);
+    setShowNeu(false);
+    setFilter("offen");
+  }
+
   const filterTabs: { key: Filter; label: string; count: number }[] = [
     { key: "alle",      label: "Alle",              count: bilder.length },
     { key: "offen",     label: "Nicht freigegeben", count: bilder.filter(b => !b.freigegeben).length },
@@ -98,13 +195,20 @@ export default function AdminBilderPage() {
 
   return (
     <div className="space-y-4">
+      {showNeu && <NeuModal onClose={() => setShowNeu(false)} onCreated={handleCreated} />}
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFotoChange} />
       {/* Kopfzeile */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-lions-blue">Bildverwaltung</h1>
-        <p className="text-sm text-gray-500">
-          {freigegebenCount}/{bilder.length} freigegeben · {mitFotoCount} mit Foto
-        </p>
+        <div className="flex items-center gap-4">
+          <p className="text-sm text-gray-500">
+            {freigegebenCount}/{bilder.length} freigegeben · {mitFotoCount} mit Foto
+          </p>
+          <button onClick={() => setShowNeu(true)}
+            className="px-4 py-1.5 bg-lions-blue text-white text-sm font-medium rounded-md hover:bg-blue-900 transition-colors">
+            + Neues Bild
+          </button>
+        </div>
       </div>
 
       {/* Filter-Tabs */}

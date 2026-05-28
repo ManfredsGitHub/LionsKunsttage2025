@@ -1,13 +1,15 @@
 import os
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Body
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 from pydantic import BaseModel
+from typing import Optional
 import secrets
 from datetime import datetime, timedelta
-from models import Bild, BildPublic, Kuenstler, KuenstlerCreate, Reservierung, Kauf, Besucher, MerklisteEintrag
+from models import Bild, BildPublic, Kuenstler, KuenstlerCreate, KuenstlerPublic, Reservierung, Kauf, Besucher, MerklisteEintrag, Genre, Verfuegbarkeit
 from database import get_session
 from services.import_service import import_csv, import_excel
 from services.image_service import compress_image, save_image
+from services.price_service import berechne_verkaufspreis
 import csv, io
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
@@ -115,6 +117,50 @@ def druckliste(session: Session = Depends(get_session)):
 
 
 # --- Übersichten ---
+
+@router.get("/kuenstler/alle", response_model=list[KuenstlerPublic])
+def alle_kuenstler(session: Session = Depends(get_session)):
+    return session.exec(
+        select(Kuenstler).where(Kuenstler.aktiv == True).order_by(Kuenstler.db_name)
+    ).all()
+
+
+class BildNeuData(BaseModel):
+    kuenstler_id: int
+    bildtitel: str
+    bildtechnik: str
+    genre: Genre
+    breite_rahmen_cm: float = 0
+    hoehe_rahmen_cm: float = 0
+    einlieferungspreis: Optional[float] = None
+
+
+@router.post("/bilder/neu", response_model=BildPublic)
+def bild_neu(data: BildNeuData, session: Session = Depends(get_session)):
+    # Bild-Nr auto-generieren: VOR{YY}{lfd}
+    year = datetime.now().year % 100
+    count = session.exec(select(func.count(Bild.id))).one()
+    bild_nr = f"VOR{year:02d}{count+1:04d}"
+    while session.exec(select(Bild).where(Bild.bild_nr == bild_nr)).first():
+        count += 1
+        bild_nr = f"VOR{year:02d}{count:04d}"
+    b = Bild(
+        bild_nr=bild_nr,
+        kuenstler_id=data.kuenstler_id,
+        bildtitel=data.bildtitel,
+        bildtechnik=data.bildtechnik,
+        genre=data.genre,
+        breite_rahmen_cm=data.breite_rahmen_cm,
+        hoehe_rahmen_cm=data.hoehe_rahmen_cm,
+        einlieferungspreis=data.einlieferungspreis,
+        verkaufspreis_vorschlag=berechne_verkaufspreis(data.einlieferungspreis) if data.einlieferungspreis else None,
+    )
+    session.add(b)
+    session.commit()
+    session.refresh(b)
+    _ = b.kuenstler
+    return BildPublic.model_validate(b)
+
 
 @router.get("/bilder/alle", response_model=list[BildPublic])
 def alle_bilder(session: Session = Depends(get_session)):
