@@ -74,7 +74,11 @@ export const getAlleKuenstler = () => req<Kuenstler[]>("/admin/kuenstler/alle");
 export const bildNeuAnlegen = (data: {
   kuenstler_id: number; bildtitel: string; bildtechnik: string; genre: string;
   breite_rahmen_cm: number; hoehe_rahmen_cm: number; einlieferungspreis?: number;
+  in_ausstellung?: boolean;
 }) => req<Bild>("/admin/bilder/neu", { method: "POST", body: JSON.stringify(data) });
+
+export const ausstellungToggle = (id: number, inAusstellung: boolean) =>
+  req(`/admin/bilder/${id}/ausstellung?in_ausstellung=${inAusstellung}`, { method: "PATCH" });
 
 // --- Merkliste ---
 export const merklisteAnmelden = (email?: string, telefon?: string) =>

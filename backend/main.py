@@ -9,7 +9,7 @@ load_dotenv()
 from database import create_db
 from routers import artworks, reservations, sales, artists, admin, merkliste
 
-app = FastAPI(title="Lions Kunsttage API", version="1.0.0")
+app = FastAPI(title="Kunsttage auf der Ludwigshöhe API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -38,4 +38,4 @@ def on_startup():
 
 @app.get("/")
 def root():
-    return {"status": "Lions Kunsttage API läuft"}
+    return {"status": "Kunsttage auf der Ludwigshöhe API läuft"}

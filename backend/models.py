@@ -116,6 +116,7 @@ class Bild(BildBase, table=True):
     bild_url_original: Optional[str] = None
     verfuegbarkeit: Verfuegbarkeit = Verfuegbarkeit.verfuegbar
     freigegeben: bool = False
+    in_ausstellung: bool = True
     erstellt_am: datetime = Field(default_factory=datetime.utcnow)
     kuenstler: Optional[Kuenstler] = Relationship(back_populates="bilder")
 
@@ -133,6 +134,7 @@ class BildPublic(BildBase):
     bild_url_web: Optional[str] = None
     verfuegbarkeit: Verfuegbarkeit
     freigegeben: bool = False
+    in_ausstellung: bool = True
     kuenstler: Optional[KuenstlerPublic] = None
 
 

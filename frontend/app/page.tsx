@@ -23,8 +23,8 @@ export default function GaleriePage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-lions-blue">Kunstgalerie 2026</h1>
-        <p className="text-gray-500 mt-1">Villa Ludwigshöhe · Benefizausstellung</p>
+        <h1 className="text-3xl font-bold text-lions-blue">Galerie 2026</h1>
+        <p className="text-gray-500 mt-1">Schloss Villa Ludwigshöhe · Edenkoben</p>
       </div>
 
       <FilterBar genre={genre} technik={technik} onGenre={setGenre} onTechnik={setTechnik} />

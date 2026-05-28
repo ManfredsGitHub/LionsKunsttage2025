@@ -12,7 +12,7 @@ export default function AdminPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-lions-blue mb-2">Admin-Dashboard</h1>
-      <p className="text-gray-500 mb-8">Lions Kunsttage 2026 · Verwaltung</p>
+      <p className="text-gray-500 mb-8">Kunsttage auf der Ludwigshöhe 2026 · Verwaltung</p>
       <div className="grid sm:grid-cols-3 gap-4">
         {kacheln.map((k) => (
           <Link key={k.href} href={k.href}>

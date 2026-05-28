@@ -31,7 +31,7 @@ def send_reservierung_besucher(email: str, name: str, bildtitel: str, bild_nr: s
         <p>Hallo {name},</p>
         <p>Ihre Reservierung für <strong>{bildtitel}</strong> (Nr. {bild_nr}) wurde erfolgreich registriert.</p>
         <p>Bitte holen Sie das Werk während der Veranstaltung ab oder sprechen Sie uns wegen Transport an.</p>
-        <p>Mit freundlichen Grüßen<br>Lions Kunsttage Villa Ludwigshöhe</p>
+        <p>Mit freundlichen Grüßen<br>Kunsttage auf der Ludwigshöhe</p>
         """,
     )
 
@@ -62,7 +62,7 @@ def send_kaufbestaetigung(email: str, name: str, bildtitel: str, preis: float, z
         <p>Hallo {name},</p>
         <p>vielen Dank für Ihren Kauf!</p>
         <p><strong>{bildtitel}</strong> – {preis:.2f} € ({zahlungsart})</p>
-        <p>Mit freundlichen Grüßen<br>Lions Kunsttage Villa Ludwigshöhe</p>
+        <p>Mit freundlichen Grüßen<br>Kunsttage auf der Ludwigshöhe</p>
         """,
     )
 
@@ -77,6 +77,6 @@ def send_kuenstler_login(email: str, name: str, token: str):
         <p>hier ist Ihr persönlicher Login-Link für das Künstler-Portal:</p>
         <p><a href="{link}">{link}</a></p>
         <p>Der Link ist 48 Stunden gültig.</p>
-        <p>Mit freundlichen Grüßen<br>Lions Kunsttage Villa Ludwigshöhe</p>
+        <p>Mit freundlichen Grüßen<br>Kunsttage auf der Ludwigshöhe</p>
         """,
     )

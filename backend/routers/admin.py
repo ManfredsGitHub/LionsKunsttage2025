@@ -125,6 +125,17 @@ def alle_kuenstler(session: Session = Depends(get_session)):
     ).all()
 
 
+@router.patch("/bilder/{bild_id}/ausstellung")
+def ausstellung_toggle(bild_id: int, in_ausstellung: bool, session: Session = Depends(get_session)):
+    bild = session.get(Bild, bild_id)
+    if not bild:
+        raise HTTPException(404)
+    bild.in_ausstellung = in_ausstellung
+    session.add(bild)
+    session.commit()
+    return {"in_ausstellung": in_ausstellung}
+
+
 class BildNeuData(BaseModel):
     kuenstler_id: int
     bildtitel: str
@@ -133,6 +144,7 @@ class BildNeuData(BaseModel):
     breite_rahmen_cm: float = 0
     hoehe_rahmen_cm: float = 0
     einlieferungspreis: Optional[float] = None
+    in_ausstellung: bool = True
 
 
 @router.post("/bilder/neu", response_model=BildPublic)
@@ -154,6 +166,7 @@ def bild_neu(data: BildNeuData, session: Session = Depends(get_session)):
         hoehe_rahmen_cm=data.hoehe_rahmen_cm,
         einlieferungspreis=data.einlieferungspreis,
         verkaufspreis_vorschlag=berechne_verkaufspreis(data.einlieferungspreis) if data.einlieferungspreis else None,
+        in_ausstellung=data.in_ausstellung,
     )
     session.add(b)
     session.commit()

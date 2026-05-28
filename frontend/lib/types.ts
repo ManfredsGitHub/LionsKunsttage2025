@@ -43,6 +43,7 @@ export interface Bild {
   einlieferungspreis?: number;
   verkaufspreis_vorschlag?: number;
   freigegeben?: boolean;
+  in_ausstellung?: boolean;
 }
 
 export interface ReservierungCreate {

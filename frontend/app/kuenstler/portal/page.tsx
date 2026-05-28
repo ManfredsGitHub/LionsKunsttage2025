@@ -120,7 +120,7 @@ function VitaVorschau({ kuenstler, form }: { kuenstler: Kuenstler; form: FormDat
 
       {/* Footer */}
       <div style={{ marginTop: "auto", paddingTop: "8mm", borderTop: "1px solid #eee", textAlign: "center", fontSize: "8pt", color: "#aaa" }}>
-        Lions Club Villa Ludwigshöhe · Kunsttage 2026 · Alle Erlöse für gemeinnützige Zwecke
+        Kunsttage auf der Ludwigshöhe · Eine Benefizveranstaltung der Lions Clubs der Südpfalz
       </div>
     </div>
   );
@@ -279,7 +279,7 @@ export default function KuenstlerPortalPage() {
                 <Field label="Ausstellungen & Auszeichnungen"
                   hint="Eine Ausstellung pro Zeile — wird als Aufzählung dargestellt">
                   <textarea rows={6} value={form.db_ausstellungen} onChange={set("db_ausstellungen")}
-                    placeholder={"2023 Lions Kunsttage\n2022 Galerie Musterstadt\n2020 Gruppenausstellung Neustadt"}
+                    placeholder={"2023 Kunsttage auf der Ludwigshöhe\n2022 Galerie Musterstadt\n2020 Gruppenausstellung Neustadt"}
                     className="input" />
                 </Field>
 
@@ -328,7 +328,7 @@ export default function KuenstlerPortalPage() {
               <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
                 <h3 className="font-semibold text-yellow-800 mb-1 text-sm">DSGVO-Einwilligung</h3>
                 <p className="text-xs text-yellow-700 mb-3">
-                  Ich willige ein, dass meine Daten und Bilder für die Kunsttage 2026 veröffentlicht werden.
+                  Ich willige ein, dass meine Daten und Bilder für die Kunsttage auf der Ludwigshöhe 2026 veröffentlicht werden.
                 </p>
                 <button type="button" onClick={handleDsgvo}
                   className="bg-yellow-600 text-white px-4 py-1.5 rounded text-sm hover:bg-yellow-700 transition-colors">

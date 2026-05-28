@@ -65,8 +65,8 @@ export default function MerklistePage() {
       <div className="hidden print:block mb-8">
         <div className="flex justify-between items-start border-b pb-4 mb-2">
           <div>
-            <h1 className="text-xl font-bold">Meine Merkliste · Lions Kunsttage 2026</h1>
-            <p className="text-sm text-gray-600 mt-0.5">Villa Ludwigshöhe · Benefizausstellung</p>
+            <h1 className="text-xl font-bold">Meine Merkliste · Kunsttage auf der Ludwigshöhe 2026</h1>
+            <p className="text-sm text-gray-600 mt-0.5">Schloss Villa Ludwigshöhe · Edenkoben</p>
           </div>
           <p className="text-sm text-gray-500">{new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "long", year: "numeric" })}</p>
         </div>

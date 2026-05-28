@@ -27,6 +27,11 @@ export default function BildCard({ bild }: { bild: Bild }) {
           <span className={`absolute top-2 right-2 text-xs px-2 py-1 rounded-full font-medium ${statusColors[bild.verfuegbarkeit]}`}>
             {bild.verfuegbarkeit}
           </span>
+          {bild.in_ausstellung === false && (
+            <span className="absolute top-2 left-2 text-xs px-2 py-1 rounded-full font-medium bg-blue-100 text-blue-800">
+              Online-Katalog
+            </span>
+          )}
         </div>
         <div className="p-4 pb-3">
           <p className="font-semibold text-gray-900 truncate">{bild.bildtitel}</p>

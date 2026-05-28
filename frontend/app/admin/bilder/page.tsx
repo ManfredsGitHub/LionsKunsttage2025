@@ -1,16 +1,17 @@
 "use client";
 import { useEffect, useState, useMemo, useRef } from "react";
-import { getAlleBilder, massenFreigeben, bilderFreigeben, preisSetzen, fotoHochladen, getAlleKuenstler, bildNeuAnlegen } from "@/lib/api";
+import { getAlleBilder, massenFreigeben, bilderFreigeben, preisSetzen, fotoHochladen, getAlleKuenstler, bildNeuAnlegen, ausstellungToggle } from "@/lib/api";
 import { Bild, Kuenstler } from "@/lib/types";
 
 const GENRES = ["Abstrakt","Akt","Landschaft","Menschen","Pfalz","Portrait","Städte","Stilleben","Sonstiges"];
-type Filter = "alle" | "offen" | "mit_foto" | "ohne_foto";
+type Filter = "alle" | "offen" | "mit_foto" | "ohne_foto" | "online";
 
 function NeuModal({ onClose, onCreated }: { onClose: () => void; onCreated: (b: Bild) => void }) {
   const [kuenstler, setKuenstler] = useState<Kuenstler[]>([]);
   const [form, setForm] = useState({
     kuenstler_id: "", bildtitel: "", bildtechnik: "", genre: "Abstrakt",
     breite_rahmen_cm: "", hoehe_rahmen_cm: "", einlieferungspreis: "",
+    in_ausstellung: true,
   });
   const [laden, setLaden] = useState(false);
   const [fehler, setFehler] = useState("");
@@ -29,6 +30,7 @@ function NeuModal({ onClose, onCreated }: { onClose: () => void; onCreated: (b: 
         breite_rahmen_cm: Number(form.breite_rahmen_cm) || 0,
         hoehe_rahmen_cm: Number(form.hoehe_rahmen_cm) || 0,
         einlieferungspreis: form.einlieferungspreis ? Number(form.einlieferungspreis) : undefined,
+        in_ausstellung: form.in_ausstellung,
       });
       onCreated(bild);
     } catch (err: any) { setFehler(err.message); }
@@ -84,6 +86,12 @@ function NeuModal({ onClose, onCreated }: { onClose: () => void; onCreated: (b: 
               <input type="number" value={form.einlieferungspreis} onChange={e => setForm({...form, einlieferungspreis: e.target.value})} className={inp} />
             </div>
           </div>
+          <label className="flex items-center gap-2 text-sm text-gray-700">
+            <input type="checkbox" checked={form.in_ausstellung}
+              onChange={e => setForm({...form, in_ausstellung: e.target.checked})}
+              className="rounded" />
+            In der Ausstellung (nicht nur online)
+          </label>
           {fehler && <p className="text-red-600 text-sm">{fehler}</p>}
           <button type="submit" disabled={laden}
             className="w-full bg-lions-blue text-white py-2.5 rounded-md font-medium hover:bg-blue-900 transition-colors disabled:opacity-50 mt-2">
@@ -115,6 +123,7 @@ export default function AdminBilderPage() {
       case "offen":     return bilder.filter(b => !b.freigegeben);
       case "mit_foto":  return bilder.filter(b => !!b.bild_url_web);
       case "ohne_foto": return bilder.filter(b => !b.bild_url_web);
+      case "online":    return bilder.filter(b => b.in_ausstellung === false);
       default:          return bilder;
     }
   }, [bilder, filter]);
@@ -175,6 +184,11 @@ export default function AdminBilderPage() {
     setBilder(prev => prev.map(b => b.id === id ? { ...b, verkaufspreis: preis } : b));
   }
 
+  async function handleAusstellungToggle(id: number, inAusstellung: boolean) {
+    await ausstellungToggle(id, inAusstellung);
+    setBilder(prev => prev.map(b => b.id === id ? { ...b, in_ausstellung: inAusstellung } : b));
+  }
+
   if (laden) return <p className="text-gray-400 animate-pulse">Laden…</p>;
 
   const freigegebenCount = bilder.filter(b => b.freigegeben).length;
@@ -191,6 +205,7 @@ export default function AdminBilderPage() {
     { key: "offen",     label: "Nicht freigegeben", count: bilder.filter(b => !b.freigegeben).length },
     { key: "mit_foto",  label: "Mit Foto",          count: mitFotoCount },
     { key: "ohne_foto", label: "Ohne Foto",         count: bilder.filter(b => !b.bild_url_web).length },
+    { key: "online",    label: "Nur Online",        count: bilder.filter(b => b.in_ausstellung === false).length },
   ];
 
   return (
@@ -263,6 +278,7 @@ export default function AdminBilderPage() {
               <th className="px-3 py-3 text-left">Titel · Künstler</th>
               <th className="px-3 py-3 text-center">Foto</th>
               <th className="px-3 py-3 text-center whitespace-nowrap">Status</th>
+              <th className="px-3 py-3 text-center whitespace-nowrap">Ausst.</th>
               <th className="px-3 py-3 text-right whitespace-nowrap">Einlief.</th>
               <th className="px-3 py-3 text-right whitespace-nowrap">Vorschlag</th>
               <th className="px-3 py-3 text-right whitespace-nowrap">Verkaufspreis</th>
@@ -317,6 +333,18 @@ export default function AdminBilderPage() {
                     b.verfuegbarkeit === "Reserviert" ? "bg-yellow-100 text-yellow-700" :
                     "bg-red-100 text-red-700"
                   }`}>{b.verfuegbarkeit}</span>
+                </td>
+                <td className="px-3 py-2.5 text-center" onClick={e => e.stopPropagation()}>
+                  <button
+                    onClick={() => handleAusstellungToggle(b.id, !(b.in_ausstellung !== false))}
+                    title={b.in_ausstellung !== false ? "In Ausstellung — klicken für Online-only" : "Nur Online — klicken für Ausstellung"}
+                    className={`text-xs px-2 py-0.5 rounded-full font-medium transition-colors ${
+                      b.in_ausstellung !== false
+                        ? "bg-green-100 text-green-700 hover:bg-green-200"
+                        : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                    }`}>
+                    {b.in_ausstellung !== false ? "Ja" : "Online"}
+                  </button>
                 </td>
                 <td className="px-3 py-2.5 text-right text-gray-500 whitespace-nowrap">
                   {b.einlieferungspreis ? `${b.einlieferungspreis} €` : "—"}

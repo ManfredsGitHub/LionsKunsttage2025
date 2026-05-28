@@ -1,6 +1,6 @@
-# Lions Kunsttage 2026
+# Kunsttage auf der Ludwigshöhe 2026
 
-Jahreliche Benefizveranstaltung der Lions Villa Ludwigshöhe — digitales Kunstkatalog- und Verwaltungssystem.
+Jährliche Benefizveranstaltung des Lions Club Villa Ludwigshöhe — digitales Kunstkatalog- und Verwaltungssystem.
 
 ## Stack
 - **Backend**: FastAPI + SQLModel + SQLite (`/backend`)
