@@ -21,11 +21,16 @@ export interface Bild {
   id: number;
   bild_nr: string;
   bildtitel: string;
+  anmerkung_bild?: string;
   bildtechnik: string;
   genre: Genre;
   anzahl: number;
   hoehe_rahmen_cm: number;
   breite_rahmen_cm: number;
+  hoehe_cm?: number;
+  breite_cm?: number;
+  tiefe_cm?: number;
+  gewicht_kg?: number;
   verkaufspreis?: number;
   bild_url_web?: string;
   verfuegbarkeit: Verfuegbarkeit;

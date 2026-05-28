@@ -67,10 +67,27 @@ export default function BildDetailPage() {
           <dd className="font-medium">{bild.bildtechnik}</dd>
           <dt className="text-gray-500">Genre</dt>
           <dd className="font-medium">{bild.genre}</dd>
-          <dt className="text-gray-500">Maße (mit Rahmen)</dt>
-          <dd className="font-medium">{bild.breite_rahmen_cm} × {bild.hoehe_rahmen_cm} cm</dd>
+          <dt className="text-gray-500">Maße mit Rahmen</dt>
+          <dd className="font-medium">
+            {bild.breite_rahmen_cm} × {bild.hoehe_rahmen_cm} cm
+          </dd>
+          {(bild.breite_cm || bild.hoehe_cm) && (
+            <>
+              <dt className="text-gray-500">Maße ohne Rahmen</dt>
+              <dd className="font-medium">
+                {bild.breite_cm ?? "?"} × {bild.hoehe_cm ?? "?"} cm
+                {bild.tiefe_cm ? ` × ${bild.tiefe_cm} cm` : ""}
+              </dd>
+            </>
+          )}
+          {bild.gewicht_kg && (
+            <>
+              <dt className="text-gray-500">Gewicht</dt>
+              <dd className="font-medium">{bild.gewicht_kg} kg</dd>
+            </>
+          )}
           <dt className="text-gray-500">Nr.</dt>
-          <dd className="font-medium">{bild.bild_nr}</dd>
+          <dd className="font-medium text-gray-400">{bild.bild_nr}</dd>
           {bild.verkaufspreis && (
             <>
               <dt className="text-gray-500">Preis</dt>
@@ -78,6 +95,12 @@ export default function BildDetailPage() {
             </>
           )}
         </dl>
+
+        {bild.anmerkung_bild && (
+          <div className="bg-gray-50 rounded-md px-4 py-3 text-sm text-gray-600 leading-relaxed">
+            {bild.anmerkung_bild}
+          </div>
+        )}
 
         {/* Verfügbarkeitsstatus */}
         <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
