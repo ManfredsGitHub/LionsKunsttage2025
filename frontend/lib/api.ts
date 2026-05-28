@@ -61,6 +61,11 @@ export const alsBezahltMarkieren = (kaufId: number) =>
 export const getAlleBilder = () => req<Bild[]>("/admin/bilder/alle");
 export const bilderFreigeben = (id: number) =>
   req(`/admin/bilder/${id}/freigeben`, { method: "PATCH" });
+export const massenFreigeben = (ids: number[]) =>
+  req<{ freigegeben: number }>("/admin/bilder/massenfreigabe", {
+    method: "PATCH",
+    body: JSON.stringify({ ids }),
+  });
 export const preisSetzen = (id: number, preis: number) =>
   req(`/admin/bilder/${id}/preis?verkaufspreis=${preis}`, { method: "PATCH" });
 export const getAlleReservierungen = () => req("/admin/reservierungen");

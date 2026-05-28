@@ -123,9 +123,12 @@ class BildCreate(BildBase):
 
 class BildPublic(BildBase):
     id: int
+    einlieferungspreis: Optional[float] = None
+    verkaufspreis_vorschlag: Optional[float] = None
     verkaufspreis: Optional[float] = None
     bild_url_web: Optional[str] = None
     verfuegbarkeit: Verfuegbarkeit
+    freigegeben: bool = False
     kuenstler: Optional[KuenstlerPublic] = None
 
 

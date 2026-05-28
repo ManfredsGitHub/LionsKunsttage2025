@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Body
 from sqlmodel import Session, select
-from models import Bild, Kuenstler, Reservierung, Kauf
+from pydantic import BaseModel
+from models import Bild, BildPublic, Kuenstler, Reservierung, Kauf
 from database import get_session
 from services.import_service import import_csv, import_excel
 import csv, io
@@ -19,6 +20,20 @@ def freigeben(bild_id: int, session: Session = Depends(get_session)):
     session.add(bild)
     session.commit()
     return {"status": "freigegeben"}
+
+
+class MassenfreigabeIn(BaseModel):
+    ids: list[int]
+
+
+@router.patch("/bilder/massenfreigabe")
+def massenfreigabe(body: MassenfreigabeIn, session: Session = Depends(get_session)):
+    bilder = session.exec(select(Bild).where(Bild.id.in_(body.ids))).all()
+    for b in bilder:
+        b.freigegeben = True
+        session.add(b)
+    session.commit()
+    return {"freigegeben": len(bilder)}
 
 
 @router.patch("/bilder/{bild_id}/preis")
@@ -75,9 +90,9 @@ def druckliste(session: Session = Depends(get_session)):
 
 # --- Übersichten ---
 
-@router.get("/bilder/alle")
+@router.get("/bilder/alle", response_model=list[BildPublic])
 def alle_bilder(session: Session = Depends(get_session)):
-    return session.exec(select(Bild)).all()
+    return session.exec(select(Bild).order_by(Bild.bild_nr)).all()
 
 
 @router.get("/reservierungen")
