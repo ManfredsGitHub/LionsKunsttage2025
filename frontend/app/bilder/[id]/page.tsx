@@ -165,10 +165,46 @@ export default function BildDetailPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-lions-blue">{bild.bildtitel}</h1>
+
           {bild.kuenstler && (
-            <p className="text-lg text-gray-600 mt-1">
-              {bild.kuenstler.db_vorname} {bild.kuenstler.db_name}
-            </p>
+            <div className="mt-3 flex items-start gap-3">
+              {/* Portrait */}
+              {bild.kuenstler.portrait_foto ? (
+                <img
+                  src={`${API}${bild.kuenstler.portrait_foto}`}
+                  alt="Portrait"
+                  className="w-12 h-12 rounded-full object-cover flex-shrink-0 mt-0.5 shadow"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-lions-blue/10 flex items-center justify-center
+                  text-lions-blue font-bold text-sm flex-shrink-0 mt-0.5">
+                  {bild.kuenstler.db_vorname?.[0]}{bild.kuenstler.db_name?.[0]}
+                </div>
+              )}
+
+              <div className="min-w-0">
+                <a href={`/kuenstler/${bild.kuenstler.id}`}
+                  className="text-lg font-medium text-gray-800 hover:text-lions-blue transition-colors">
+                  {bild.kuenstler.db_vorname} {bild.kuenstler.db_name}
+                </a>
+                {bild.kuenstler.db_beruf && (
+                  <p className="text-sm text-gray-500">{bild.kuenstler.db_beruf}</p>
+                )}
+                {bild.kuenstler.db_kommentar && (
+                  <p className="text-sm text-gray-600 mt-1 leading-relaxed line-clamp-3">
+                    {bild.kuenstler.db_kommentar}
+                  </p>
+                )}
+                {bild.kuenstler.kuenstlertyp !== "Eigenbestand" && (
+                  <a href={`/kuenstler/${bild.kuenstler.id}`}
+                    className="inline-block mt-1.5 text-xs text-lions-blue hover:underline">
+                    {bild.kuenstler.kuenstlertyp === "VorOrt"
+                      ? "Portrait & Vita ansehen →"
+                      : "Weitere Werke & Infos →"}
+                  </a>
+                )}
+              </div>
+            </div>
           )}
         </div>
 
