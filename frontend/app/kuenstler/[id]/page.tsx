@@ -50,8 +50,8 @@ export default function KuenstlerDetailPage() {
             {kuenstler.db_vorname} {kuenstler.db_name}
           </h1>
           <p className="text-sm text-gray-400 mt-1">
-            {kuenstler.kuenstlertyp === "VorOrt" ? "Vor-Ort-Künstler" :
-             kuenstler.kuenstlertyp === "Galerie" ? "Galerie-Künstler" : "Eigenbestand"}
+            {kuenstler.kuenstlertyp === "VorOrt" ? "Live-Malerei vor Ort" :
+             kuenstler.kuenstlertyp === "Galerie" ? "Kunstausstellung" : ""}
           </p>
           <div className="flex gap-4 mt-3">
             {kuenstler.db_instagram && (

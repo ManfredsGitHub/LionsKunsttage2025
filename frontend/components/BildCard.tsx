@@ -40,9 +40,11 @@ export default function BildCard({ bild }: { bild: Bild }) {
               <span className="font-bold text-lions-blue">{bild.verkaufspreis.toFixed(0)} €</span>
             )}
           </div>
-          <p className="text-xs text-gray-400 mt-1">
-            {bild.breite_rahmen_cm} × {bild.hoehe_rahmen_cm} cm
-          </p>
+          {(bild.breite_rahmen_cm > 0 || bild.hoehe_rahmen_cm > 0) && (
+            <p className="text-xs text-gray-400 mt-1">
+              {bild.breite_rahmen_cm} × {bild.hoehe_rahmen_cm} cm
+            </p>
+          )}
         </div>
       </div>
     </Link>

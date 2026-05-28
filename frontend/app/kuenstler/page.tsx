@@ -10,7 +10,12 @@ export default function KuenstlerListePage() {
 
   useEffect(() => {
     getKuenstler()
-      .then((data) => setKuenstler(data.filter((k) => k.kuenstlertyp === "VorOrt")))
+      .then((data) => {
+        const sichtbar = data
+          .filter((k) => k.kuenstlertyp !== "Eigenbestand")
+          .sort((a, b) => a.db_name.localeCompare(b.db_name, "de"));
+        setKuenstler(sichtbar);
+      })
       .finally(() => setLaden(false));
   }, []);
 

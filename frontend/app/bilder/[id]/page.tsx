@@ -67,10 +67,12 @@ export default function BildDetailPage() {
           <dd className="font-medium">{bild.bildtechnik}</dd>
           <dt className="text-gray-500">Genre</dt>
           <dd className="font-medium">{bild.genre}</dd>
-          <dt className="text-gray-500">Maße mit Rahmen</dt>
-          <dd className="font-medium">
-            {bild.breite_rahmen_cm} × {bild.hoehe_rahmen_cm} cm
-          </dd>
+          {(bild.breite_rahmen_cm > 0 || bild.hoehe_rahmen_cm > 0) && (
+            <>
+              <dt className="text-gray-500">Maße mit Rahmen</dt>
+              <dd className="font-medium">{bild.breite_rahmen_cm} × {bild.hoehe_rahmen_cm} cm</dd>
+            </>
+          )}
           {(bild.breite_cm || bild.hoehe_cm) && (
             <>
               <dt className="text-gray-500">Maße ohne Rahmen</dt>
