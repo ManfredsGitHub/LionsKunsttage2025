@@ -8,10 +8,14 @@ export interface Kuenstler {
   db_ident: string;
   db_name: string;
   db_vorname: string;
+  db_beruf?: string;
   db_leben?: string;
   db_kommentar?: string;
   db_ausstellungen?: string;
+  db_email?: string;
+  db_adresse?: string;
   db_instagram?: string;
+  db_facebook?: string;
   db_webseite?: string;
   portrait_foto?: string;
   kuenstlertyp: "VorOrt" | "Galerie" | "Eigenbestand";

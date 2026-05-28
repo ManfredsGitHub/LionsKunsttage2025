@@ -46,6 +46,7 @@ class KuenstlerBase(SQLModel):
     db_ident: str = Field(unique=True, index=True)
     db_name: str
     db_vorname: str
+    db_beruf: Optional[str] = None
     db_leben: Optional[str] = None
     db_kommentar: Optional[str] = None
     db_ausstellungen: Optional[str] = None
@@ -77,7 +78,10 @@ class KuenstlerCreate(KuenstlerBase):
 
 class KuenstlerPublic(KuenstlerBase):
     id: int
+    db_email: Optional[str] = None
+    db_adresse: Optional[str] = None
     db_instagram: Optional[str] = None
+    db_facebook: Optional[str] = None
     db_webseite: Optional[str] = None
     portrait_foto: Optional[str] = None
 
