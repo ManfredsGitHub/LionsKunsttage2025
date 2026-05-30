@@ -1,9 +1,11 @@
 "use client";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { getBilder } from "@/lib/api";
 import { Bild } from "@/lib/types";
 import BildCard from "@/components/BildCard";
 import FilterBar from "@/components/FilterBar";
+
+const STORAGE_KEY = "galerie_state";
 
 export default function GaleriePage() {
   const [bilder, setBilder] = useState<Bild[]>([]);
@@ -13,6 +15,28 @@ export default function GaleriePage() {
   const [kuenstlerId, setKuenstlerId] = useState("");
   const [laden, setLaden] = useState(true);
   const [fehler, setFehler] = useState("");
+  const scrollRestored = useRef(false);
+
+  // Filter-State und Scroll-Position aus sessionStorage wiederherstellen
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const { genre: g, technik: t, kuenstlerId: k, scrollY } = JSON.parse(saved);
+        if (g) setGenre(g);
+        if (t) setTechnik(t);
+        if (k) setKuenstlerId(k);
+        if (scrollY) scrollRestored.current = true;
+        sessionStorage.removeItem(STORAGE_KEY);
+        // Scroll nach dem Render wiederherstellen
+        if (scrollY) {
+          requestAnimationFrame(() => {
+            setTimeout(() => window.scrollTo({ top: scrollY }), 100);
+          });
+        }
+      }
+    } catch {}
+  }, []);
 
   // Einmalig alle Bilder laden für die Künstler-Dropdown-Optionen
   useEffect(() => {
@@ -43,6 +67,14 @@ export default function GaleriePage() {
       .catch(() => setFehler("Verbindung zum Server fehlgeschlagen."))
       .finally(() => setLaden(false));
   }, [genre, technik, kuenstlerId]);
+
+  function handleBildClick() {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+        genre, technik, kuenstlerId, scrollY: window.scrollY,
+      }));
+    } catch {}
+  }
 
   return (
     <div>
@@ -75,7 +107,11 @@ export default function GaleriePage() {
         <p className="text-gray-500 py-12 text-center">Keine Bilder gefunden.</p>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-          {bilder.map((b) => <BildCard key={b.id} bild={b} />)}
+          {bilder.map((b) => (
+            <div key={b.id} onClick={handleBildClick}>
+              <BildCard bild={b} />
+            </div>
+          ))}
         </div>
       )}
     </div>

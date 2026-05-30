@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { getBild, reservieren } from "@/lib/api";
 import { Bild } from "@/lib/types";
 import MerklistenButton from "@/components/MerklistenButton";
@@ -116,6 +116,7 @@ function WandVorschau({ bild }: { bild: Bild }) {
 
 export default function BildDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const [bild, setBild] = useState<Bild | null>(null);
   const [fehler, setFehler] = useState("");
   const [form, setForm] = useState({ vorname: "", name: "", email: "", telefon: "" });
@@ -150,6 +151,13 @@ export default function BildDetailPage() {
     : "/placeholder.jpg";
 
   return (
+    <div>
+      <button
+        onClick={() => router.back()}
+        className="mb-6 flex items-center gap-1.5 text-sm text-lions-blue hover:text-blue-900"
+      >
+        ← Zurück zur Galerie
+      </button>
     <div className="grid md:grid-cols-2 gap-10">
       {/* Bild + Wandansicht */}
       <div>
@@ -303,6 +311,7 @@ export default function BildDetailPage() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }
