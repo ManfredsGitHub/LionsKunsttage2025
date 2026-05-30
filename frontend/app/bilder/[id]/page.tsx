@@ -123,6 +123,14 @@ export default function BildDetailPage() {
   const [erfolg, setErfolg] = useState(false);
   const [senden, setSenden] = useState(false);
   const [dsgvo, setDsgvo] = useState(false);
+  const [lightbox, setLightbox] = useState(false);
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setLightbox(false); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [lightbox]);
 
   useEffect(() => {
     getBild(Number(id)).then(setBild).catch(() => setFehler("Bild nicht gefunden."));
@@ -161,10 +169,24 @@ export default function BildDetailPage() {
     <div className="grid md:grid-cols-2 gap-10">
       {/* Bild + Wandansicht */}
       <div>
+        {lightbox && (
+          <div
+            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center cursor-zoom-out"
+            onClick={() => setLightbox(false)}
+          >
+            <img
+              src={imgSrc}
+              alt={bild.bildtitel}
+              className="max-w-full max-h-full object-contain select-none"
+              onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.jpg"; }}
+            />
+          </div>
+        )}
         <img
           src={imgSrc}
           alt={bild.bildtitel}
-          className="w-full rounded-lg shadow-lg object-contain max-h-[600px]"
+          className="w-full rounded-lg shadow-lg object-contain max-h-[600px] cursor-zoom-in"
+          onClick={() => setLightbox(true)}
           onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.jpg"; }}
         />
         <WandVorschau bild={bild} />
