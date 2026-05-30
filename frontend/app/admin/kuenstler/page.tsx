@@ -204,6 +204,16 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
             </label>
           </div>
 
+          {/* Vita drucken */}
+          {k.vor_ort_anwesend && (
+            <div className="border-t pt-3 flex gap-4">
+              <a href={`/admin/kuenstler/${k.id}/drucken`} target="_blank"
+                className="text-sm text-lions-blue underline hover:text-blue-900">
+                Vita drucken (A4)
+              </a>
+            </div>
+          )}
+
           {/* Portal-Link */}
           <div className="border-t pt-3">
             <button type="button" onClick={handleEinladen} disabled={portalLaden}

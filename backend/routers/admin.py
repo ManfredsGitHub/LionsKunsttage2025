@@ -10,6 +10,8 @@ from database import get_session
 from services.import_service import import_csv, import_excel
 from services.image_service import compress_image, save_image
 from services.price_service import berechne_verkaufspreis
+from services.vita_pdf_service import generate_vita_pdf
+from fastapi.responses import Response
 import csv, io
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
@@ -261,6 +263,14 @@ def kuenstler_anlegen(daten: KuenstlerCreate, session: Session = Depends(get_ses
     return {"id": k.id, "db_ident": k.db_ident}
 
 
+@router.get("/kuenstler/{kuenstler_id}", response_model=KuenstlerPublic)
+def kuenstler_detail(kuenstler_id: int, session: Session = Depends(get_session)):
+    k = session.get(Kuenstler, kuenstler_id)
+    if not k:
+        raise HTTPException(404)
+    return k
+
+
 @router.patch("/kuenstler/{kuenstler_id}", response_model=KuenstlerPublic)
 def kuenstler_aktualisieren(kuenstler_id: int, daten: dict = Body(...), session: Session = Depends(get_session)):
     k = session.get(Kuenstler, kuenstler_id)
@@ -302,6 +312,24 @@ def kuenstler_einladen(kuenstler_id: int, session: Session = Depends(get_session
     session.add(k)
     session.commit()
     return {"token": token, "portal_url": f"/kuenstler/login?token={token}"}
+
+
+@router.get("/kuenstler/{kuenstler_id}/vita-pdf")
+def vita_pdf(kuenstler_id: int, session: Session = Depends(get_session)):
+    k = session.get(Kuenstler, kuenstler_id)
+    if not k:
+        raise HTTPException(404)
+    bilder = session.exec(
+        select(Bild).where(Bild.kuenstler_id == kuenstler_id, Bild.in_ausstellung == True)
+        .order_by(Bild.bild_nr)
+    ).all()
+    pdf = generate_vita_pdf(k, bilder, UPLOAD_DIR)
+    name = f"vita_{k.db_name}_{k.db_vorname or ''}".replace(" ", "_")
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{name}.pdf"'},
+    )
 
 
 @router.get("/reservierungen")

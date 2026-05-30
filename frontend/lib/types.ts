@@ -10,16 +10,24 @@ export interface Kuenstler {
   db_vorname: string;
   db_beruf?: string;
   db_leben?: string;
+  db_lebenstext?: string;
   db_kommentar?: string;
+  db_inspiration?: string;
   db_ausstellungen?: string;
   db_email?: string;
   db_adresse?: string;
+  db_plz?: string;
+  db_ort?: string;
   db_instagram?: string;
   db_facebook?: string;
   db_webseite?: string;
+  db_telefon?: string;
   portrait_foto?: string;
-  kuenstlertyp: "VorOrt" | "Galerie" | "Eigenbestand";
+  aktiv?: boolean;
+  vor_ort_anwesend?: boolean;
 }
+
+export type Abrechnungsempfaenger = "Künstler" | "Galerist" | "Lions";
 
 export interface Bild {
   id: number;
@@ -44,6 +52,9 @@ export interface Bild {
   verkaufspreis_vorschlag?: number;
   freigegeben?: boolean;
   in_ausstellung?: boolean;
+  abrechnungsempf?: Abrechnungsempfaenger;
+  galerist_id?: number;
+  galerist?: Kuenstler;
 }
 
 export interface ReservierungCreate {
