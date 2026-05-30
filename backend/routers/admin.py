@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import Optional
 import secrets
 from datetime import datetime, timedelta
-from models import Bild, BildPublic, Kuenstler, KuenstlerCreate, KuenstlerPublic, Reservierung, Kauf, Besucher, MerklisteEintrag, Genre, Verfuegbarkeit
+from models import Bild, BildPublic, Kuenstler, KuenstlerCreate, KuenstlerPublic, Reservierung, Kauf, Besucher, MerklisteEintrag, Genre, Verfuegbarkeit, Abrechnungsempfaenger
 from database import get_session
 from services.import_service import import_csv, import_excel
 from services.image_service import compress_image, save_image
@@ -32,13 +32,14 @@ def freigeben(bild_id: int, session: Session = Depends(get_session)):
 
 class MassenfreigabeIn(BaseModel):
     ids: list[int]
+    freigegeben: bool = True
 
 
 @router.patch("/bilder/massenfreigabe")
 def massenfreigabe(body: MassenfreigabeIn, session: Session = Depends(get_session)):
     bilder = session.exec(select(Bild).where(Bild.id.in_(body.ids))).all()
     for b in bilder:
-        b.freigegeben = True
+        b.freigegeben = body.freigegeben
         session.add(b)
     session.commit()
     return {"freigegeben": len(bilder)}
@@ -53,6 +54,54 @@ def preis_setzen(bild_id: int, verkaufspreis: float, session: Session = Depends(
     session.add(bild)
     session.commit()
     return {"verkaufspreis": verkaufspreis}
+
+
+# --- Bild löschen ---
+
+@router.delete("/bilder/{bild_id}")
+def bild_loeschen(bild_id: int, session: Session = Depends(get_session)):
+    bild = session.get(Bild, bild_id)
+    if not bild:
+        raise HTTPException(404)
+    session.delete(bild)
+    session.commit()
+    return {"status": "gelöscht"}
+
+
+# --- Bild bearbeiten ---
+
+class BildUpdate(BaseModel):
+    bildtitel: Optional[str] = None
+    bildtechnik: Optional[str] = None
+    genre: Optional[Genre] = None
+    breite_rahmen_cm: Optional[float] = None
+    hoehe_rahmen_cm: Optional[float] = None
+    breite_cm: Optional[float] = None
+    hoehe_cm: Optional[float] = None
+    tiefe_cm: Optional[float] = None
+    gewicht_kg: Optional[float] = None
+    einlieferungspreis: Optional[float] = None
+    verkaufspreis: Optional[float] = None
+    anmerkung_bild: Optional[str] = None
+    foto_nr: Optional[str] = None
+    in_ausstellung: Optional[bool] = None
+    freigegeben: Optional[bool] = None
+    abrechnungsempf: Optional[Abrechnungsempfaenger] = None
+
+
+@router.patch("/bilder/{bild_id}", response_model=BildPublic)
+def bild_aktualisieren(bild_id: int, update: BildUpdate, session: Session = Depends(get_session)):
+    bild = session.get(Bild, bild_id)
+    if not bild:
+        raise HTTPException(404)
+    for field, value in update.model_dump(exclude_unset=True).items():
+        setattr(bild, field, value)
+    if update.einlieferungspreis is not None:
+        bild.verkaufspreis_vorschlag = berechne_verkaufspreis(update.einlieferungspreis)
+    session.add(bild)
+    session.commit()
+    session.refresh(bild)
+    return bild
 
 
 # --- Foto-Upload ---
@@ -119,10 +168,11 @@ def druckliste(session: Session = Depends(get_session)):
 # --- Übersichten ---
 
 @router.get("/kuenstler/alle", response_model=list[KuenstlerPublic])
-def alle_kuenstler(session: Session = Depends(get_session)):
-    return session.exec(
-        select(Kuenstler).where(Kuenstler.aktiv == True).order_by(Kuenstler.db_name)
-    ).all()
+def alle_kuenstler(mit_inaktiven: bool = False, session: Session = Depends(get_session)):
+    q = select(Kuenstler).order_by(Kuenstler.db_name)
+    if not mit_inaktiven:
+        q = q.where(Kuenstler.aktiv == True)
+    return session.exec(q).all()
 
 
 @router.patch("/bilder/{bild_id}/ausstellung")
@@ -177,7 +227,14 @@ def bild_neu(data: BildNeuData, session: Session = Depends(get_session)):
 
 @router.get("/bilder/alle", response_model=list[BildPublic])
 def alle_bilder(session: Session = Depends(get_session)):
-    return session.exec(select(Bild).order_by(Bild.bild_nr)).all()
+    bilder = session.exec(select(Bild).order_by(Bild.bild_nr)).all()
+    result = []
+    for b in bilder:
+        data = BildPublic.model_validate(b)
+        if b.galerist_id:
+            data.galerist = session.get(Kuenstler, b.galerist_id)
+        result.append(data)
+    return result
 
 
 @router.post("/kuenstler")
@@ -196,13 +253,42 @@ def kuenstler_anlegen(daten: KuenstlerCreate, session: Session = Depends(get_ses
         db_email=daten.db_email,
         db_telefon=daten.db_telefon,
         db_adresse=daten.db_adresse,
-        kuenstlertyp="VorOrt",
         aktiv=True,
     )
     session.add(k)
     session.commit()
     session.refresh(k)
     return {"id": k.id, "db_ident": k.db_ident}
+
+
+@router.patch("/kuenstler/{kuenstler_id}", response_model=KuenstlerPublic)
+def kuenstler_aktualisieren(kuenstler_id: int, daten: dict = Body(...), session: Session = Depends(get_session)):
+    k = session.get(Kuenstler, kuenstler_id)
+    if not k:
+        raise HTTPException(404)
+    felder = ["db_name","db_vorname","db_email","db_telefon","db_adresse","db_plz","db_ort",
+              "db_beruf","db_leben","db_lebenstext","db_kommentar","db_inspiration","db_ausstellungen",
+              "db_instagram","db_facebook","db_webseite","aktiv","vor_ort_anwesend"]
+    for f in felder:
+        if f in daten:
+            setattr(k, f, daten[f])
+    session.add(k)
+    session.commit()
+    session.refresh(k)
+    return k
+
+
+@router.delete("/kuenstler/{kuenstler_id}")
+def kuenstler_loeschen(kuenstler_id: int, session: Session = Depends(get_session)):
+    k = session.get(Kuenstler, kuenstler_id)
+    if not k:
+        raise HTTPException(404)
+    bilder = session.exec(select(Bild).where(Bild.kuenstler_id == kuenstler_id)).all()
+    if bilder:
+        raise HTTPException(400, detail=f"Künstler hat {len(bilder)} Bild(er) — bitte zuerst alle Bilder löschen.")
+    session.delete(k)
+    session.commit()
+    return {"status": "gelöscht"}
 
 
 @router.post("/kuenstler/{kuenstler_id}/einladen")

@@ -61,16 +61,23 @@ export const alsBezahltMarkieren = (kaufId: number) =>
 export const getAlleBilder = () => req<Bild[]>("/admin/bilder/alle");
 export const bilderFreigeben = (id: number) =>
   req(`/admin/bilder/${id}/freigeben`, { method: "PATCH" });
-export const massenFreigeben = (ids: number[]) =>
+export const massenFreigeben = (ids: number[], freigegeben: boolean = true) =>
   req<{ freigegeben: number }>("/admin/bilder/massenfreigabe", {
     method: "PATCH",
-    body: JSON.stringify({ ids }),
+    body: JSON.stringify({ ids, freigegeben }),
   });
 export const preisSetzen = (id: number, preis: number) =>
   req(`/admin/bilder/${id}/preis?verkaufspreis=${preis}`, { method: "PATCH" });
 export const getAlleReservierungen = () => req("/admin/reservierungen");
 export const getAlleKaeufe = () => req("/admin/kaeufe");
-export const getAlleKuenstler = () => req<Kuenstler[]>("/admin/kuenstler/alle");
+export const getAlleKuenstler = (mitInaktiven = false) =>
+  req<Kuenstler[]>(`/admin/kuenstler/alle${mitInaktiven ? "?mit_inaktiven=true" : ""}`);
+export const kuenstlerAktualisieren = (id: number, data: Partial<Kuenstler>) =>
+  req<Kuenstler>(`/admin/kuenstler/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+export const kuenstlerEinladen = (id: number) =>
+  req<{ token: string; portal_url: string }>(`/admin/kuenstler/${id}/einladen`, { method: "POST" });
+export const kuenstlerLoeschen = (id: number) =>
+  req(`/admin/kuenstler/${id}`, { method: "DELETE" });
 export const bildNeuAnlegen = (data: {
   kuenstler_id: number; bildtitel: string; bildtechnik: string; genre: string;
   breite_rahmen_cm: number; hoehe_rahmen_cm: number; einlieferungspreis?: number;
@@ -79,6 +86,19 @@ export const bildNeuAnlegen = (data: {
 
 export const ausstellungToggle = (id: number, inAusstellung: boolean) =>
   req(`/admin/bilder/${id}/ausstellung?in_ausstellung=${inAusstellung}`, { method: "PATCH" });
+
+export const bildLoeschen = (id: number) =>
+  req(`/admin/bilder/${id}`, { method: "DELETE" });
+
+export const bildAktualisieren = (id: number, data: Partial<{
+  bildtitel: string; bildtechnik: string; genre: string;
+  breite_rahmen_cm: number; hoehe_rahmen_cm: number;
+  breite_cm: number; hoehe_cm: number; tiefe_cm: number; gewicht_kg: number;
+  einlieferungspreis: number; verkaufspreis: number;
+  anmerkung_bild: string; foto_nr: string;
+  in_ausstellung: boolean; freigegeben: boolean;
+  abrechnungsempf: string;
+}>) => req<import("./types").Bild>(`/admin/bilder/${id}`, { method: "PATCH", body: JSON.stringify(data) });
 
 // --- Merkliste ---
 export const merklisteAnmelden = (email?: string, telefon?: string) =>
