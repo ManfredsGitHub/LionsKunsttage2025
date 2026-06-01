@@ -67,6 +67,54 @@ def send_kaufbestaetigung(email: str, name: str, bildtitel: str, preis: float, z
     )
 
 
+def send_merkliste(email: str, bilder: list) -> None:
+    zeilen = ""
+    for b in bilder:
+        kuenstler = ""
+        if b.kuenstler:
+            kuenstler = f"{b.kuenstler.db_vorname} {b.kuenstler.db_name}".strip()
+        masse = f"{b.breite_rahmen_cm} × {b.hoehe_rahmen_cm} cm" if b.breite_rahmen_cm else ""
+        preis = f"<strong>{b.verkaufspreis:.0f} €</strong>" if b.verkaufspreis else "Preis auf Anfrage"
+        verfuegbar = b.verfuegbarkeit.value if hasattr(b.verfuegbarkeit, "value") else str(b.verfuegbarkeit)
+        farbe = "#16a34a" if verfuegbar == "Verfügbar" else "#ca8a04" if verfuegbar == "Reserviert" else "#dc2626"
+        zeilen += f"""
+        <tr style="border-bottom:1px solid #e5e7eb">
+          <td style="padding:12px 8px;vertical-align:top;width:60px">
+            {'<img src="' + BASE_URL + b.bild_url_web + '" style="width:56px;height:56px;object-fit:cover;border-radius:4px">' if b.bild_url_web else '<div style="width:56px;height:56px;background:#f3f4f6;border-radius:4px"></div>'}
+          </td>
+          <td style="padding:12px 8px;vertical-align:top">
+            <strong style="font-size:14px">{b.bildtitel}</strong><br>
+            <span style="color:#6b7280;font-size:13px">{kuenstler}</span><br>
+            <span style="color:#9ca3af;font-size:12px">{b.bildtechnik}{" · " + masse if masse else ""} · Nr. {b.bild_nr}</span>
+          </td>
+          <td style="padding:12px 8px;vertical-align:top;text-align:right;white-space:nowrap">
+            {preis}<br>
+            <span style="font-size:11px;color:{farbe}">{verfuegbar}</span>
+          </td>
+        </tr>"""
+    _send(
+        email,
+        "Ihre Merkliste – Kunsttage auf der Ludwigshöhe 2026",
+        f"""
+        <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+          <h2 style="color:#1e3a5f;border-bottom:2px solid #1e3a5f;padding-bottom:8px">
+            Meine Merkliste · Kunsttage auf der Ludwigshöhe 2026
+          </h2>
+          <p style="color:#6b7280;font-size:13px">
+            Schloss Villa Ludwigshöhe · Edenkoben<br>
+            Bitte bringen Sie diese Liste zur Ausstellung mit. Die Preise sind unverbindlich.
+          </p>
+          <table style="width:100%;border-collapse:collapse;margin-top:16px">
+            {zeilen}
+          </table>
+          <p style="color:#9ca3af;font-size:12px;margin-top:24px">
+            {len(bilder)} {"Werk" if len(bilder) == 1 else "Werke"} gespeichert
+          </p>
+        </div>
+        """,
+    )
+
+
 def send_kuenstler_login(email: str, name: str, token: str):
     link = f"{BASE_URL}/kuenstler/login?token={token}"
     _send(
