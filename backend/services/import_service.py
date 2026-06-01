@@ -1,7 +1,8 @@
 import pandas as pd
 from sqlmodel import Session, select
-from models import Bild, Kuenstler, Kuenstlertyp, Genre, Abrechnungsempfaenger
+from models import Bild, Kuenstler, Genre, Abrechnungsempfaenger
 from services.price_service import berechne_verkaufspreis
+from datetime import datetime
 import io
 
 
@@ -22,6 +23,20 @@ def import_excel(data: bytes, session: Session) -> dict:
     return _process(df, session)
 
 
+def _normalisiere_bild_nr(bild_nr: str) -> str:
+    """Normalisiert bild_nr auf das Format JJKKKNN (7 Stellen).
+    - 7-stellig mit Jahrspräfix (20–29): unverändert  → '2610501' bleibt '2610501'
+    - 5-stellig (KKKNN ohne Jahr):       Jahr voranstellen → '10501' wird '2610501'
+    - Andere Längen:                      unverändert (Legacy / manuell)
+    """
+    year_prefix = f"{datetime.now().year % 100:02d}"
+    if len(bild_nr) == 7 and bild_nr[:2].isdigit() and 20 <= int(bild_nr[:2]) <= 29:
+        return bild_nr
+    if len(bild_nr) == 5 and bild_nr.isdigit():
+        return year_prefix + bild_nr
+    return bild_nr
+
+
 def _process(df: pd.DataFrame, session: Session) -> dict:
     fehlend = PFLICHT_SPALTEN - set(df.columns)
     if fehlend:
@@ -31,7 +46,7 @@ def _process(df: pd.DataFrame, session: Session) -> dict:
 
     for i, row in df.iterrows():
         try:
-            bild_nr = row["bild_nr"].strip()
+            bild_nr = _normalisiere_bild_nr(row["bild_nr"].strip())
 
             # Künstler suchen oder anlegen
             ident = f"{row['kuenstler_name'].strip()}_{row['kuenstler_vorname'].strip()}".lower()
@@ -43,7 +58,6 @@ def _process(df: pd.DataFrame, session: Session) -> dict:
                     db_ident=ident,
                     db_name=row["kuenstler_name"].strip(),
                     db_vorname=row["kuenstler_vorname"].strip(),
-                    kuenstlertyp=Kuenstlertyp.galerie,
                 )
                 session.add(kuenstler)
                 session.flush()

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
-from sqlmodel import Session, select
+from sqlmodel import Session, select, func
 from typing import Optional
+from datetime import datetime
 from models import Bild, BildCreate, BildPublic, Verfuegbarkeit, Genre
 from database import get_session
 from services.image_service import compress_image, save_image
@@ -40,8 +41,29 @@ def get_bild(bild_id: int, session: Session = Depends(get_session)):
     return bild
 
 
+def _generiere_bild_nr(kuenstler_id: int, session: Session) -> str:
+    from models import Kuenstler
+    from fastapi import HTTPException
+    kuenstler = session.get(Kuenstler, kuenstler_id)
+    if not kuenstler or not kuenstler.kuenstler_nr:
+        raise HTTPException(400, f"Künstler {kuenstler_id} hat keine Künstlernummer (KKK) hinterlegt")
+    year = datetime.now().year % 100
+    prefix = f"{year:02d}{kuenstler.kuenstler_nr:>03s}"  # z.B. "26105"
+    count = session.exec(
+        select(func.count(Bild.id)).where(Bild.bild_nr.like(f"{prefix}%"))
+    ).one()
+    nn = count + 1
+    bild_nr = f"{prefix}{nn:02d}"
+    while session.exec(select(Bild).where(Bild.bild_nr == bild_nr)).first():
+        nn += 1
+        bild_nr = f"{prefix}{nn:02d}"
+    return bild_nr
+
+
 @router.post("/", response_model=BildPublic)
 def create_bild(bild: BildCreate, session: Session = Depends(get_session)):
+    if not bild.bild_nr:
+        bild.bild_nr = _generiere_bild_nr(bild.kuenstler_id, session)
     db_bild = Bild.model_validate(bild)
     if bild.einlieferungspreis and not bild.verkaufspreis:
         db_bild.verkaufspreis_vorschlag = berechne_verkaufspreis(bild.einlieferungspreis)

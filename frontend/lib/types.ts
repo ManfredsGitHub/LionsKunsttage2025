@@ -8,6 +8,7 @@ export interface Kuenstler {
   db_ident: string;
   db_name: string;
   db_vorname: string;
+  kuenstler_nr?: string;
   db_beruf?: string;
   db_leben?: string;
   db_lebenstext?: string;

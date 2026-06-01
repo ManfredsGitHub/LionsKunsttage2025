@@ -28,11 +28,6 @@ class Abrechnungsempfaenger(str, Enum):
     lions = "Lions"
 
 
-class Kuenstlertyp(str, Enum):
-    vor_ort = "VorOrt"
-    galerie = "Galerie"
-    eigenbestand = "Eigenbestand"
-
 
 class Zahlungsart(str, Enum):
     paypal = "PayPal"
@@ -46,11 +41,13 @@ class KuenstlerBase(SQLModel):
     db_ident: str = Field(unique=True, index=True)
     db_name: str
     db_vorname: str
+    kuenstler_nr: Optional[str] = Field(default=None, max_length=3, description="3-stellige externe Künstlernummer (KKK)")
     db_beruf: Optional[str] = None
     db_leben: Optional[str] = None
+    db_lebenstext: Optional[str] = None
     db_kommentar: Optional[str] = None
+    db_inspiration: Optional[str] = None
     db_ausstellungen: Optional[str] = None
-    kuenstlertyp: Kuenstlertyp = Kuenstlertyp.vor_ort
 
 
 class Kuenstler(KuenstlerBase, table=True):
@@ -61,12 +58,15 @@ class Kuenstler(KuenstlerBase, table=True):
     db_facebook: Optional[str] = None
     db_webseite: Optional[str] = None
     db_adresse: Optional[str] = None
+    db_plz: Optional[str] = None
+    db_ort: Optional[str] = None
     portrait_foto: Optional[str] = None
     dsgvo_einwilligung: bool = False
     dsgvo_zeitstempel: Optional[datetime] = None
     login_token: Optional[str] = None
     login_token_expiry: Optional[datetime] = None
     aktiv: bool = True
+    vor_ort_anwesend: bool = False
     bilder: List["Bild"] = Relationship(back_populates="kuenstler")
 
 
@@ -78,12 +78,17 @@ class KuenstlerCreate(KuenstlerBase):
 
 class KuenstlerPublic(KuenstlerBase):
     id: int
+    kuenstler_nr: Optional[str] = None
     db_email: Optional[str] = None
     db_adresse: Optional[str] = None
+    db_plz: Optional[str] = None
+    db_ort: Optional[str] = None
     db_instagram: Optional[str] = None
     db_facebook: Optional[str] = None
     db_webseite: Optional[str] = None
     portrait_foto: Optional[str] = None
+    aktiv: bool = True
+    vor_ort_anwesend: bool = False
 
 
 # --- Bild ---
@@ -122,6 +127,7 @@ class Bild(BildBase, table=True):
 
 
 class BildCreate(BildBase):
+    bild_nr: Optional[str] = None  # wird auto-generiert wenn leer
     einlieferungspreis: Optional[float] = None
     verkaufspreis: Optional[float] = None
 
@@ -136,6 +142,7 @@ class BildPublic(BildBase):
     freigegeben: bool = False
     in_ausstellung: bool = True
     kuenstler: Optional[KuenstlerPublic] = None
+    galerist: Optional[KuenstlerPublic] = None
 
 
 # --- Reservierung ---

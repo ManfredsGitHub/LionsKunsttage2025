@@ -201,13 +201,25 @@ class BildNeuData(BaseModel):
 
 @router.post("/bilder/neu", response_model=BildPublic)
 def bild_neu(data: BildNeuData, session: Session = Depends(get_session)):
-    # Bild-Nr auto-generieren: VOR{YY}{lfd}
+    kuenstler = session.get(Kuenstler, data.kuenstler_id)
+    if not kuenstler:
+        raise HTTPException(404, "Künstler nicht gefunden")
     year = datetime.now().year % 100
-    count = session.exec(select(func.count(Bild.id))).one()
-    bild_nr = f"VOR{year:02d}{count+1:04d}"
-    while session.exec(select(Bild).where(Bild.bild_nr == bild_nr)).first():
-        count += 1
-        bild_nr = f"VOR{year:02d}{count:04d}"
+    if kuenstler.kuenstler_nr:
+        prefix = f"{year:02d}{kuenstler.kuenstler_nr:>03s}"
+        count = session.exec(select(func.count(Bild.id)).where(Bild.bild_nr.like(f"{prefix}%"))).one()
+        nn = count + 1
+        bild_nr = f"{prefix}{nn:02d}"
+        while session.exec(select(Bild).where(Bild.bild_nr == bild_nr)).first():
+            nn += 1
+            bild_nr = f"{prefix}{nn:02d}"
+    else:
+        # Fallback wenn noch keine Künstlernummer vergeben: JJVORXXXX
+        count = session.exec(select(func.count(Bild.id))).one()
+        bild_nr = f"{year:02d}VOR{count+1:04d}"
+        while session.exec(select(Bild).where(Bild.bild_nr == bild_nr)).first():
+            count += 1
+            bild_nr = f"{year:02d}VOR{count:04d}"
     b = Bild(
         bild_nr=bild_nr,
         kuenstler_id=data.kuenstler_id,
@@ -278,7 +290,7 @@ def kuenstler_aktualisieren(kuenstler_id: int, daten: dict = Body(...), session:
         raise HTTPException(404)
     felder = ["db_name","db_vorname","db_email","db_telefon","db_adresse","db_plz","db_ort",
               "db_beruf","db_leben","db_lebenstext","db_kommentar","db_inspiration","db_ausstellungen",
-              "db_instagram","db_facebook","db_webseite","aktiv","vor_ort_anwesend"]
+              "db_instagram","db_facebook","db_webseite","aktiv","vor_ort_anwesend","kuenstler_nr"]
     for f in felder:
         if f in daten:
             setattr(k, f, daten[f])
