@@ -62,6 +62,28 @@ def einladen(kuenstler_id: int, session: Session = Depends(get_session)):
     return {"status": "eingeladen"}
 
 
+@router.post("/login-link-anfordern")
+def login_link_anfordern(data: dict, session: Session = Depends(get_session)):
+    """Künstler fordert neuen Login-Link per E-Mail an."""
+    email = (data.get("email") or "").strip().lower()
+    if not email:
+        raise HTTPException(400, "E-Mail erforderlich")
+    k = session.exec(select(Kuenstler).where(Kuenstler.db_email == email, Kuenstler.aktiv == True)).first()
+    if not k:
+        # Keine Fehlermeldung um E-Mail-Enumeration zu vermeiden
+        return {"status": "gesendet"}
+    token = secrets.token_urlsafe(32)
+    k.login_token = token
+    k.login_token_expiry = datetime.utcnow() + timedelta(hours=48)
+    session.add(k)
+    session.commit()
+    try:
+        email_service.send_kuenstler_login(k.db_email, k.db_vorname or k.db_name, token)
+    except Exception as exc:
+        logger.warning("E-Mail-Versand fehlgeschlagen: %s", exc)
+    return {"status": "gesendet"}
+
+
 @router.get("/login/verify")
 def verify_token(token: str, session: Session = Depends(get_session)):
     k = session.exec(

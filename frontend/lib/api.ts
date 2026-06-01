@@ -36,6 +36,11 @@ export const getKuenstler = () => req<Kuenstler[]>("/kuenstler/");
 export const getKuenstlerById = (id: number) => req<Kuenstler>(`/kuenstler/${id}`);
 export const verifyToken = (token: string) =>
   req<{ kuenstler_id: number; name: string }>(`/kuenstler/login/verify?token=${token}`);
+
+export const loginLinkAnfordern = (email: string) =>
+  req<{ status: string }>("/kuenstler/login-link-anfordern", {
+    method: "POST", body: JSON.stringify({ email }),
+  });
 export const updateProfil = (id: number, daten: Record<string, string>) =>
   req(`/kuenstler/${id}/profil`, { method: "PATCH", body: JSON.stringify(daten) });
 

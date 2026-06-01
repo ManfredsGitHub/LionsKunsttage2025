@@ -257,6 +257,16 @@ export default function KuenstlerPortalPage() {
 
       <div className="max-w-7xl mx-auto">
         {/* Seitenkopf */}
+        <div className="mb-4 bg-blue-50 border border-blue-100 rounded-md px-4 py-2.5 flex items-center justify-between gap-4 print:hidden">
+          <p className="text-xs text-blue-700">
+            💡 Speichern Sie diese Seite als <strong>Lesezeichen</strong> — so können Sie jederzeit ohne neuen Link zurückkehren.
+          </p>
+          <button onClick={() => window.location.href = "/kuenstler/login"}
+            className="text-xs text-blue-500 hover:underline whitespace-nowrap flex-shrink-0">
+            Abmelden
+          </button>
+        </div>
+
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-lions-blue">Ihr Künstler-Portal</h1>
