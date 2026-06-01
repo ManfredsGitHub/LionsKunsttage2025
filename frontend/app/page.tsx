@@ -15,7 +15,7 @@ export default function GaleriePage() {
   const [kuenstlerId, setKuenstlerId] = useState("");
   const [laden, setLaden] = useState(true);
   const [fehler, setFehler] = useState("");
-  const scrollRestored = useRef(false);
+  const [restored, setRestored] = useState(false);
 
   // Filter-State und Scroll-Position aus sessionStorage wiederherstellen
   useEffect(() => {
@@ -26,16 +26,11 @@ export default function GaleriePage() {
         if (g) setGenre(g);
         if (t) setTechnik(t);
         if (k) setKuenstlerId(k);
-        if (scrollY) scrollRestored.current = true;
         sessionStorage.removeItem(STORAGE_KEY);
-        // Scroll nach dem Render wiederherstellen
-        if (scrollY) {
-          requestAnimationFrame(() => {
-            setTimeout(() => window.scrollTo({ top: scrollY }), 100);
-          });
-        }
+        if (scrollY) setTimeout(() => window.scrollTo({ top: scrollY }), 100);
       }
     } catch {}
+    setRestored(true);
   }, []);
 
   // Einmalig alle Bilder laden für die Künstler-Dropdown-Optionen
@@ -57,6 +52,7 @@ export default function GaleriePage() {
   }, [alleBilder]);
 
   useEffect(() => {
+    if (!restored) return;
     setLaden(true);
     getBilder({
       genre: genre || undefined,
@@ -66,7 +62,7 @@ export default function GaleriePage() {
       .then(setBilder)
       .catch(() => setFehler("Verbindung zum Server fehlgeschlagen."))
       .finally(() => setLaden(false));
-  }, [genre, technik, kuenstlerId]);
+  }, [genre, technik, kuenstlerId, restored]);
 
   function handleBildClick() {
     try {
