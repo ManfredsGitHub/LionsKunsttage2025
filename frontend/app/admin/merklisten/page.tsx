@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Bild } from "@/lib/types";
+import { merkliste_admin_zusenden, merklisten_nachfassen } from "@/lib/api";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -17,6 +18,9 @@ export default function AdminMerklistenPage() {
   const [daten, setDaten] = useState<BesucherMerkliste[]>([]);
   const [laden, setLaden] = useState(true);
   const [offen, setOffen] = useState<Set<number>>(new Set());
+  const [senden, setSenden] = useState<Record<number, "laden" | "ok" | "fehler">>({});
+  const [nachfass, setNachfass] = useState({ betreff: "", text: "" });
+  const [nachfassStatus, setNachfassStatus] = useState<"" | "laden" | "ok" | "fehler">("");
 
   useEffect(() => {
     fetch(`${API}/admin/merklisten`)
@@ -24,6 +28,32 @@ export default function AdminMerklistenPage() {
       .then(setDaten)
       .finally(() => setLaden(false));
   }, []);
+
+  const empfaengerMitMerkliste = daten.filter(b => b.email && b.anzahl > 0).length;
+
+  async function nachfassSenden(e: React.FormEvent) {
+    e.preventDefault();
+    setNachfassStatus("laden");
+    try {
+      await merklisten_nachfassen(nachfass.betreff, nachfass.text);
+      setNachfassStatus("ok");
+    } catch {
+      setNachfassStatus("fehler");
+    }
+  }
+
+  async function emailSenden(e: React.MouseEvent, id: number) {
+    e.stopPropagation();
+    setSenden(prev => ({ ...prev, [id]: "laden" }));
+    try {
+      await merkliste_admin_zusenden(id);
+      setSenden(prev => ({ ...prev, [id]: "ok" }));
+      setTimeout(() => setSenden(prev => { const n = { ...prev }; delete n[id]; return n; }), 3000);
+    } catch {
+      setSenden(prev => ({ ...prev, [id]: "fehler" }));
+      setTimeout(() => setSenden(prev => { const n = { ...prev }; delete n[id]; return n; }), 3000);
+    }
+  }
 
   function toggle(id: number) {
     setOffen(prev => {
@@ -67,6 +97,42 @@ export default function AdminMerklistenPage() {
         ))}
       </div>
 
+      {/* Nachfass-Email */}
+      <div className="bg-white rounded-lg shadow-sm border p-4">
+        <h2 className="font-semibold text-gray-800 mb-1">Nachfass-Email</h2>
+        <p className="text-xs text-gray-400 mb-4">
+          Geht an <strong>{empfaengerMitMerkliste} Empfänger</strong> mit Merkliste (per BCC)
+        </p>
+        {nachfassStatus === "ok" ? (
+          <div className="bg-green-50 border border-green-200 rounded-md p-4 text-green-800 text-sm text-center">
+            ✓ Email an {empfaengerMitMerkliste} Empfänger gesendet.
+            <button onClick={() => setNachfassStatus("")} className="ml-3 underline text-xs">Neue Email</button>
+          </div>
+        ) : (
+          <form onSubmit={nachfassSenden} className="space-y-3">
+            <input
+              type="text" required placeholder="Betreff"
+              value={nachfass.betreff}
+              onChange={e => setNachfass(p => ({ ...p, betreff: e.target.value }))}
+              className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue"
+            />
+            <textarea
+              required placeholder="Emailtext…" rows={6}
+              value={nachfass.text}
+              onChange={e => setNachfass(p => ({ ...p, text: e.target.value }))}
+              className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue resize-y"
+            />
+            {nachfassStatus === "fehler" && (
+              <p className="text-red-600 text-xs">Fehler beim Senden — bitte erneut versuchen.</p>
+            )}
+            <button type="submit" disabled={nachfassStatus === "laden" || empfaengerMitMerkliste === 0}
+              className="bg-lions-blue text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-900 disabled:opacity-50">
+              {nachfassStatus === "laden" ? "Wird gesendet…" : `✉ An ${empfaengerMitMerkliste} Empfänger senden`}
+            </button>
+          </form>
+        )}
+      </div>
+
       {/* Top-Werke */}
       {top.length > 0 && (
         <div className="bg-white rounded-lg shadow-sm border p-4">
@@ -106,6 +172,7 @@ export default function AdminMerklistenPage() {
                 <th className="px-4 py-3 text-left">Kontakt</th>
                 <th className="px-4 py-3 text-left">Registriert</th>
                 <th className="px-4 py-3 text-center">Werke</th>
+                <th className="px-4 py-3 text-center">Aktion</th>
                 <th className="px-4 py-3 w-8"></th>
               </tr>
             </thead>
@@ -136,6 +203,26 @@ export default function AdminMerklistenPage() {
                         {b.anzahl}
                       </span>
                     </td>
+                    <td className="px-4 py-3 text-center" onClick={e => e.stopPropagation()}>
+                      {b.email && b.anzahl > 0 && (
+                        <button
+                          onClick={e => emailSenden(e, b.id)}
+                          disabled={senden[b.id] === "laden"}
+                          className={`text-xs px-3 py-1 rounded-full font-medium transition-colors ${
+                            senden[b.id] === "ok"
+                              ? "bg-green-100 text-green-700"
+                              : senden[b.id] === "fehler"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-lions-blue/10 text-lions-blue hover:bg-lions-blue hover:text-white disabled:opacity-50"
+                          }`}
+                        >
+                          {senden[b.id] === "laden" ? "Wird gesendet…"
+                            : senden[b.id] === "ok" ? "✓ Gesendet"
+                            : senden[b.id] === "fehler" ? "Fehler"
+                            : "✉ Senden"}
+                        </button>
+                      )}
+                    </td>
                     <td className="px-4 py-3 text-gray-400 text-center">
                       {b.anzahl > 0 && (
                         <span className="text-xs">{offen.has(b.id) ? "▲" : "▼"}</span>
@@ -144,7 +231,7 @@ export default function AdminMerklistenPage() {
                   </tr>
                   {offen.has(b.id) && (
                     <tr key={`${b.id}-detail`}>
-                      <td colSpan={4} className="bg-gray-50 px-4 py-3">
+                      <td colSpan={5} className="bg-gray-50 px-4 py-3">
                         <div className="space-y-2">
                           {b.bilder.map(bild => (
                             <div key={bild.id} className="flex items-center gap-3">

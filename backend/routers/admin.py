@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from models import Bild, BildPublic, Kuenstler, KuenstlerCreate, KuenstlerPublic, Reservierung, Kauf, Besucher, MerklisteEintrag, Genre, Verfuegbarkeit, Abrechnungsempfaenger
 from database import get_session
 from services.import_service import import_csv, import_excel
+from services.email_service import send_merkliste
 from services.image_service import compress_image, save_image
 from services.price_service import berechne_verkaufspreis
 from services.vita_pdf_service import generate_vita_pdf
@@ -382,3 +383,49 @@ def alle_merklisten(session: Session = Depends(get_session)):
             "bilder": bilder,
         })
     return result
+
+
+@router.post("/merklisten/{besucher_id}/zusenden")
+def merkliste_an_besucher_senden(besucher_id: int, session: Session = Depends(get_session)):
+    besucher = session.get(Besucher, besucher_id)
+    if not besucher:
+        raise HTTPException(404, "Besucher nicht gefunden")
+    if not besucher.email:
+        raise HTTPException(400, "Keine E-Mail-Adresse hinterlegt")
+    eintraege = session.exec(
+        select(MerklisteEintrag)
+        .where(MerklisteEintrag.besucher_id == besucher_id)
+        .order_by(MerklisteEintrag.hinzugefuegt_am)
+    ).all()
+    if not eintraege:
+        raise HTTPException(400, "Merkliste ist leer")
+    bilder = []
+    for e in eintraege:
+        bild = session.get(Bild, e.bild_id)
+        if bild:
+            _ = bild.kuenstler
+            bilder.append(bild)
+    send_merkliste(besucher.email, bilder)
+    return {"status": "gesendet", "email": besucher.email}
+
+
+class NachfassData(BaseModel):
+    betreff: str
+    text: str
+
+
+@router.post("/merklisten/nachfassen")
+def merklisten_nachfassen(data: NachfassData, session: Session = Depends(get_session)):
+    alle_besucher = session.exec(select(Besucher).where(Besucher.email != None)).all()
+    empfaenger = []
+    for b in alle_besucher:
+        hat_eintraege = session.exec(
+            select(MerklisteEintrag).where(MerklisteEintrag.besucher_id == b.id)
+        ).first()
+        if hat_eintraege:
+            empfaenger.append(b.email)
+    if not empfaenger:
+        raise HTTPException(400, "Keine Empfänger mit Merkliste gefunden")
+    from services.email_service import send_nachfass
+    send_nachfass(data.betreff, data.text, empfaenger)
+    return {"status": "gesendet", "anzahl": len(empfaenger)}

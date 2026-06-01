@@ -109,6 +109,14 @@ export const bildNeuAnlegen = (data: {
   in_ausstellung?: boolean;
 }) => req<Bild>("/admin/bilder/neu", { method: "POST", body: JSON.stringify(data) });
 
+export const merkliste_admin_zusenden = (besucherId: number) =>
+  req<{ status: string; email: string }>(`/admin/merklisten/${besucherId}/zusenden`, { method: "POST" });
+
+export const merklisten_nachfassen = (betreff: string, text: string) =>
+  req<{ status: string; anzahl: number }>("/admin/merklisten/nachfassen", {
+    method: "POST", body: JSON.stringify({ betreff, text }),
+  });
+
 export const ausstellungToggle = (id: number, inAusstellung: boolean) =>
   req(`/admin/bilder/${id}/ausstellung?in_ausstellung=${inAusstellung}`, { method: "PATCH" });
 

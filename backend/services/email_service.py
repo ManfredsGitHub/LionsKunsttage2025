@@ -118,6 +118,28 @@ def send_merkliste(email: str, bilder: list) -> None:
     )
 
 
+def send_nachfass(betreff: str, text: str, bcc_empfaenger: list[str]):
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = betreff
+    msg["From"] = SMTP_USER
+    msg["To"] = ADMIN_EMAIL
+    msg["Bcc"] = ", ".join(bcc_empfaenger)
+    html = f"""
+    <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+      <p style="white-space:pre-line">{text}</p>
+      <p style="color:#9ca3af;font-size:12px;margin-top:32px;border-top:1px solid #e5e7eb;padding-top:12px">
+        Kunsttage auf der Ludwigshöhe · Lions Club Villa Ludwigshöhe
+      </p>
+    </div>
+    """
+    msg.attach(MIMEText(html, "html"))
+    alle = [ADMIN_EMAIL] + bcc_empfaenger
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as s:
+        s.starttls()
+        s.login(SMTP_USER, SMTP_PASS)
+        s.sendmail(SMTP_USER, alle, msg.as_string())
+
+
 def send_kuenstler_login(email: str, name: str, token: str):
     link = f"{BASE_URL}/kuenstler/login?token={token}"
     _send(
