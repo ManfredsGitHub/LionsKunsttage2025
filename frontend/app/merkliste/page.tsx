@@ -8,9 +8,18 @@ import { Bild } from "@/lib/types";
 const API = process.env.NEXT_PUBLIC_API_URL;
 
 export default function MerklistePage() {
-  const { token, ids, toggle, openModal } = useMerkliste();
+  const { token, email, ids, toggle, openModal } = useMerkliste();
   const [bilder, setBilder] = useState<Bild[]>([]);
   const [laden, setLaden] = useState(false);
+
+  const druckTitel = email
+    ? `Kunsttag26_Merkliste_von_${email}`
+    : "Kunsttag26_Merkliste";
+
+  useEffect(() => {
+    document.title = druckTitel;
+    return () => { document.title = "Kunsttage auf der Ludwigshöhe"; };
+  }, [druckTitel]);
 
   useEffect(() => {
     if (!token) return;
@@ -65,7 +74,7 @@ export default function MerklistePage() {
       <div className="hidden print:block mb-8">
         <div className="flex justify-between items-start border-b pb-4 mb-2">
           <div>
-            <h1 className="text-xl font-bold">Meine Merkliste · Kunsttage auf der Ludwigshöhe 2026</h1>
+            <h1 className="text-xl font-bold">{druckTitel}</h1>
             <p className="text-sm text-gray-600 mt-0.5">Schloss Villa Ludwigshöhe · Edenkoben</p>
           </div>
           <p className="text-sm text-gray-500">{new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "long", year: "numeric" })}</p>

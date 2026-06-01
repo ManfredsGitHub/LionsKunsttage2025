@@ -4,6 +4,7 @@ import { merklisteAnmelden, getMerkliste, merklisteHinzufuegen, merklisteEntfern
 
 interface MerklisteContextType {
   token: string | null;
+  email: string | null;
   ids: Set<number>;
   anmelden: (email?: string, telefon?: string) => Promise<void>;
   toggle: (bildId: number) => Promise<void>;
@@ -17,6 +18,7 @@ const MerklisteContext = createContext<MerklisteContextType | null>(null);
 
 export function MerklisteProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
   const [ids, setIds] = useState<Set<number>>(new Set());
   const [showModal, setShowModal] = useState(false);
   const pendingIdRef = useRef<number | null>(null);
@@ -25,6 +27,7 @@ export function MerklisteProvider({ children }: { children: ReactNode }) {
     const t = localStorage.getItem("merkliste_token");
     if (!t) return;
     setToken(t);
+    setEmail(localStorage.getItem("merkliste_email"));
     getMerkliste(t)
       .then(data => setIds(new Set(data.bilder.map((b: any) => b.id))))
       .catch(() => {
@@ -36,7 +39,9 @@ export function MerklisteProvider({ children }: { children: ReactNode }) {
   const anmelden = useCallback(async (email?: string, telefon?: string) => {
     const data = await merklisteAnmelden(email, telefon);
     localStorage.setItem("merkliste_token", data.token);
+    if (email) localStorage.setItem("merkliste_email", email);
     setToken(data.token);
+    setEmail(email ?? null);
     const list = await getMerkliste(data.token);
     const newIds = new Set<number>(list.bilder.map((b: any) => b.id));
     if (pendingIdRef.current !== null) {
@@ -68,7 +73,7 @@ export function MerklisteProvider({ children }: { children: ReactNode }) {
   const closeModal = useCallback(() => { setShowModal(false); pendingIdRef.current = null; }, []);
 
   return (
-    <MerklisteContext.Provider value={{ token, ids, anmelden, toggle, isInList, showModal, openModal, closeModal }}>
+    <MerklisteContext.Provider value={{ token, email, ids, anmelden, toggle, isInList, showModal, openModal, closeModal }}>
       {children}
     </MerklisteContext.Provider>
   );
