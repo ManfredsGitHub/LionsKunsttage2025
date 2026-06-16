@@ -28,6 +28,12 @@ class Abrechnungsempfaenger(str, Enum):
     lions = "Lions"
 
 
+class Kuenstlertyp(str, Enum):
+    galerie = "galerie"
+    vor_ort = "vor_ort"
+    eigenbestand = "eigenbestand"
+
+
 
 class Zahlungsart(str, Enum):
     bar = "Bar"
@@ -42,6 +48,7 @@ class KuenstlerBase(SQLModel):
     db_ident: str = Field(unique=True, index=True)
     db_name: str
     db_vorname: str
+    kuenstlertyp: Kuenstlertyp = Field(default=Kuenstlertyp.vor_ort)
     kuenstler_nr: Optional[str] = Field(default=None, max_length=3, description="3-stellige externe Künstlernummer (KKK)")
     db_beruf: Optional[str] = None
     db_leben: Optional[str] = None
@@ -68,6 +75,7 @@ class Kuenstler(KuenstlerBase, table=True):
     login_token_expiry: Optional[datetime] = None
     aktiv: bool = True
     vor_ort_anwesend: bool = False
+    ist_galerist: bool = False
     abrechnungsempf: Abrechnungsempfaenger = Field(default=Abrechnungsempfaenger.kuenstler)
     galerist_id: Optional[int] = Field(default=None, foreign_key="kuenstler.id")
     bilder: List["Bild"] = Relationship(back_populates="kuenstler")
@@ -92,6 +100,7 @@ class KuenstlerPublic(KuenstlerBase):
     portrait_foto: Optional[str] = None
     aktiv: bool = True
     vor_ort_anwesend: bool = False
+    ist_galerist: bool = False
     abrechnungsempf: Abrechnungsempfaenger = Abrechnungsempfaenger.kuenstler
     galerist_id: Optional[int] = None
 

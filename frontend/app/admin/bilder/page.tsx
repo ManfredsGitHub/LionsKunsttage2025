@@ -115,7 +115,7 @@ function NeuModal({ onClose, onCreated }: { onClose: () => void; onCreated: (b: 
               <label className="block text-xs font-medium text-gray-600 mb-1">Galerist / Sammler auswählen</label>
               <select required value={form.galerist_id} onChange={e => setForm({...form, galerist_id: e.target.value})} className={inp}>
                 <option value="">— bitte wählen —</option>
-                {kuenstler.sort((a, b) => a.db_name.localeCompare(b.db_name)).map(k => (
+                {kuenstler.filter(k => k.ist_galerist).sort((a, b) => a.db_name.localeCompare(b.db_name)).map(k => (
                   <option key={k.id} value={k.id}>{k.db_name}, {k.db_vorname}</option>
                 ))}
               </select>
@@ -430,7 +430,7 @@ function EditModal({ bild, onClose, onSaved, onDeleted }: { bild: Bild; onClose:
                   <label className="block text-xs font-medium text-gray-600 mb-1">Galerist / Sammler auswählen</label>
                   <select required value={form.galerist_id} onChange={e => setForm({...form, galerist_id: e.target.value})} className={inp}>
                     <option value="">— bitte wählen —</option>
-                    {kuenstler.sort((a, b) => a.db_name.localeCompare(b.db_name)).map(k => (
+                    {kuenstler.filter(k => k.ist_galerist).sort((a, b) => a.db_name.localeCompare(b.db_name)).map(k => (
                       <option key={k.id} value={k.id}>{k.db_name}, {k.db_vorname}</option>
                     ))}
                   </select>

@@ -349,7 +349,7 @@ def kuenstler_aktualisieren(kuenstler_id: int, daten: dict = Body(...), session:
     felder = ["db_name","db_vorname","db_email","db_telefon","db_adresse","db_plz","db_ort",
               "db_beruf","db_leben","db_lebenstext","db_kommentar","db_inspiration","db_ausstellungen",
               "db_instagram","db_facebook","db_webseite","aktiv","vor_ort_anwesend","kuenstler_nr",
-              "abrechnungsempf","galerist_id"]
+              "abrechnungsempf","galerist_id","ist_galerist","kuenstlertyp"]
     for f in felder:
         if f in daten:
             setattr(k, f, daten[f])

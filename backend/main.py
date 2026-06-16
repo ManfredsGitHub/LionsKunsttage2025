@@ -13,14 +13,6 @@ from services.auth_service import verify_token
 
 app = FastAPI(title="Kunsttage auf der Ludwigshöhe API", version="1.0.0")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001").split(","),
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 app.include_router(artworks.router)
 app.include_router(reservations.router)
 app.include_router(sales.router)
@@ -82,6 +74,18 @@ async def auth_middleware(request: Request, call_next):
         return await call_next(request)
 
     return JSONResponse({"detail": "Kein Zugriff"}, status_code=403)
+
+
+# CORS muss nach der Auth-Middleware registriert werden, damit es auch
+# 401/403-Antworten mit Access-Control-Allow-Origin versieht (Starlette:
+# zuletzt registriert = außerste Schicht).
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001").split(","),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "./uploads")

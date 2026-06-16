@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { getAlleKuenstler, getAlleBilder, kuenstlerAktualisieren, kuenstlerEinladen, kuenstlerLoeschen } from "@/lib/api";
+import { authHeaders } from "@/lib/auth";
 import { Kuenstler, Bild } from "@/lib/types";
 import { formatBildNr } from "@/lib/utils";
 
@@ -31,8 +32,10 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
     db_facebook: k.db_facebook ?? "",
     aktiv: k.aktiv !== false,
     vor_ort_anwesend: k.vor_ort_anwesend ?? false,
+    ist_galerist: k.ist_galerist ?? false,
     abrechnungsempf: (k as any).abrechnungsempf ?? "Künstler",
     galerist_id: String((k as any).galerist_id ?? ""),
+    kuenstlertyp: (k as any).kuenstlertyp ?? "vor_ort",
   });
   const [alleKuenstler, setAlleKuenstler] = useState<Kuenstler[]>([]);
   useEffect(() => { getAlleKuenstler().then(setAlleKuenstler).catch(() => {}); }, []);
@@ -78,8 +81,10 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
         db_facebook: form.db_facebook || undefined,
         aktiv: form.aktiv,
         vor_ort_anwesend: form.vor_ort_anwesend,
+        ist_galerist: form.ist_galerist,
         abrechnungsempf: form.abrechnungsempf,
         galerist_id: form.abrechnungsempf === "Galerist" && form.galerist_id ? Number(form.galerist_id) : null,
+        kuenstlertyp: form.kuenstlertyp,
         ...(form.db_telefon ? { db_telefon: form.db_telefon } : {}),
       } as any);
       if (portraitFile) {
@@ -325,9 +330,25 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
                       Vor Ort anwesend
                     </span>
                   </label>
+                  <label className="flex items-center gap-2.5 cursor-pointer">
+                    <input type="checkbox" checked={form.ist_galerist} onChange={e => setForm({...form, ist_galerist: e.target.checked})}
+                      className="w-4 h-4 rounded accent-lions-blue" />
+                    <span className={`text-sm font-medium ${form.ist_galerist ? "text-lions-blue" : "text-gray-700"}`}>
+                      Ist Galerist·in
+                    </span>
+                  </label>
                 </div>
 
                 <hr className="border-gray-100" />
+
+                <div>
+                  <label className={lbl}>Typ</label>
+                  <select value={form.kuenstlertyp} onChange={e => setForm({...form, kuenstlertyp: e.target.value})} className={inp}>
+                    <option value="vor_ort">Künstler·in vor Ort</option>
+                    <option value="galerie">Galerie / Händler</option>
+                    <option value="eigenbestand">Eigenbestand</option>
+                  </select>
+                </div>
 
                 <div>
                   <label className={lbl}>Abrechnung über</label>
@@ -342,7 +363,7 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
                     <label className={lbl}>Galerist / Sammler</label>
                     <select value={form.galerist_id} onChange={e => setForm({...form, galerist_id: e.target.value})} className={inp}>
                       <option value="">— bitte wählen —</option>
-                      {alleKuenstler.filter(a => a.id !== k.id).sort((a, b) => a.db_name.localeCompare(b.db_name)).map(a => (
+                      {alleKuenstler.filter(a => a.id !== k.id && a.ist_galerist).sort((a, b) => a.db_name.localeCompare(b.db_name)).map(a => (
                         <option key={a.id} value={a.id}>{a.db_name}, {a.db_vorname}</option>
                       ))}
                     </select>
@@ -426,12 +447,12 @@ function NeuModal({ onClose, onCreated }: { onClose: () => void; onCreated: () =
     try {
       const res = await fetch(`${API}/admin/kuenstler`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders() },
         body: JSON.stringify({ ...form, db_ident: "" }),
       });
       if (!res.ok) throw new Error(await res.text());
       const { id } = await res.json();
-      const einRes = await fetch(`${API}/admin/kuenstler/${id}/einladen`, { method: "POST" });
+      const einRes = await fetch(`${API}/admin/kuenstler/${id}/einladen`, { method: "POST", headers: authHeaders() });
       if (!einRes.ok) throw new Error(await einRes.text());
       const { portal_url } = await einRes.json();
       setErgebnis({ portalLink: `${window.location.origin}${portal_url}` });

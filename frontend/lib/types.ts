@@ -26,6 +26,10 @@ export interface Kuenstler {
   portrait_foto?: string;
   aktiv?: boolean;
   vor_ort_anwesend?: boolean;
+  ist_galerist?: boolean;
+  kuenstlertyp?: "vor_ort" | "galerie" | "eigenbestand";
+  abrechnungsempf?: string;
+  galerist_id?: number;
 }
 
 export type Abrechnungsempfaenger = "Künstler" | "Galerist" | "Lions";

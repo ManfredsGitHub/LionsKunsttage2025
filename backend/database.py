@@ -14,6 +14,9 @@ def create_db():
         if "kuenstler_nr" not in cols:
             con.exec_driver_sql("ALTER TABLE kuenstler ADD COLUMN kuenstler_nr TEXT")
             con.commit()
+        if "ist_galerist" not in cols:
+            con.exec_driver_sql("ALTER TABLE kuenstler ADD COLUMN ist_galerist INTEGER DEFAULT 0")
+            con.commit()
         kauf_cols = [r[1] for r in con.exec_driver_sql("PRAGMA table_info(kauf)")]
         for col, typ in [
             ("snap_bild_nr", "TEXT"), ("snap_bildtitel", "TEXT"),
