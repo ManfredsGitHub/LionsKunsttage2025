@@ -98,7 +98,6 @@ function NeuModal({ onClose, onCreated }: { onClose: () => void; onCreated: (b: 
               <select value={form.abrechnungsempf} onChange={e => setForm({...form, abrechnungsempf: e.target.value, galerist_id: ""})} className={inp}>
                 <option value="Künstler">Künstler</option>
                 <option value="Galerist">Galerist / Sammler</option>
-                <option value="Lions">Lions</option>
               </select>
             </div>
             <div className="flex items-end pb-1">
@@ -423,7 +422,6 @@ function EditModal({ bild, onClose, onSaved, onDeleted }: { bild: Bild; onClose:
               <select value={form.abrechnungsempf} onChange={e => setForm({...form, abrechnungsempf: e.target.value as any, galerist_id: ""})} className={inp}>
                 <option value="Künstler">Künstler</option>
                 <option value="Galerist">Galerist / Sammler</option>
-                <option value="Lions">Lions</option>
               </select>
               {form.abrechnungsempf === "Galerist" && (
                 <div className="mt-2">

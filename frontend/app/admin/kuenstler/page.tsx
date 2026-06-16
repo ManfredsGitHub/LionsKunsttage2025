@@ -355,7 +355,6 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
                   <select value={form.abrechnungsempf} onChange={e => setForm({...form, abrechnungsempf: e.target.value, galerist_id: ""})} className={inp}>
                     <option value="Künstler">Direkt an Künstler·in</option>
                     <option value="Galerist">Über Galerist / Sammler</option>
-                    <option value="Lions">Lions (Spende)</option>
                   </select>
                 </div>
                 {form.abrechnungsempf === "Galerist" && (

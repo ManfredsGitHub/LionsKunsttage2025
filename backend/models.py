@@ -25,7 +25,6 @@ class Verfuegbarkeit(str, Enum):
 class Abrechnungsempfaenger(str, Enum):
     kuenstler = "Künstler"
     galerist = "Galerist"
-    lions = "Lions"
 
 
 class Kuenstlertyp(str, Enum):
