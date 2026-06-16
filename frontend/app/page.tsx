@@ -98,12 +98,11 @@ export default function GaleriePage() {
           <span>e</span>
         </h1>
         <p
-          className="text-gray-500 mt-2 tracking-widest uppercase text-xs"
-          style={{ fontFamily: "var(--font-cormorant), Georgia, serif", letterSpacing: "0.25em" }}
+          className="text-gray-500 mt-2 text-xs tracking-[0.2em] uppercase"
+          style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
         >
-          auf der Ludwigshöhe · 2026
+          auf der Ludwigshöhe · 2026 · Schloss Villa Ludwigshöhe · Edenkoben
         </p>
-        <p className="text-gray-400 text-xs mt-1">Schloss Villa Ludwigshöhe · Edenkoben</p>
       </div>
 
       <div className="mb-6">

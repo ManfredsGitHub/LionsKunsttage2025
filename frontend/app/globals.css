@@ -5,7 +5,7 @@
 /* ── Kunsttage-Titel-Typografie ───────────────────────────────────────────── */
 .kunsttage {
   font-family: var(--font-cormorant), "Georgia", serif;
-  font-weight: 300;
+  font-weight: 700;
   letter-spacing: 0.04em;
   line-height: 1;
   display: flex;
@@ -33,7 +33,7 @@
 /* Header-Variante (selbe Proportionen, kleinere Basisgröße) */
 .kunsttage-header {
   font-family: var(--font-cormorant), "Georgia", serif;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.04em;
   line-height: 1;
   display: flex;
@@ -44,15 +44,15 @@
 
 .kunsttage-header span { display: inline-block; }
 
-.kunsttage-header span:nth-child(1) { font-size: 2.0rem; }   /* K */
-.kunsttage-header span:nth-child(2) { font-size: 1.2rem; }   /* u */
-.kunsttage-header span:nth-child(3) { font-size: 1.5rem; }   /* n */
-.kunsttage-header span:nth-child(4) { font-size: 1.0rem; }   /* s */
-.kunsttage-header span:nth-child(5) { font-size: 2.2rem; }   /* t */
-.kunsttage-header span:nth-child(6) { font-size: 1.7rem; }   /* t */
-.kunsttage-header span:nth-child(7) { font-size: 1.1rem; }   /* a */
-.kunsttage-header span:nth-child(8) { font-size: 1.4rem; }   /* g */
-.kunsttage-header span:nth-child(9) { font-size: 1.8rem; }   /* e */
+.kunsttage-header span:nth-child(1) { font-size: 2.8rem; }   /* K */
+.kunsttage-header span:nth-child(2) { font-size: 1.7rem; }   /* u */
+.kunsttage-header span:nth-child(3) { font-size: 2.1rem; }   /* n */
+.kunsttage-header span:nth-child(4) { font-size: 1.4rem; }   /* s */
+.kunsttage-header span:nth-child(5) { font-size: 3.1rem; }   /* t */
+.kunsttage-header span:nth-child(6) { font-size: 2.4rem; }   /* t */
+.kunsttage-header span:nth-child(7) { font-size: 1.5rem; }   /* a */
+.kunsttage-header span:nth-child(8) { font-size: 2.0rem; }   /* g */
+.kunsttage-header span:nth-child(9) { font-size: 2.5rem; }   /* e */
 
 input[type=number]::-webkit-outer-spin-button,
 input[type=number]::-webkit-inner-spin-button {
