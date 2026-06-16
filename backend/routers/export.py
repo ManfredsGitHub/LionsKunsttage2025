@@ -5,13 +5,20 @@ Encoding: Latin-1 (DATEV-Standard)
 Dezimaltrennzeichen: Komma
 Feldtrennzeichen: Semikolon
 Datumformat Belegdatum: TTMM (kein Jahr)
+Kontenrahmen: 04 (DATEV-Vereinskontenrahmen SKR49)
 
-Kontenplan (SKR03 / SKR49 – mit Steuerberater abstimmen):
-  1000  Kasse (Bar)
-  1200  Bank (Überweisung)
-  1361  Kreditkartenkonto
-  1362  PayPal
-  8400  Erlöse aus Lieferungen und Leistungen
+Kontenplan Lions Club Villa Ludwigshöhe:
+  1460  Geldtransit       (Bar, Kreditkarte, PayPal)
+  1800  Bank              (Überweisung)
+  2120  Ausschüttung Erlös
+  4120  Steuerfreie Umsätze § 19 UStG  (Erlöskonto)
+  5200  Wareneingang
+  6300  Sonst. betr. Ausgaben
+  6400  Versicherungen
+  6600  Werbekosten
+  6800  Porto
+  6850  Sonstiger Betriebsbedarf
+  6855  Nebenkosten des Geldverkehrs
   10001+  Debitoren (Käufer, je E-Mail-Adresse)
   70001+  Kreditoren (Künstler / Galerien)
 """
@@ -30,15 +37,16 @@ from models import Bild, Kauf, Kuenstler, Zahlungsart
 router = APIRouter(prefix="/admin/export", tags=["Export"])
 
 # ── Kontenplan ────────────────────────────────────────────────────────────────
+# Bar/Kreditkarte/PayPal laufen alle über Geldtransit, Überweisung direkt auf Bank
 KONTO_ZAHLUNGSART = {
-    Zahlungsart.bar: "1000",
-    Zahlungsart.ueberweisung: "1200",
-    Zahlungsart.kreditkarte: "1361",
-    Zahlungsart.paypal: "1362",
+    Zahlungsart.bar: "1460",
+    Zahlungsart.ueberweisung: "1800",
+    Zahlungsart.kreditkarte: "1460",
+    Zahlungsart.paypal: "1460",
 }
-KONTO_ERLOESE = "8400"
-DEBITOR_BASIS = 10000   # Käufer: 10001, 10002, …
-KREDITOR_BASIS = 70000  # Künstler: 70001, 70002, …
+KONTO_ERLOESE = "4120"   # Steuerfreie Umsätze § 19 UStG
+DEBITOR_BASIS = 10000    # Käufer: 10001, 10002, …
+KREDITOR_BASIS = 70000   # Künstler: 70001, 70002, …
 
 
 # ── Hilfsfunktionen ───────────────────────────────────────────────────────────
@@ -67,7 +75,7 @@ def _safe(s: str, max_len: int = 0) -> str:
 def _buchungsstapel_header(berater: int, mandant: int, wj_beginn: str) -> str:
     return (
         f'"EXTF";700;21;"Buchungsstapel";7;{_ts()};;'
-        f'"RE";"";"";"";{berater};{mandant};{wj_beginn};4;"EUR";"";"";"";""'
+        f'"RE";"";"";"";{berater};{mandant};{wj_beginn};04;"EUR";"";"";"";""'
     )
 
 
@@ -83,7 +91,7 @@ BUCHUNGSSTAPEL_SPALTEN = (
 def _stammdaten_header(berater: int, mandant: int, wj_beginn: str) -> str:
     return (
         f'"EXTF";700;16;"Debitoren/Kreditoren";5;{_ts()};;'
-        f'"RE";"";"";"";{berater};{mandant};{wj_beginn};4;"EUR";"";"";"";""'
+        f'"RE";"";"";"";{berater};{mandant};{wj_beginn};04;"EUR";"";"";"";""'
     )
 
 
