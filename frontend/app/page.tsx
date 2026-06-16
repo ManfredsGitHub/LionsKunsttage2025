@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getBilder } from "@/lib/api";
 import { Bild } from "@/lib/types";
 import BildCard from "@/components/BildCard";

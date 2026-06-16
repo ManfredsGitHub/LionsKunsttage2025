@@ -49,7 +49,7 @@ export default function BildCard({ bild }: { bild: Bild }) {
           {(() => {
             const b = bild.breite_rahmen_cm > 0 ? bild.breite_rahmen_cm : bild.breite_cm;
             const h = bild.hoehe_rahmen_cm > 0 ? bild.hoehe_rahmen_cm : bild.hoehe_cm;
-            return (b > 0 || h > 0) ? (
+            return ((b ?? 0) > 0 || (h ?? 0) > 0) ? (
               <p className="text-xs text-gray-400 mt-1">{b} × {h} cm</p>
             ) : null;
           })()}

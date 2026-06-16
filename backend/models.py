@@ -25,6 +25,7 @@ class Verfuegbarkeit(str, Enum):
 class Abrechnungsempfaenger(str, Enum):
     kuenstler = "Künstler"
     galerist = "Galerist"
+    lions = "Lions"  # Altdaten — nicht mehr in UI anzeigen
 
 
 class Kuenstlertyp(str, Enum):

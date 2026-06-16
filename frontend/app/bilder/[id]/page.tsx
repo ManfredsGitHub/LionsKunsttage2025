@@ -313,7 +313,7 @@ export default function BildDetailPage() {
           </div>
           {bild.in_ausstellung === false && (
             <div className="inline-block px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-              Online-Katalog · Abrechnung über Lions
+              Online-Katalog
             </div>
           )}
         </div>

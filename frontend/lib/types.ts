@@ -140,5 +140,5 @@ export interface KaufCreate {
   kaeufer_plz: string;
   kaeufer_ort: string;
   kaeufer_email: string;
-  zahlungsart: "PayPal" | "Kreditkarte" | "Überweisung";
+  zahlungsart: "Bar" | "PayPal" | "Kreditkarte" | "Überweisung";
 }

@@ -548,7 +548,6 @@ export default function KuenstlerPortalPage() {
                 <select value={bildForm.abrechnungsempf} onChange={e => setBildForm(f => ({...f, abrechnungsempf: e.target.value, galerist_id: ""}))} className="input">
                   <option value="Künstler">Künstler</option>
                   <option value="Galerist">Galerist / Sammler</option>
-                  <option value="Lions">Lions</option>
                 </select>
               </div>
               {bildForm.abrechnungsempf === "Galerist" && (
