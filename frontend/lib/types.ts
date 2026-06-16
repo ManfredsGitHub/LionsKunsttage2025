@@ -58,12 +58,72 @@ export interface Bild {
   galerist?: Kuenstler;
 }
 
+export interface BildFoto {
+  id: number;
+  bild_id: number;
+  url: string;
+  reihenfolge: number;
+}
+
 export interface ReservierungCreate {
   bild_id: number;
   vorname: string;
   name: string;
   email: string;
   telefon?: string;
+}
+
+export interface KaufDetail extends Kauf {
+  bildtechnik?: string;
+  genre?: string;
+  breite_rahmen_cm?: number;
+  hoehe_rahmen_cm?: number;
+  breite_cm?: number;
+  hoehe_cm?: number;
+  kuenstler_beruf?: string;
+}
+
+export interface Kauf {
+  id: number;
+  erstellt_am: string;
+  bezahlt: boolean;
+  bezahlt_am?: string;
+  zahlungsart: string;
+  kaeufer_titel?: string;
+  kaeufer_vorname: string;
+  kaeufer_name: string;
+  kaeufer_email: string;
+  kaeufer_strasse: string;
+  kaeufer_plz: string;
+  kaeufer_ort: string;
+  bild_id: number;
+  bild_nr?: string;
+  bildtitel?: string;
+  verkaufspreis?: number;
+  kuenstler?: string;
+}
+
+export interface KaeuferKauf {
+  kauf_id: number;
+  datum: string;
+  bild_nr?: string;
+  bildtitel?: string;
+  kuenstler?: string;
+  verkaufspreis: number;
+  bezahlt: boolean;
+  zahlungsart: string;
+}
+
+export interface KaeuferEintrag {
+  email: string;
+  titel?: string;
+  vorname: string;
+  name: string;
+  strasse: string;
+  plz: string;
+  ort: string;
+  kaeufe: KaeuferKauf[];
+  gesamt: number;
 }
 
 export interface KaufCreate {

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useMerkliste } from "@/lib/MerklisteContext";
 import { getMerkliste, merklisteZusenden } from "@/lib/api";
+import { formatBildNr } from "@/lib/utils";
 import { Bild } from "@/lib/types";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -188,12 +189,12 @@ export default function MerklistePage() {
                 <span className="hidden print:block text-gray-400 text-sm pt-1 w-5 flex-shrink-0">{i + 1}.</span>
 
                 {/* Thumbnail */}
-                <div className="w-20 h-20 flex-shrink-0 rounded overflow-hidden bg-gray-100 print:w-16 print:h-16">
+                <div className="w-20 flex-shrink-0 rounded overflow-hidden bg-gray-100 print:w-16">
                   {b.bild_url_web ? (
                     <img src={`${API}${b.bild_url_web}`} alt={b.bildtitel}
-                      className="w-full h-full object-cover" />
+                      className="w-full h-auto block" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">—</div>
+                    <div className="w-20 h-20 flex items-center justify-center text-gray-300 text-xs">—</div>
                   )}
                 </div>
 
@@ -216,7 +217,7 @@ export default function MerklistePage() {
                     </p>
                   )}
                   <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-1.5 text-xs text-gray-500">
-                    <span className="font-mono text-gray-400">Nr. {b.bild_nr}</span>
+                    <span className="font-mono text-gray-400">Nr. {formatBildNr(b.bild_nr)}</span>
                     <span>{b.bildtechnik}</span>
                     {b.breite_rahmen_cm > 0 && (
                       <span>{b.breite_rahmen_cm} × {b.hoehe_rahmen_cm} cm</span>

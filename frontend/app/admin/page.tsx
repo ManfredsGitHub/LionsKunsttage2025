@@ -2,8 +2,12 @@ import Link from "next/link";
 
 const kacheln = [
   { href: "/admin/bilder", titel: "Bildverwaltung", beschreibung: "Bilder freigeben, Preise bestätigen", icon: "🖼️" },
+  { href: "/admin/bilder/aufsteller", titel: "Bildaufsteller", beschreibung: "Druckfertige Aufsteller für alle Bilder", icon: "🏷️" },
   { href: "/admin/import", titel: "CSV / Excel Import", beschreibung: "Galerie-Bilder importieren", icon: "📥" },
   { href: "/admin/kasse", titel: "Vor-Ort-Kasse", beschreibung: "Käufe erfassen & Zahlungen verwalten", icon: "🧾" },
+  { href: "/admin/kaufuebersicht", titel: "Kaufübersicht", beschreibung: "Alle Verkäufe & Zahlungsstatus", icon: "📋" },
+  { href: "/admin/kaeufer", titel: "Käufer", beschreibung: "Käuferverwaltung & Kaufhistorie", icon: "👤" },
+  { href: "/admin/archiv", titel: "Archivierung", beschreibung: "Nummernkreis exportieren & archivieren", icon: "🗄️" },
   { href: "/admin/merklisten", titel: "Besucher-Merklisten", beschreibung: "Favoriten & Interesse der Besucher", icon: "♡" },
   { href: "/admin/nachrichten", titel: "Kommunikation", beschreibung: "Newsletter & Infos an Künstler", icon: "✉" },
   { href: "/admin/kuenstler", titel: "Künstler anlegen", beschreibung: "Künstler registrieren & einladen", icon: "🎨" },
@@ -33,6 +37,23 @@ export default function AdminPage() {
         >
           Druckliste als CSV herunterladen
         </a>
+      </div>
+
+      <div className="mt-10 bg-white rounded-lg shadow p-5">
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Tastaturkürzel</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
+          {[
+            { key: "Ctrl+A", ziel: "Admin-Dashboard" },
+            { key: "Ctrl+B", ziel: "Bildverwaltung" },
+            { key: "Ctrl+K", ziel: "Vor-Ort-Kasse" },
+            { key: "Ctrl+U", ziel: "Kaufübersicht" },
+          ].map(({ key, ziel }) => (
+            <div key={key} className="flex items-center gap-2">
+              <kbd className="bg-gray-100 border border-gray-300 rounded px-2 py-0.5 font-mono text-xs text-gray-700 whitespace-nowrap">{key}</kbd>
+              <span className="text-gray-600">{ziel}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

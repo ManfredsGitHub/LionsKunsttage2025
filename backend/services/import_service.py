@@ -76,6 +76,18 @@ def _process(df: pd.DataFrame, session: Session) -> dict:
             abrech_raw = (row.get("abrechnungsempf") or "").strip().lower()
             abrech = Abrechnungsempfaenger.galerist if "galerist" in abrech_raw else Abrechnungsempfaenger.kuenstler
 
+            # Galerist per Name nachschlagen (Spalten: galerist_name + galerist_vorname)
+            galerist_id = None
+            galerist_name_raw = (row.get("galerist_name") or "").strip()
+            if abrech == Abrechnungsempfaenger.galerist and galerist_name_raw:
+                galerist_vorname_raw = (row.get("galerist_vorname") or "").strip()
+                g_ident = f"{galerist_name_raw}_{galerist_vorname_raw}".lower()
+                galerist = session.exec(
+                    select(Kuenstler).where(Kuenstler.db_ident == g_ident)
+                ).first()
+                if galerist:
+                    galerist_id = galerist.id
+
             bild = Bild(
                 bild_nr=bild_nr,
                 kuenstler_id=kuenstler.id,
@@ -89,6 +101,7 @@ def _process(df: pd.DataFrame, session: Session) -> dict:
                 verkaufspreis_vorschlag=berechne_verkaufspreis(einlieferungspreis) if einlieferungspreis else None,
                 verkaufspreis=verkaufspreis,
                 abrechnungsempf=abrech,
+                galerist_id=galerist_id,
                 foto_nr=row.get("bild_dateiname", "").strip() or None,
             )
             session.add(bild)

@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getBild, reservieren } from "@/lib/api";
-import { Bild } from "@/lib/types";
+import { getBild, reservieren, getBildFotosPublic } from "@/lib/api";
+import { Bild, BildFoto } from "@/lib/types";
+import { formatBildNr } from "@/lib/utils";
 import MerklistenButton from "@/components/MerklistenButton";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
@@ -124,6 +125,8 @@ export default function BildDetailPage() {
   const [senden, setSenden] = useState(false);
   const [dsgvo, setDsgvo] = useState(false);
   const [lightbox, setLightbox] = useState(false);
+  const [aktivFoto, setAktivFoto] = useState<string | null>(null);
+  const [zusatzFotos, setZusatzFotos] = useState<BildFoto[]>([]);
 
   useEffect(() => {
     if (!lightbox) return;
@@ -133,7 +136,8 @@ export default function BildDetailPage() {
   }, [lightbox]);
 
   useEffect(() => {
-    getBild(Number(id)).then(setBild).catch(() => setFehler("Bild nicht gefunden."));
+    getBild(Number(id)).then(b => { setBild(b); setAktivFoto(b.bild_url_web ?? null); }).catch(() => setFehler("Bild nicht gefunden."));
+    getBildFotosPublic(Number(id)).then(setZusatzFotos).catch(() => {});
   }, [id]);
 
   async function handleReservieren(e: React.FormEvent) {
@@ -154,9 +158,8 @@ export default function BildDetailPage() {
   if (fehler) return <p className="text-red-600">{fehler}</p>;
   if (!bild) return <p className="text-gray-400 animate-pulse">Laden…</p>;
 
-  const imgSrc = bild.bild_url_web
-    ? `${API}${bild.bild_url_web}`
-    : "/placeholder.jpg";
+  const imgSrc = aktivFoto ? `${API}${aktivFoto}` : "/placeholder.jpg";
+  const alleUrls = [bild.bild_url_web, ...zusatzFotos.map(f => f.url)].filter(Boolean) as string[];
 
   return (
     <div>
@@ -189,6 +192,24 @@ export default function BildDetailPage() {
           onClick={() => setLightbox(true)}
           onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.jpg"; }}
         />
+
+        {/* Thumbnail-Galerie bei mehreren Fotos */}
+        {alleUrls.length > 1 && (
+          <div className="flex gap-2 mt-3">
+            {alleUrls.map(url => (
+              <button
+                key={url}
+                onClick={() => setAktivFoto(url)}
+                className={`w-16 h-16 rounded-md overflow-hidden border-2 transition-colors flex-shrink-0 ${
+                  aktivFoto === url ? "border-lions-blue" : "border-transparent hover:border-gray-300"
+                }`}
+              >
+                <img src={`${API}${url}`} alt="" className="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
+
         <WandVorschau bild={bild} />
       </div>
 
@@ -266,7 +287,7 @@ export default function BildDetailPage() {
             </>
           )}
           <dt className="text-gray-500">Nr.</dt>
-          <dd className="font-medium text-gray-400">{bild.bild_nr}</dd>
+          <dd className="font-medium text-gray-400">{formatBildNr(bild.bild_nr)}</dd>
           {bild.verkaufspreis && (
             <>
               <dt className="text-gray-500">Preis</dt>

@@ -59,3 +59,54 @@ Legt 3 Künstler und 10 freigegebene Bilder an (idempotent).
 
 ## Datenmodell
 Siehe `backend/models.py` — Kernentitäten: `Kuenstler`, `Bild`, `Reservierung`, `Kauf`
+
+---
+
+## Fertige Features (Stand 2026-06)
+
+- **Bildverwaltung** mit Status-Filter (Verfügbar / Reserviert / Verkauft) · `admin/bilder`
+- **CSV-Import** inkl. optionaler Felder: hoehe_cm, breite_cm, tiefe_cm, gewicht_kg, anmerkung_bild · `admin/import`
+- **Vor-Ort-Kasse** mit Käufererfassung · `admin/kasse`
+- **Kaufübersicht** mit Bezahlt-Toggle und Quittungsdruck · `admin/kaufuebersicht`
+- **Käuferverwaltung** gruppiert nach E-Mail, aufklappbare Kaufhistorie · `admin/kaeufer`
+- **Archivierung**: Nummernkreis → CSV + Bilder verschieben, aus DB löschen · `admin/archiv`
+- **Rück-Import**: Archiv-CSV + Bilder zurück in die DB laden
+- **Bildaufsteller** (druckfertige Schilder) · `admin/bilder/aufsteller`
+- **Merkliste** für Besucher
+- **Künstler-Portal** (Login per Token-Link)
+- **Kommunikation / Newsletter**
+
+## Wichtige Konventionen
+
+### Bild-Nr. Format
+- **Intern (DB)**: 7-stellig ohne Punkte, z. B. `2540001`
+- **Anzeige**: `JJ.KKK.NN`, z. B. `25.400.01`
+- Umwandlung: `formatBildNr()` aus `frontend/lib/utils.ts`
+- Suche funktioniert mit beiden Formaten (raw in DB, formatiert in Anzeige)
+
+### Snapshot-Felder im Kauf-Modell
+Beim Archivieren werden Bilddaten in `snap_*`-Felder des Kauf-Eintrags kopiert,
+damit Quittungen und Kaufübersicht auch nach der Archivierung vollständig bleiben:
+```
+snap_bild_nr, snap_bildtitel, snap_kuenstler, snap_bildtechnik,
+snap_verkaufspreis, snap_hoehe_rahmen_cm, snap_breite_rahmen_cm, snap_genre
+```
+Zugriffsmuster: `(bild.bild_nr if bild else None) or kauf.snap_bild_nr`
+
+### Archiv-Struktur
+```
+backend/archiv/{Jahr}/{Galerist- oder Künstlername}/
+    *.jpg                  # Bilddateien
+    archiv_{bild_nr}.csv   # Metadaten (importkompatibel + Käufer-Spalten)
+```
+Archiv-Unterverzeichnis: Galerist-Name wenn `abrechnungsempf=Galerist`, sonst Künstler-Name.
+
+### SQLite-Migrationen
+Neue Spalten werden in `database.py` per `PRAGMA table_info` + `ALTER TABLE ADD COLUMN` ergänzt (kein Alembic).
+
+### Keyboard Shortcuts (global, nur wenn kein Input fokussiert)
+- `Ctrl+A` → `/admin`
+- `Ctrl+B` → `/admin/bilder`
+- `Ctrl+K` → `/admin/kasse`
+- `Ctrl+U` → `/admin/kaufuebersicht`
+- Implementiert in `frontend/components/KeyboardShortcuts.tsx`, eingebunden in `app/layout.tsx`

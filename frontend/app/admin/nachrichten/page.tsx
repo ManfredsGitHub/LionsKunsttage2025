@@ -47,7 +47,7 @@ function EmailForm({
       <form onSubmit={submit} className="space-y-3">
         <input type="text" required placeholder="Betreff"
           value={form.betreff} onChange={e => setForm(p => ({ ...p, betreff: e.target.value }))}
-          className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue" />
+          className="w-full border rounded-md px-3 py-2 text-sm bg-gray-100 focus:outline-none focus:ring-2 focus:ring-lions-blue" />
         <textarea required placeholder="Emailtext…" rows={6}
           value={form.text} onChange={e => setForm(p => ({ ...p, text: e.target.value }))}
           className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue resize-y" />

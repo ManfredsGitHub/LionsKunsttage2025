@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getKuenstlerById, updateProfil, dsgvoEinwilligung, getKuenstlerBilder, kuenstlerBildEinreichen, kuenstlerBildLoeschen, kuenstlerBildFotoHochladen, getKuenstlerNachrichten, nachrichtAlsGelesen } from "@/lib/api";
+import { getKuenstlerById, getKuenstler, updateProfil, dsgvoEinwilligung, getKuenstlerBilder, kuenstlerBildEinreichen, kuenstlerBildLoeschen, kuenstlerBildFotoHochladen, getKuenstlerNachrichten, nachrichtAlsGelesen } from "@/lib/api";
 import { Kuenstler, Bild, Genre } from "@/lib/types";
+import { formatBildNr } from "@/lib/utils";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -149,8 +150,9 @@ export default function KuenstlerPortalPage() {
 
   // Bilder-State
   const [bilder, setBilder] = useState<Bild[]>([]);
+  const [alleKuenstler, setAlleKuenstler] = useState<Kuenstler[]>([]);
   const [showBildForm, setShowBildForm] = useState(false);
-  const [bildForm, setBildForm] = useState({ bildtitel: "", bildtechnik: "", genre: "Landschaft" as Genre, breite_rahmen_cm: "", hoehe_rahmen_cm: "", einlieferungspreis: "", anmerkung_bild: "" });
+  const [bildForm, setBildForm] = useState({ bildtitel: "", bildtechnik: "", genre: "Landschaft" as Genre, breite_rahmen_cm: "", hoehe_rahmen_cm: "", einlieferungspreis: "", anmerkung_bild: "", abrechnungsempf: "Künstler", galerist_id: "" });
   const [bildFehler, setBildFehler] = useState("");
   const [bildLaden, setBildLaden] = useState(false);
 
@@ -159,6 +161,7 @@ export default function KuenstlerPortalPage() {
     if (!id) { router.push("/kuenstler/login"); return; }
     getKuenstlerBilder(Number(id)).then(setBilder).catch(() => {});
     getKuenstlerNachrichten(Number(id)).then(setNachrichten).catch(() => {});
+    getKuenstler().then(setAlleKuenstler).catch(() => {});
     getKuenstlerById(Number(id)).then((k) => {
       setKuenstler(k);
       setForm({
@@ -212,9 +215,11 @@ export default function KuenstlerPortalPage() {
         hoehe_rahmen_cm: Number(bildForm.hoehe_rahmen_cm) || 0,
         einlieferungspreis: bildForm.einlieferungspreis ? Number(bildForm.einlieferungspreis) : undefined,
         anmerkung_bild: bildForm.anmerkung_bild || undefined,
+        abrechnungsempf: bildForm.abrechnungsempf,
+        galerist_id: bildForm.abrechnungsempf === "Galerist" && bildForm.galerist_id ? Number(bildForm.galerist_id) : undefined,
       });
       setBilder(prev => [...prev, neuesBild]);
-      setBildForm({ bildtitel: "", bildtechnik: "", genre: "Landschaft", breite_rahmen_cm: "", hoehe_rahmen_cm: "", einlieferungspreis: "", anmerkung_bild: "" });
+      setBildForm({ bildtitel: "", bildtechnik: "", genre: "Landschaft", breite_rahmen_cm: "", hoehe_rahmen_cm: "", einlieferungspreis: "", anmerkung_bild: "", abrechnungsempf: "Künstler", galerist_id: "" });
       setShowBildForm(false);
     } catch (err: any) { setBildFehler(err.message); }
     finally { setBildLaden(false); }
@@ -473,10 +478,19 @@ export default function KuenstlerPortalPage() {
             <h2 className="text-xl font-bold text-lions-blue">Meine Bilder</h2>
             <p className="text-sm text-gray-500">{bilder.length} {bilder.length === 1 ? "Werk" : "Werke"} eingereicht</p>
           </div>
-          <button onClick={() => setShowBildForm(v => !v)}
-            className="px-4 py-2 bg-lions-blue text-white text-sm font-medium rounded-md hover:bg-blue-900 transition-colors">
-            {showBildForm ? "Abbrechen" : "+ Bild einreichen"}
-          </button>
+          <div className="flex items-center gap-2">
+            {bilder.length > 0 && (
+              <button
+                onClick={() => window.open("/kuenstler/aufsteller", "_blank")}
+                className="px-4 py-2 border border-lions-blue text-lions-blue text-sm font-medium rounded-md hover:bg-lions-blue hover:text-white transition-colors whitespace-nowrap">
+                ⎙ Aufsteller drucken
+              </button>
+            )}
+            <button onClick={() => setShowBildForm(v => !v)}
+              className="px-4 py-2 bg-lions-blue text-white text-sm font-medium rounded-md hover:bg-blue-900 transition-colors">
+              {showBildForm ? "Abbrechen" : "+ Bild einreichen"}
+            </button>
+          </div>
         </div>
 
         {/* Neues-Bild-Formular */}
@@ -524,6 +538,25 @@ export default function KuenstlerPortalPage() {
                 <input value={bildForm.anmerkung_bild} onChange={e => setBildForm(f => ({...f, anmerkung_bild: e.target.value}))}
                   placeholder="Optionale Anmerkung" className="input" />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Abrechnung über</label>
+                <select value={bildForm.abrechnungsempf} onChange={e => setBildForm(f => ({...f, abrechnungsempf: e.target.value, galerist_id: ""}))} className="input">
+                  <option value="Künstler">Künstler</option>
+                  <option value="Galerist">Galerist / Sammler</option>
+                  <option value="Lions">Lions</option>
+                </select>
+              </div>
+              {bildForm.abrechnungsempf === "Galerist" && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Galerist / Sammler auswählen</label>
+                  <select required value={bildForm.galerist_id} onChange={e => setBildForm(f => ({...f, galerist_id: e.target.value}))} className="input">
+                    <option value="">— bitte wählen —</option>
+                    {alleKuenstler.sort((a, b) => a.db_name.localeCompare(b.db_name)).map(k => (
+                      <option key={k.id} value={k.id}>{k.db_name}, {k.db_vorname}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
             {bildFehler && <p className="text-red-600 text-sm">{bildFehler}</p>}
             <button type="submit" disabled={bildLaden}
@@ -562,7 +595,7 @@ export default function KuenstlerPortalPage() {
                     <div>
                       <p className="font-semibold text-gray-800">{b.bildtitel}</p>
                       <p className="text-xs text-gray-500 mt-0.5">{b.bildtechnik} · {b.genre} · {b.breite_rahmen_cm > 0 ? `${b.breite_rahmen_cm} × ${b.hoehe_rahmen_cm} cm` : "Maße fehlen"}</p>
-                      <p className="text-xs font-mono text-gray-400 mt-0.5">Nr. {b.bild_nr}</p>
+                      <p className="text-xs font-mono text-gray-400 mt-0.5">Nr. {formatBildNr(b.bild_nr)}</p>
                       {b.einlieferungspreis && (
                         <p className="text-xs text-gray-500">Einlieferungspreis: {b.einlieferungspreis} € → Vorschlag: {b.verkaufspreis_vorschlag?.toFixed(0)} €</p>
                       )}
@@ -571,6 +604,12 @@ export default function KuenstlerPortalPage() {
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${b.freigegeben ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
                         {b.freigegeben ? "✓ Freigegeben" : "Ausstehend"}
                       </span>
+                      <button
+                        onClick={() => window.open(`/kuenstler/aufsteller?suche=${encodeURIComponent(b.bild_nr)}&vorschau=1`, "_blank")}
+                        className="text-xs px-2 py-1 rounded border text-gray-500 hover:text-lions-blue hover:border-lions-blue transition-colors"
+                        title="Aufsteller drucken">
+                        ⎙
+                      </button>
                       {!b.freigegeben && (
                         <button onClick={() => handleBildLoeschen(b.id)}
                           className="text-gray-300 hover:text-red-400 transition-colors text-lg leading-none"

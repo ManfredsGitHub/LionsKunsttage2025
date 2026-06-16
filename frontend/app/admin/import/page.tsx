@@ -34,13 +34,28 @@ export default function ImportPage() {
       <h1 className="text-2xl font-bold text-lions-blue mb-6">CSV / Excel Import</h1>
 
       <div className="bg-white rounded-lg shadow p-6 space-y-5">
-        <div className="bg-gray-50 rounded-md p-4 text-sm text-gray-600">
-          <p className="font-medium mb-2">Pflichtfelder der Import-Datei:</p>
-          <code className="text-xs block leading-relaxed">
-            bild_nr, kuenstler_name, kuenstler_vorname, bildtitel,<br />
-            bildtechnik, genre, hoehe_rahmen_cm, breite_rahmen_cm
-          </code>
-          <p className="mt-2">Optional: einlieferungspreis, verkaufspreis, abrechnungsempf, bild_dateiname</p>
+        <div className="bg-gray-50 rounded-md p-4 text-sm text-gray-600 space-y-3">
+          <div>
+            <p className="font-medium mb-1">Pflichtfelder:</p>
+            <code className="text-xs block leading-relaxed text-gray-700">
+              bild_nr, kuenstler_name, kuenstler_vorname, bildtitel,<br />
+              bildtechnik, genre, hoehe_rahmen_cm, breite_rahmen_cm
+            </code>
+          </div>
+          <div>
+            <p className="font-medium mb-1">Optional — Maße &amp; Gewicht:</p>
+            <code className="text-xs block leading-relaxed text-gray-700">
+              hoehe_cm, breite_cm, tiefe_cm, gewicht_kg
+            </code>
+          </div>
+          <div>
+            <p className="font-medium mb-1">Optional — Sonstiges:</p>
+            <code className="text-xs block leading-relaxed text-gray-700">
+              anmerkung_bild, einlieferungspreis, verkaufspreis,<br />
+              abrechnungsempf, bild_dateiname, galerist_name, galerist_vorname
+            </code>
+          </div>
+          <p className="text-xs text-gray-400">Bei abrechnungsempf=Galerist werden galerist_name + galerist_vorname zur Zuordnung verwendet. Archiv-CSVs (mit Käufer-Spalten) können direkt reimportiert werden — die Käufer-Spalten werden ignoriert.</p>
         </div>
 
         <form onSubmit={handleImport} className="space-y-4">

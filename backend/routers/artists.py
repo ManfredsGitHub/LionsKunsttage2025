@@ -132,6 +132,8 @@ class BildEinreichungData(BaseModel):
     hoehe_rahmen_cm: float = 0
     einlieferungspreis: Optional[float] = None
     anmerkung_bild: Optional[str] = None
+    abrechnungsempf: Optional[Abrechnungsempfaenger] = None
+    galerist_id: Optional[int] = None
 
 
 def _generiere_bild_nr(kuenstler: Kuenstler, session: Session) -> str:
@@ -173,6 +175,8 @@ def bild_einreichen(kuenstler_id: int, data: BildEinreichungData, session: Sessi
         einlieferungspreis=data.einlieferungspreis,
         verkaufspreis_vorschlag=berechne_verkaufspreis(data.einlieferungspreis) if data.einlieferungspreis else None,
         anmerkung_bild=data.anmerkung_bild,
+        abrechnungsempf=data.abrechnungsempf,
+        galerist_id=data.galerist_id,
         freigegeben=False,
         in_ausstellung=True,
     )

@@ -51,6 +51,7 @@ export const kuenstlerBildEinreichen = (id: number, data: {
   bildtitel: string; bildtechnik: string; genre: string;
   breite_rahmen_cm: number; hoehe_rahmen_cm: number;
   einlieferungspreis?: number; anmerkung_bild?: string;
+  abrechnungsempf?: string; galerist_id?: number;
 }) => req<Bild>(`/kuenstler/${id}/bilder`, { method: "POST", body: JSON.stringify(data) });
 
 export const kuenstlerBildLoeschen = (kuenstlerId: number, bildId: number) =>
@@ -74,6 +75,10 @@ export const reservieren = (data: ReservierungCreate) =>
   });
 
 // --- Kasse ---
+export const getAlleKaeufe = () => req<import("./types").Kauf[]>("/kaeufe/");
+export const getKauf = (id: number) => req<import("./types").KaufDetail>(`/kaeufe/${id}`);
+export const getAlleKaeufer = () => req<import("./types").KaeuferEintrag[]>("/kaeufe/kaeufer");
+
 export const kaufErfassen = (data: KaufCreate) =>
   req<{ id: number; status: string }>("/kaeufe/", {
     method: "POST",
@@ -94,7 +99,6 @@ export const massenFreigeben = (ids: number[], freigegeben: boolean = true) =>
 export const preisSetzen = (id: number, preis: number) =>
   req(`/admin/bilder/${id}/preis?verkaufspreis=${preis}`, { method: "PATCH" });
 export const getAlleReservierungen = () => req("/admin/reservierungen");
-export const getAlleKaeufe = () => req("/admin/kaeufe");
 export const getAlleKuenstler = (mitInaktiven = false) =>
   req<Kuenstler[]>(`/admin/kuenstler/alle${mitInaktiven ? "?mit_inaktiven=true" : ""}`);
 export const kuenstlerAktualisieren = (id: number, data: Partial<Kuenstler>) =>
@@ -106,7 +110,7 @@ export const kuenstlerLoeschen = (id: number) =>
 export const bildNeuAnlegen = (data: {
   kuenstler_id: number; bildtitel: string; bildtechnik: string; genre: string;
   breite_rahmen_cm: number; hoehe_rahmen_cm: number; einlieferungspreis?: number;
-  in_ausstellung?: boolean;
+  in_ausstellung?: boolean; abrechnungsempf?: string; galerist_id?: number;
 }) => req<Bild>("/admin/bilder/neu", { method: "POST", body: JSON.stringify(data) });
 
 export const merkliste_admin_zusenden = (besucherId: number) =>
@@ -147,6 +151,26 @@ export const ausstellungToggle = (id: number, inAusstellung: boolean) =>
 export const bildLoeschen = (id: number) =>
   req(`/admin/bilder/${id}`, { method: "DELETE" });
 
+export const aiBeschreibungGenerieren = (id: number) =>
+  req<{ beschreibung: string }>(`/admin/bilder/${id}/ai-beschreibung`, { method: "POST" });
+
+export const getZusatzFotos = (id: number) =>
+  req<import("./types").BildFoto[]>(`/admin/bilder/${id}/fotos`);
+
+export const zusatzFotoLoeschen = (bildId: number, fotoId: number) =>
+  req(`/admin/bilder/${bildId}/fotos/${fotoId}`, { method: "DELETE" });
+
+export async function zusatzFotoHochladen(bildId: number, file: File): Promise<import("./types").BildFoto> {
+  const fd = new FormData();
+  fd.append("file", file);
+  const res = await fetch(`${BASE}/admin/bilder/${bildId}/fotos`, { method: "POST", body: fd });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+export const getBildFotosPublic = (id: number) =>
+  req<import("./types").BildFoto[]>(`/bilder/${id}/fotos`);
+
 export const bildAktualisieren = (id: number, data: Partial<{
   bildtitel: string; bildtechnik: string; genre: string;
   breite_rahmen_cm: number; hoehe_rahmen_cm: number;
@@ -154,7 +178,7 @@ export const bildAktualisieren = (id: number, data: Partial<{
   einlieferungspreis: number; verkaufspreis: number;
   anmerkung_bild: string; foto_nr: string;
   in_ausstellung: boolean; freigegeben: boolean;
-  abrechnungsempf: string;
+  abrechnungsempf: string; galerist_id: number | null;
 }>) => req<import("./types").Bild>(`/admin/bilder/${id}`, { method: "PATCH", body: JSON.stringify(data) });
 
 // --- Merkliste ---

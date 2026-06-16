@@ -30,8 +30,9 @@ class Abrechnungsempfaenger(str, Enum):
 
 
 class Zahlungsart(str, Enum):
-    paypal = "PayPal"
+    bar = "Bar"
     kreditkarte = "Kreditkarte"
+    paypal = "PayPal"
     ueberweisung = "Überweisung"
 
 
@@ -67,6 +68,8 @@ class Kuenstler(KuenstlerBase, table=True):
     login_token_expiry: Optional[datetime] = None
     aktiv: bool = True
     vor_ort_anwesend: bool = False
+    abrechnungsempf: Abrechnungsempfaenger = Field(default=Abrechnungsempfaenger.kuenstler)
+    galerist_id: Optional[int] = Field(default=None, foreign_key="kuenstler.id")
     bilder: List["Bild"] = Relationship(back_populates="kuenstler")
 
 
@@ -89,6 +92,8 @@ class KuenstlerPublic(KuenstlerBase):
     portrait_foto: Optional[str] = None
     aktiv: bool = True
     vor_ort_anwesend: bool = False
+    abrechnungsempf: Abrechnungsempfaenger = Abrechnungsempfaenger.kuenstler
+    galerist_id: Optional[int] = None
 
 
 # --- Bild ---
@@ -145,6 +150,15 @@ class BildPublic(BildBase):
     galerist: Optional[KuenstlerPublic] = None
 
 
+# --- BildFoto (max. 3 Fotos pro Bild) ---
+
+class BildFoto(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    bild_id: int = Field(foreign_key="bild.id", index=True)
+    url: str
+    reihenfolge: int = 1
+
+
 # --- Reservierung ---
 
 class Reservierung(SQLModel, table=True):
@@ -183,6 +197,15 @@ class Kauf(SQLModel, table=True):
     bezahlt: bool = False
     bezahlt_am: Optional[datetime] = None
     erstellt_am: datetime = Field(default_factory=datetime.utcnow)
+    # Snapshot-Felder — werden beim Archivieren befüllt
+    snap_bild_nr: Optional[str] = None
+    snap_bildtitel: Optional[str] = None
+    snap_kuenstler: Optional[str] = None
+    snap_bildtechnik: Optional[str] = None
+    snap_verkaufspreis: Optional[float] = None
+    snap_hoehe_rahmen_cm: Optional[float] = None
+    snap_breite_rahmen_cm: Optional[float] = None
+    snap_genre: Optional[str] = None
 
 
 class KaufCreate(SQLModel):

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Query
 from sqlmodel import Session, select, func
 from typing import Optional
 from datetime import datetime
-from models import Bild, BildCreate, BildPublic, Verfuegbarkeit, Genre
+from models import Bild, BildCreate, BildPublic, BildFoto, Verfuegbarkeit, Genre
 from database import get_session
 from services.image_service import compress_image, save_image
 from services.price_service import berechne_verkaufspreis
@@ -39,6 +39,13 @@ def get_bild(bild_id: int, session: Session = Depends(get_session)):
     if not bild or not bild.freigegeben:
         raise HTTPException(404, "Bild nicht gefunden")
     return bild
+
+
+@router.get("/{bild_id}/fotos")
+def get_bild_fotos(bild_id: int, session: Session = Depends(get_session)):
+    return session.exec(
+        select(BildFoto).where(BildFoto.bild_id == bild_id).order_by(BildFoto.reihenfolge)
+    ).all()
 
 
 def _generiere_bild_nr(kuenstler_id: int, session: Session) -> str:

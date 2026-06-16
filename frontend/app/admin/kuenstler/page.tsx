@@ -2,6 +2,7 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { getAlleKuenstler, getAlleBilder, kuenstlerAktualisieren, kuenstlerEinladen, kuenstlerLoeschen } from "@/lib/api";
 import { Kuenstler, Bild } from "@/lib/types";
+import { formatBildNr } from "@/lib/utils";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -27,7 +28,11 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
     db_facebook: k.db_facebook ?? "",
     aktiv: k.aktiv !== false,
     vor_ort_anwesend: k.vor_ort_anwesend ?? false,
+    abrechnungsempf: (k as any).abrechnungsempf ?? "Künstler",
+    galerist_id: String((k as any).galerist_id ?? ""),
   });
+  const [alleKuenstler, setAlleKuenstler] = useState<Kuenstler[]>([]);
+  useEffect(() => { getAlleKuenstler().then(setAlleKuenstler).catch(() => {}); }, []);
   const [portraitFile, setPortraitFile] = useState<File | null>(null);
   const [laden, setLaden] = useState(false);
   const [fehler, setFehler] = useState("");
@@ -35,7 +40,7 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
   const [portalLaden, setPortalLaden] = useState(false);
   const [loeschenLaden, setLoeschenLaden] = useState(false);
   const [loeschenBestaetigung, setLoeschenBestaetigung] = useState(false);
-  const inp = "w-full border rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-lions-blue";
+  const inp = "w-full border rounded-md px-3 py-1.5 text-sm bg-gray-100 focus:outline-none focus:ring-1 focus:ring-lions-blue";
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -60,6 +65,8 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
         db_facebook: form.db_facebook || undefined,
         aktiv: form.aktiv,
         vor_ort_anwesend: form.vor_ort_anwesend,
+        abrechnungsempf: form.abrechnungsempf,
+        galerist_id: form.abrechnungsempf === "Galerist" && form.galerist_id ? Number(form.galerist_id) : null,
         ...(form.db_telefon ? { db_telefon: form.db_telefon } : {}),
       } as any);
       if (portraitFile) {
@@ -133,7 +140,7 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
                   }`}
                 />
                 {form.kuenstler_nr.length === 3
-                  ? <span className="text-xs text-green-600">Bildnummern: 26{form.kuenstler_nr}01, 26{form.kuenstler_nr}02 …</span>
+                  ? <span className="text-xs text-green-600">Bildnummern: {formatBildNr(`26${form.kuenstler_nr}01`)}, {formatBildNr(`26${form.kuenstler_nr}02`)} …</span>
                   : <span className="text-xs text-red-500">Pflicht für automatische Bildnummern</span>
                 }
               </div>
@@ -155,6 +162,29 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
               <label className={label}>Telefon</label>
               <input value={form.db_telefon} onChange={e => setForm({...form, db_telefon: e.target.value})} className={inp} />
             </div>
+          </div>
+
+          {/* Abrechnung */}
+          <div className="border-t pt-3 space-y-2">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Abrechnung über</label>
+              <select value={form.abrechnungsempf} onChange={e => setForm({...form, abrechnungsempf: e.target.value, galerist_id: ""})} className={inp}>
+                <option value="Künstler">Künstler</option>
+                <option value="Galerist">Galerist / Sammler</option>
+                <option value="Lions">Lions</option>
+              </select>
+            </div>
+            {form.abrechnungsempf === "Galerist" && (
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Galerist / Sammler auswählen</label>
+                <select value={form.galerist_id} onChange={e => setForm({...form, galerist_id: e.target.value})} className={inp}>
+                  <option value="">— bitte wählen —</option>
+                  {alleKuenstler.filter(a => a.id !== k.id).sort((a, b) => a.db_name.localeCompare(b.db_name)).map(a => (
+                    <option key={a.id} value={a.id}>{a.db_name}, {a.db_vorname}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Status & Anwesend-Toggle */}
@@ -315,7 +345,7 @@ function NeuModal({ onClose, onCreated }: { onClose: () => void; onCreated: () =
   const [laden, setLaden] = useState(false);
   const [ergebnis, setErgebnis] = useState<{ portalLink: string } | null>(null);
   const [fehler, setFehler] = useState("");
-  const inp = "w-full border rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-lions-blue";
+  const inp = "w-full border rounded-md px-3 py-1.5 text-sm bg-gray-100 focus:outline-none focus:ring-1 focus:ring-lions-blue";
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -528,7 +558,7 @@ export default function AdminKuenstlerPage() {
               }
               <div className="p-4">
                 <p className="font-semibold text-gray-800">{b.bildtitel}</p>
-                <p className="text-xs text-gray-400 mt-0.5 font-mono">{b.bild_nr} · {b.bildtechnik} · {b.genre}</p>
+                <p className="text-xs text-gray-400 mt-0.5 font-mono">{formatBildNr(b.bild_nr)} · {b.bildtechnik} · {b.genre}</p>
                 {b.verkaufspreis && (
                   <p className="text-sm text-lions-blue font-medium mt-1">€ {b.verkaufspreis.toLocaleString("de-DE")}</p>
                 )}
@@ -632,7 +662,7 @@ export default function AdminKuenstlerPage() {
                     : <div className="w-full h-full flex items-center justify-center text-gray-300 text-lg">🖼</div>
                   }
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-1">
-                    <span className="text-white text-[9px] leading-tight font-mono">{b.bild_nr}</span>
+                    <span className="text-white text-[9px] leading-tight font-mono">{formatBildNr(b.bild_nr)}</span>
                   </div>
                 </button>
               ))}

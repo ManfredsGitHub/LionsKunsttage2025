@@ -7,7 +7,7 @@ import os
 load_dotenv()
 
 from database import create_db
-from routers import artworks, reservations, sales, artists, admin, merkliste
+from routers import artworks, reservations, sales, artists, admin, merkliste, archive
 
 app = FastAPI(title="Kunsttage auf der Ludwigshöhe API", version="1.0.0")
 
@@ -25,6 +25,7 @@ app.include_router(sales.router)
 app.include_router(artists.router)
 app.include_router(admin.router)
 app.include_router(merkliste.router)
+app.include_router(archive.router)
 
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "./uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)

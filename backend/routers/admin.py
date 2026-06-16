@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import Optional
 import secrets
 from datetime import datetime, timedelta
-from models import Bild, BildPublic, Kuenstler, KuenstlerCreate, KuenstlerPublic, Reservierung, Kauf, Besucher, MerklisteEintrag, Genre, Verfuegbarkeit, Abrechnungsempfaenger, KuenstlerNachricht, KuenstlerNachrichtGelesen
+from models import Bild, BildPublic, BildFoto, Kuenstler, KuenstlerCreate, KuenstlerPublic, Reservierung, Kauf, Besucher, MerklisteEintrag, Genre, Verfuegbarkeit, Abrechnungsempfaenger, KuenstlerNachricht, KuenstlerNachrichtGelesen
 from database import get_session
 from services.import_service import import_csv, import_excel
 from services.email_service import send_merkliste
@@ -90,6 +90,7 @@ class BildUpdate(BaseModel):
     in_ausstellung: Optional[bool] = None
     freigegeben: Optional[bool] = None
     abrechnungsempf: Optional[Abrechnungsempfaenger] = None
+    galerist_id: Optional[int] = None
 
 
 @router.patch("/bilder/{bild_id}", response_model=BildPublic)
@@ -125,6 +126,60 @@ async def foto_hochladen(
     session.add(bild)
     session.commit()
     return {"bild_url_web": web_url}
+
+
+# --- Zusatz-Fotos (max. 3 gesamt) ---
+
+@router.get("/bilder/{bild_id}/fotos")
+def get_zusatz_fotos(bild_id: int, session: Session = Depends(get_session)):
+    return session.exec(
+        select(BildFoto).where(BildFoto.bild_id == bild_id).order_by(BildFoto.reihenfolge)
+    ).all()
+
+
+@router.post("/bilder/{bild_id}/fotos")
+async def zusatz_foto_hochladen(
+    bild_id: int,
+    file: UploadFile = File(...),
+    session: Session = Depends(get_session),
+):
+    bild = session.get(Bild, bild_id)
+    if not bild:
+        raise HTTPException(404)
+    anzahl = session.exec(
+        select(func.count(BildFoto.id)).where(BildFoto.bild_id == bild_id)
+    ).one()
+    belegt = anzahl + (1 if bild.bild_url_web else 0)
+    if belegt >= 3:
+        raise HTTPException(400, "Maximal 3 Fotos pro Bild erlaubt")
+
+    data = await file.read()
+    web_bytes, _ = compress_image(data, file.filename)
+    reihenfolge = anzahl + 1
+    filename = f"{bild.bild_nr}_{reihenfolge + 1}"
+    web_path = os.path.join(UPLOAD_DIR, "web", f"{filename}.jpg")
+    os.makedirs(os.path.dirname(web_path), exist_ok=True)
+    with open(web_path, "wb") as f:
+        f.write(web_bytes)
+    url = f"/uploads/web/{filename}.jpg"
+    foto = BildFoto(bild_id=bild_id, url=url, reihenfolge=reihenfolge)
+    session.add(foto)
+    session.commit()
+    session.refresh(foto)
+    return foto
+
+
+@router.delete("/bilder/{bild_id}/fotos/{foto_id}")
+def zusatz_foto_loeschen(bild_id: int, foto_id: int, session: Session = Depends(get_session)):
+    foto = session.get(BildFoto, foto_id)
+    if not foto or foto.bild_id != bild_id:
+        raise HTTPException(404)
+    path = "." + foto.url
+    if os.path.exists(path):
+        os.remove(path)
+    session.delete(foto)
+    session.commit()
+    return {"status": "gelöscht"}
 
 
 # --- CSV/Excel-Import ---
@@ -198,6 +253,8 @@ class BildNeuData(BaseModel):
     hoehe_rahmen_cm: float = 0
     einlieferungspreis: Optional[float] = None
     in_ausstellung: bool = True
+    abrechnungsempf: Optional[Abrechnungsempfaenger] = None
+    galerist_id: Optional[int] = None
 
 
 @router.post("/bilder/neu", response_model=BildPublic)
@@ -291,7 +348,8 @@ def kuenstler_aktualisieren(kuenstler_id: int, daten: dict = Body(...), session:
         raise HTTPException(404)
     felder = ["db_name","db_vorname","db_email","db_telefon","db_adresse","db_plz","db_ort",
               "db_beruf","db_leben","db_lebenstext","db_kommentar","db_inspiration","db_ausstellungen",
-              "db_instagram","db_facebook","db_webseite","aktiv","vor_ort_anwesend","kuenstler_nr"]
+              "db_instagram","db_facebook","db_webseite","aktiv","vor_ort_anwesend","kuenstler_nr",
+              "abrechnungsempf","galerist_id"]
     for f in felder:
         if f in daten:
             setattr(k, f, daten[f])
@@ -518,3 +576,75 @@ def nachricht_ungelesen(nachricht_id: int, session: Session = Depends(get_sessio
         )
     ).all()
     return [{"id": k.id, "name": f"{k.db_vorname} {k.db_name}", "email": k.db_email} for k in kuenstler_liste]
+
+
+# --- KI-Beschreibung ---
+
+@router.post("/bilder/{bild_id}/ai-beschreibung")
+async def ai_beschreibung_generieren(bild_id: int, session: Session = Depends(get_session)):
+    import anthropic
+    import base64
+    import mimetypes
+
+    api_key = os.getenv("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise HTTPException(503, "ANTHROPIC_API_KEY nicht konfiguriert")
+
+    bild = session.get(Bild, bild_id)
+    if not bild:
+        raise HTTPException(404, "Bild nicht gefunden")
+
+    kuenstler = session.get(Kuenstler, bild.kuenstler_id) if bild.kuenstler_id else None
+    kuenstler_name = f"{kuenstler.db_vorname} {kuenstler.db_name}".strip() if kuenstler else "Unbekannt"
+
+    abmasse = (
+        f"{bild.breite_rahmen_cm} × {bild.hoehe_rahmen_cm} cm"
+        if bild.breite_rahmen_cm and bild.hoehe_rahmen_cm else "nicht angegeben"
+    )
+    kuenstler_aussage = kuenstler.db_kommentar if kuenstler else None
+
+    prompt = f"""Du bist ein erfahrener Kunstkritiker und Marketing-Texter für eine Benefiz-Kunstausstellung.
+
+Schreibe eine kurze, einladende Beschreibung (2–3 Sätze) für folgendes Kunstwerk, die auf der Ausstellungswebsite veröffentlicht wird. Der Text soll neugierig machen und zum Kauf animieren.
+
+Kunstwerk:
+- Titel: {bild.bildtitel}
+- Künstler: {kuenstler_name}
+- Technik: {bild.bildtechnik}
+- Genre: {bild.genre}
+- Maße: {abmasse}
+{f"- Aussage des Künstlers: {kuenstler_aussage}" if kuenstler_aussage else ""}
+
+Gib nur den fertigen Beschreibungstext aus, ohne Überschrift, Einleitung oder Erklärungen. Sprache: Deutsch."""
+
+    content: list = []
+
+    # Alle verfügbaren Fotos hinzufügen (Hauptfoto + Zusatzfotos, max. 3)
+    foto_urls = []
+    if bild.bild_url_web:
+        foto_urls.append(bild.bild_url_web)
+    zusatz = session.exec(select(BildFoto).where(BildFoto.bild_id == bild_id).order_by(BildFoto.reihenfolge)).all()
+    for z in zusatz:
+        foto_urls.append(z.url)
+
+    for foto_url in foto_urls[:3]:
+        img_path = "." + foto_url
+        if os.path.exists(img_path):
+            with open(img_path, "rb") as f:
+                img_data = base64.standard_b64encode(f.read()).decode("utf-8")
+            mime = mimetypes.guess_type(img_path)[0] or "image/jpeg"
+            content.append({
+                "type": "image",
+                "source": {"type": "base64", "media_type": mime, "data": img_data},
+            })
+
+    content.append({"type": "text", "text": prompt})
+
+    client = anthropic.Anthropic(api_key=api_key)
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=400,
+        messages=[{"role": "user", "content": content}],
+    )
+
+    return {"beschreibung": response.content[0].text.strip()}

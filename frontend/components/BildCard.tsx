@@ -46,11 +46,13 @@ export default function BildCard({ bild }: { bild: Bild }) {
               <span className="font-bold text-lions-blue">{bild.verkaufspreis.toFixed(0)} €</span>
             )}
           </div>
-          {(bild.breite_rahmen_cm > 0 || bild.hoehe_rahmen_cm > 0) && (
-            <p className="text-xs text-gray-400 mt-1">
-              {bild.breite_rahmen_cm} × {bild.hoehe_rahmen_cm} cm
-            </p>
-          )}
+          {(() => {
+            const b = bild.breite_rahmen_cm > 0 ? bild.breite_rahmen_cm : bild.breite_cm;
+            const h = bild.hoehe_rahmen_cm > 0 ? bild.hoehe_rahmen_cm : bild.hoehe_cm;
+            return (b > 0 || h > 0) ? (
+              <p className="text-xs text-gray-400 mt-1">{b} × {h} cm</p>
+            ) : null;
+          })()}
         </div>
         <div className="absolute bottom-3 right-3" onClick={e => e.stopPropagation()}>
           <MerklistenButton bildId={bild.id} />

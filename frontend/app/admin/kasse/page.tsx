@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { getAlleBilder, kaufErfassen, alsBezahltMarkieren } from "@/lib/api";
 import { Bild, KaufCreate } from "@/lib/types";
+import { formatBildNr } from "@/lib/utils";
 
 const leerForm = (): Omit<KaufCreate, "bild_id"> => ({
   kaeufer_titel: "",
@@ -11,7 +12,7 @@ const leerForm = (): Omit<KaufCreate, "bild_id"> => ({
   kaeufer_plz: "",
   kaeufer_ort: "",
   kaeufer_email: "",
-  zahlungsart: "Überweisung",
+  zahlungsart: "Bar",
 });
 
 export default function KassePage() {
@@ -65,14 +66,14 @@ export default function KassePage() {
             placeholder="Bild-Nr. oder Titel suchen…"
             value={suche}
             onChange={(e) => setSuche(e.target.value)}
-            className="w-full border rounded-md px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-lions-blue"
+            className="w-full border rounded-md px-4 py-2 mb-4 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-lions-blue"
           />
           <div className="space-y-2">
             {gefunden.slice(0, 20).map((b) => (
               <button key={b.id} onClick={() => setGewaehlt(b)}
                 className="w-full text-left bg-white border rounded-md px-4 py-3 hover:border-lions-blue transition-colors flex justify-between items-center">
                 <span>
-                  <span className="font-mono text-xs text-gray-400 mr-2">{b.bild_nr}</span>
+                  <span className="font-mono text-xs text-gray-400 mr-2">{formatBildNr(b.bild_nr)}</span>
                   <span className="font-medium">{b.bildtitel}</span>
                 </span>
                 <span className={`text-sm px-2 py-0.5 rounded-full ${b.verfuegbarkeit === "Verfügbar" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
@@ -105,7 +106,7 @@ export default function KassePage() {
           <div className="flex justify-between items-start">
             <div>
               <h2 className="font-semibold text-lg">{gewaehlt.bildtitel}</h2>
-              <p className="text-gray-500 text-sm">{gewaehlt.bild_nr} · {gewaehlt.verkaufspreis} €</p>
+              <p className="text-gray-500 text-sm">{formatBildNr(gewaehlt.bild_nr)} · {gewaehlt.verkaufspreis} €</p>
             </div>
             <button type="button" onClick={() => setGewaehlt(null)} className="text-gray-400 hover:text-gray-600">✕</button>
           </div>
@@ -113,33 +114,33 @@ export default function KassePage() {
           <div className="grid grid-cols-3 gap-3">
             <input placeholder="Titel" value={form.kaeufer_titel}
               onChange={(e) => setForm({ ...form, kaeufer_titel: e.target.value })}
-              className="border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue" />
+              className="border rounded-md px-3 py-2 text-sm bg-gray-100 focus:outline-none focus:ring-2 focus:ring-lions-blue" />
             <input required placeholder="Vorname" value={form.kaeufer_vorname}
               onChange={(e) => setForm({ ...form, kaeufer_vorname: e.target.value })}
-              className="border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue" />
+              className="border rounded-md px-3 py-2 text-sm bg-gray-100 focus:outline-none focus:ring-2 focus:ring-lions-blue" />
             <input required placeholder="Nachname" value={form.kaeufer_name}
               onChange={(e) => setForm({ ...form, kaeufer_name: e.target.value })}
-              className="border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue" />
+              className="border rounded-md px-3 py-2 text-sm bg-gray-100 focus:outline-none focus:ring-2 focus:ring-lions-blue" />
           </div>
           <input required placeholder="Straße und Hausnummer" value={form.kaeufer_strasse}
             onChange={(e) => setForm({ ...form, kaeufer_strasse: e.target.value })}
-            className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue" />
+            className="w-full border rounded-md px-3 py-2 text-sm bg-gray-100 focus:outline-none focus:ring-2 focus:ring-lions-blue" />
           <div className="grid grid-cols-3 gap-3">
             <input required placeholder="PLZ" value={form.kaeufer_plz}
               onChange={(e) => setForm({ ...form, kaeufer_plz: e.target.value })}
-              className="border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue" />
+              className="border rounded-md px-3 py-2 text-sm bg-gray-100 focus:outline-none focus:ring-2 focus:ring-lions-blue" />
             <input required placeholder="Ort" value={form.kaeufer_ort}
               onChange={(e) => setForm({ ...form, kaeufer_ort: e.target.value })}
-              className="col-span-2 border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue" />
+              className="col-span-2 border rounded-md px-3 py-2 text-sm bg-gray-100 focus:outline-none focus:ring-2 focus:ring-lions-blue" />
           </div>
           <input required type="email" placeholder="E-Mail" value={form.kaeufer_email}
             onChange={(e) => setForm({ ...form, kaeufer_email: e.target.value })}
-            className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue" />
+            className="w-full border rounded-md px-3 py-2 text-sm bg-gray-100 focus:outline-none focus:ring-2 focus:ring-lions-blue" />
 
           <div>
             <label className="block text-sm text-gray-600 mb-1">Zahlungsart</label>
             <div className="flex gap-3">
-              {(["PayPal", "Kreditkarte", "Überweisung"] as const).map((z) => (
+              {(["Bar", "Kreditkarte", "PayPal", "Überweisung"] as const).map((z) => (
                 <label key={z} className={`flex-1 border rounded-md p-3 text-center cursor-pointer text-sm transition-colors ${form.zahlungsart === z ? "border-lions-blue bg-lions-blue/5 font-medium" : "hover:border-gray-400"}`}>
                   <input type="radio" name="zahlungsart" value={z} checked={form.zahlungsart === z}
                     onChange={() => setForm({ ...form, zahlungsart: z })} className="hidden" />
