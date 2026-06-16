@@ -2,9 +2,43 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "Veranstaltung – Kunsttage auf der Ludwigshöhe 2026",
+  title: "Veranstaltung",
   description:
-    "Kunsttage auf der Ludwigshöhe 2026 – Schloss Villa Ludwigshöhe, Edenkoben – 17. und 18. Oktober 2026. Kunst für einen guten Zweck.",
+    "Kunsttage auf der Ludwigshöhe 2026 – Schloss Villa Ludwigshöhe, Edenkoben – 17. und 18. Oktober 2026. Eintritt frei. Kunst für einen guten Zweck.",
+  openGraph: {
+    title: "Kunsttage auf der Ludwigshöhe 2026",
+    description: "17. & 18. Oktober 2026 · Schloss Villa Ludwigshöhe · Edenkoben · Eintritt frei",
+    images: [{ url: "/villa.jpg", width: 1200, height: 630 }],
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ExhibitionEvent",
+  name: "Kunsttage auf der Ludwigshöhe 2026",
+  description:
+    "Jährliche Benefizkunstausstellung der Lions Clubs der Südpfalz im Schloss Villa Ludwigshöhe. Alle Erlöse für gemeinnützige Zwecke.",
+  startDate: "2026-10-17T12:00:00+02:00",
+  endDate: "2026-10-18T17:00:00+02:00",
+  eventStatus: "https://schema.org/EventScheduled",
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  isAccessibleForFree: true,
+  organizer: {
+    "@type": "Organization",
+    name: "Lions Clubs der Südpfalz",
+  },
+  location: {
+    "@type": "Place",
+    name: "Schloss Villa Ludwigshöhe",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Villastraße 64",
+      postalCode: "67480",
+      addressLocality: "Edenkoben",
+      addressCountry: "DE",
+    },
+  },
+  image: "/villa.jpg",
 };
 
 const TAGE = [
@@ -15,6 +49,10 @@ const TAGE = [
 export default function VeranstaltungPage() {
   return (
     <div className="space-y-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       {/* Hero */}
       <div className="relative rounded-2xl overflow-hidden h-96 md:h-[560px]">

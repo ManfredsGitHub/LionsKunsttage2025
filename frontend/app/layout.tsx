@@ -13,8 +13,18 @@ const cormorant = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Kunsttage auf der Ludwigshöhe 2026",
+  title: {
+    default: "Kunsttage auf der Ludwigshöhe 2026",
+    template: "%s | Kunsttage auf der Ludwigshöhe",
+  },
   description: "Kunstausstellung und Benefizveranstaltung im Schloss Villa Ludwigshöhe, Edenkoben – organisiert von den Lions Clubs der Südpfalz.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  openGraph: {
+    siteName: "Kunsttage auf der Ludwigshöhe",
+    locale: "de_DE",
+    type: "website",
+    images: [{ url: "/villa.jpg", width: 1200, height: 630, alt: "Schloss Villa Ludwigshöhe – Kunsttage 2026" }],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
