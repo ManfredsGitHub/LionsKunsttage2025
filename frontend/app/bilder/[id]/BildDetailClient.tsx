@@ -95,16 +95,16 @@ function WandVorschau({ bild }: { bild: Bild }) {
   );
 }
 
-export default function BildDetailClient({ id }: { id: string }) {
+export default function BildDetailClient({ id, initialBild }: { id: string; initialBild: Bild | null }) {
   const router = useRouter();
-  const [bild, setBild] = useState<Bild | null>(null);
+  const [bild, setBild] = useState<Bild | null>(initialBild);
   const [fehler, setFehler] = useState("");
   const [form, setForm] = useState({ vorname: "", name: "", email: "", telefon: "" });
   const [erfolg, setErfolg] = useState(false);
   const [senden, setSenden] = useState(false);
   const [dsgvo, setDsgvo] = useState(false);
   const [lightbox, setLightbox] = useState(false);
-  const [aktivFoto, setAktivFoto] = useState<string | null>(null);
+  const [aktivFoto, setAktivFoto] = useState<string | null>(initialBild?.bild_url_web ?? null);
   const [zusatzFotos, setZusatzFotos] = useState<BildFoto[]>([]);
 
   useEffect(() => {

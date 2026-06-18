@@ -34,6 +34,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <KeyboardShortcuts />
           <Header />
+          <div className="bg-lions-blue/5 border-b border-lions-blue/10 text-center py-1.5 px-4 text-xs text-lions-blue tracking-wide print:hidden">
+            <span className="font-semibold">17. &amp; 18. Oktober 2026</span>
+            {" · "}Schloss Villa Ludwigshöhe, Edenkoben{" · "}
+            <span className="font-semibold">Eintritt frei</span>
+          </div>
           <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
           <footer className="mt-16 py-6 text-center text-sm text-gray-400 border-t print:hidden">
             <p>Kunsttage auf der Ludwigshöhe · Eine Benefizveranstaltung der Lions Clubs der Südpfalz · Alle Erlöse für gemeinnützige Zwecke</p>

@@ -4,6 +4,17 @@ import BildDetailClient from "./BildDetailClient";
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
+export async function generateStaticParams() {
+  try {
+    const res = await fetch(`${API}/bilder?limit=1000`);
+    if (!res.ok) return [];
+    const bilder: { id: number }[] = await res.json();
+    return bilder.map((b) => ({ id: String(b.id) }));
+  } catch {
+    return [];
+  }
+}
+
 async function fetchBild(id: string) {
   try {
     const res = await fetch(`${API}/bilder/${id}`, { next: { revalidate: 60 } });
@@ -90,7 +101,7 @@ export default async function BildDetailPage({ params }: { params: { id: string 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <BildDetailClient id={params.id} />
+      <BildDetailClient id={params.id} initialBild={bild} />
     </>
   );
 }
