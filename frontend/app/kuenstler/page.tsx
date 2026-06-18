@@ -1,22 +1,26 @@
-"use client";
-import { useEffect, useState } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { getKuenstler } from "@/lib/api";
 import { Kuenstler } from "@/lib/types";
 
-export default function KuenstlerListePage() {
-  const [kuenstler, setKuenstler] = useState<Kuenstler[]>([]);
-  const [laden, setLaden] = useState(true);
+const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-  useEffect(() => {
-    getKuenstler()
-      .then((data) => {
-        const sichtbar = data
-          .sort((a, b) => a.db_name.localeCompare(b.db_name, "de"));
-        setKuenstler(sichtbar);
-      })
-      .finally(() => setLaden(false));
-  }, []);
+export const metadata: Metadata = {
+  title: "Künstlerinnen & Künstler",
+  description:
+    "Alle teilnehmenden Künstlerinnen und Künstler der Kunsttage auf der Ludwigshöhe 2026 – mit Vita, ausgestellten Werken und Preisen.",
+  alternates: { canonical: `${SITE}/kuenstler` },
+};
+
+export default async function KuenstlerListePage() {
+  let kuenstler: Kuenstler[] = [];
+  try {
+    const res = await fetch(`${API}/kuenstler`, { next: { revalidate: 300 } });
+    if (res.ok) {
+      const data: Kuenstler[] = await res.json();
+      kuenstler = data.sort((a, b) => a.db_name.localeCompare(b.db_name, "de"));
+    }
+  } catch {}
 
   return (
     <div>
@@ -29,8 +33,9 @@ export default function KuenstlerListePage() {
           Künstler-Login
         </Link>
       </div>
-      {laden ? (
-        <p className="text-gray-400 animate-pulse">Laden…</p>
+
+      {kuenstler.length === 0 ? (
+        <p className="text-gray-400">Keine Künstlerinnen oder Künstler gefunden.</p>
       ) : (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
           {kuenstler.map((k) => (
@@ -38,14 +43,14 @@ export default function KuenstlerListePage() {
               <div className="bg-white rounded-lg shadow hover:shadow-md transition-shadow p-5 flex gap-4 items-start">
                 {k.portrait_foto ? (
                   <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}${k.portrait_foto}`}
-                    alt={k.db_name}
+                    src={`${API}${k.portrait_foto}`}
+                    alt={`Portrait ${k.db_vorname ?? ""} ${k.db_name}`.trim()}
                     className="w-16 h-16 rounded-full object-cover flex-shrink-0"
                   />
                 ) : (
                   <div className="w-16 h-16 rounded-full bg-lions-blue/10 flex items-center justify-center flex-shrink-0">
                     <span className="text-lions-blue font-bold text-xl">
-                      {k.db_vorname[0]}{k.db_name[0]}
+                      {k.db_vorname?.[0] ?? ""}{k.db_name[0]}
                     </span>
                   </div>
                 )}

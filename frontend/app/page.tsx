@@ -86,7 +86,7 @@ export default function GaleriePage() {
     <div>
       {/* ── Hero ── */}
       <div className="mb-10 text-center">
-        <h1 aria-label="Kunsttage" className="kunsttage justify-center">
+        <h1 aria-label="Kunsttage auf der Ludwigshöhe 2026" className="kunsttage justify-center">
           <span>K</span>
           <span>u</span>
           <span>n</span>

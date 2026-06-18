@@ -38,6 +38,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   return {
     title,
     description: description || undefined,
+    alternates: { canonical: `/bilder/${params.id}` },
     openGraph: {
       title,
       description: description || undefined,
