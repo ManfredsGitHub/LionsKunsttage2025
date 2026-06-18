@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from models import Bild, BildPublic, BildFoto, Kuenstler, KuenstlerCreate, KuenstlerPublic, Reservierung, Kauf, Besucher, MerklisteEintrag, Genre, Verfuegbarkeit, Abrechnungsempfaenger, KuenstlerNachricht, KuenstlerNachrichtGelesen
 from database import get_session
 from services.import_service import import_csv, import_excel
+from services.auth_service import check_passwort, set_passwort
 from services.email_service import send_merkliste
 from services.image_service import compress_image, save_image
 from services.price_service import berechne_verkaufspreis
@@ -652,3 +653,23 @@ Gib nur den fertigen Beschreibungstext aus, ohne Überschrift, Einleitung oder E
     )
 
     return {"beschreibung": response.content[0].text.strip()}
+
+
+# ── Passwort ändern ───────────────────────────────────────────────────────────
+
+class PasswortAendernData(BaseModel):
+    rolle: str
+    altes_passwort: str
+    neues_passwort: str
+
+
+@router.patch("/admin/passwort")
+def passwort_aendern(data: PasswortAendernData):
+    if data.rolle not in ("admin", "orga"):
+        raise HTTPException(status_code=400, detail="Unbekannte Rolle")
+    if not check_passwort(data.rolle, data.altes_passwort):
+        raise HTTPException(status_code=401, detail="Altes Passwort falsch")
+    if len(data.neues_passwort) < 8:
+        raise HTTPException(status_code=400, detail="Passwort zu kurz (mind. 8 Zeichen)")
+    set_passwort(data.rolle, data.neues_passwort)
+    return {"ok": True}

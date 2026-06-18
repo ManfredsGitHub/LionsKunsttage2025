@@ -14,6 +14,7 @@ const kacheln = [
   { href: "/admin/export", titel: "DATEV-Export", beschreibung: "Buchungsstapel, Debitoren, Kreditoren", icon: "📊" },
   { href: "/admin/impressum", titel: "Impressum", beschreibung: "Impressum bearbeiten", icon: "📄" },
   { href: "/admin/datenschutz", titel: "Datenschutz", beschreibung: "Datenschutzerklärung bearbeiten", icon: "🔒" },
+  { href: "/admin/einstellungen", titel: "Einstellungen", beschreibung: "Passwörter ändern", icon: "⚙️" },
 ];
 
 export default function AdminPage() {
