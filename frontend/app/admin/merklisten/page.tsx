@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Bild } from "@/lib/types";
 import { merkliste_admin_zusenden, merklisten_nachfassen } from "@/lib/api";
+import { authHeaders } from "@/lib/auth";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -23,9 +24,9 @@ export default function AdminMerklistenPage() {
   const [nachfassStatus, setNachfassStatus] = useState<"" | "laden" | "ok" | "fehler">("");
 
   useEffect(() => {
-    fetch(`${API}/admin/merklisten`)
+    fetch(`${API}/admin/merklisten`, { headers: authHeaders() })
       .then(r => r.json())
-      .then(setDaten)
+      .then(d => setDaten(Array.isArray(d) ? d : []))
       .finally(() => setLaden(false));
   }, []);
 

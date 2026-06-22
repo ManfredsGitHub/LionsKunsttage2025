@@ -663,7 +663,7 @@ class PasswortAendernData(BaseModel):
     neues_passwort: str
 
 
-@router.patch("/admin/passwort")
+@router.patch("/passwort")
 def passwort_aendern(data: PasswortAendernData):
     if data.rolle not in ("admin", "orga"):
         raise HTTPException(status_code=400, detail="Unbekannte Rolle")

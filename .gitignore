@@ -21,3 +21,18 @@ frontend/.env.local
 # Temporär
 *.log
 /tmp/
+
+# Archiv & alte Daten
+backend/archiv/
+backend/kunsttake.db
+2025 Kunsttage/
+
+# Videdateien
+*.mov
+*.mp4
+
+# TypeScript Build-Cache
+frontend/tsconfig.tsbuildinfo
+
+# Claude Code Konfiguration
+.claude/

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import { getRolle, logout } from "@/lib/auth";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -22,9 +23,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div>
       <div className="bg-lions-blue text-white text-xs px-4 py-1.5 flex justify-between items-center no-print">
-        <span className="opacity-75">
+        <Link href="/admin" className="opacity-75 hover:opacity-100 hover:underline transition-opacity">
           {rolle === "admin" ? "Admin" : rolle === "orga" ? "Orga-Team" : ""}
-        </span>
+        </Link>
         <button
           onClick={abmelden}
           className="opacity-75 hover:opacity-100 hover:underline transition-opacity"
