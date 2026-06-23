@@ -57,8 +57,8 @@ _RAUMZUTEILUNG_2025 = [
     ("48",    "gemeinsam"),
     ("49",    "gemeinsam"),
     ("42",    None),
-    ("Flur",  "Arno Mohr"),
-    ("Flur2", "BUJA / Volker Kratz"),
+    ("Flur",  "gemeinsam"),
+    ("Flur2", "gemeinsam"),
 ]
 
 
