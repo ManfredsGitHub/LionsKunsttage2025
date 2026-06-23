@@ -218,6 +218,15 @@ export async function fotoHochladen(bildId: number, file: File): Promise<{ bild_
   return res.json();
 }
 
+// --- Raumplan ---
+export const getRaumplan = () => req<import("./types").Raumzuteilung[]>("/admin/raumplan");
+
+export const raumZuweisen = (raumNr: string, belegtDurch: string | null) =>
+  req<import("./types").Raumzuteilung>(`/admin/raumplan/${encodeURIComponent(raumNr)}`, {
+    method: "PATCH",
+    body: JSON.stringify({ belegt_durch: belegtDurch }),
+  });
+
 // --- Platzplan ---
 export const getAllePlaetze = () => req<import("./types").Platz[]>("/admin/plaetze");
 

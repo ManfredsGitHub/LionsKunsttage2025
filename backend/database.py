@@ -47,6 +47,26 @@ def _seed_plaetze(session: Session) -> None:
     for pos_nr, raum, kat, haenge in _PLAETZE_2025:
         session.add(Platz(position_nr=pos_nr, raum=raum, platz_kategorie=kat, haenge_meter=haenge))
 
+
+_RAUMZUTEILUNG_2025 = [
+    ("43",    "gemeinsam"),
+    ("44",    "Lions Club Annweiler"),
+    ("45",    "Lions Club Bad Bergzabern"),
+    ("46",    "Lions Club Edenkoben"),
+    ("47",    "Lions Club Germersheim"),
+    ("48",    "gemeinsam"),
+    ("49",    "gemeinsam"),
+    ("42",    None),
+    ("Flur",  "Arno Mohr"),
+    ("Flur2", "BUJA / Volker Kratz"),
+]
+
+
+def _seed_raumzuteilung(session: Session) -> None:
+    from models import Raumzuteilung
+    for raum_nr, belegt_durch in _RAUMZUTEILUNG_2025:
+        session.add(Raumzuteilung(raum_nr=raum_nr, belegt_durch=belegt_durch))
+
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 
 
@@ -76,10 +96,13 @@ def create_db():
         # Einstellung-Tabelle wird durch SQLModel.metadata.create_all angelegt
         con.commit()
 
-    from models import Platz
+    from models import Platz, Raumzuteilung
     with Session(engine) as s:
         if s.exec(select(Platz)).first() is None:
             _seed_plaetze(s)
+            s.commit()
+        if s.exec(select(Raumzuteilung)).first() is None:
+            _seed_raumzuteilung(s)
             s.commit()
 
 

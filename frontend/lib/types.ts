@@ -143,6 +143,12 @@ export interface KaufCreate {
   zahlungsart: "Bar" | "PayPal" | "Kreditkarte" | "Überweisung";
 }
 
+export interface Raumzuteilung {
+  id: number;
+  raum_nr: string;
+  belegt_durch: string | null;
+}
+
 export interface Platz {
   id: number;
   position_nr: number;

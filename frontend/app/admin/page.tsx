@@ -12,6 +12,7 @@ const kacheln = [
   { href: "/admin/nachrichten", titel: "Kommunikation", beschreibung: "Newsletter & Infos an Künstler", icon: "✉" },
   { href: "/admin/kuenstler", titel: "Künstler anlegen", beschreibung: "Künstler registrieren & einladen", icon: "🎨" },
   { href: "/admin/plaetze", titel: "Platzplan", beschreibung: "Künstler den Positionen zuweisen", icon: "🗺️" },
+  { href: "/admin/raumplan", titel: "Raumplan", beschreibung: "Lions-Clubs den Räumen zuweisen", icon: "🏛️" },
   { href: "/admin/export", titel: "DATEV-Export", beschreibung: "Buchungsstapel, Debitoren, Kreditoren", icon: "📊" },
   { href: "/admin/impressum", titel: "Impressum", beschreibung: "Impressum bearbeiten", icon: "📄" },
   { href: "/admin/datenschutz", titel: "Datenschutz", beschreibung: "Datenschutzerklärung bearbeiten", icon: "🔒" },

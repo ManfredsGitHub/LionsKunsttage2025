@@ -294,3 +294,11 @@ class PlatzPublic(SQLModel):
     haenge_meter: str
     kuenstler_id: Optional[int] = None
     kuenstler: Optional[KuenstlerPublic] = None
+
+
+# --- Raumplan ---
+
+class Raumzuteilung(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    raum_nr: str = Field(unique=True, index=True)  # "43", "44", ..., "Flur", "Flur2"
+    belegt_durch: Optional[str] = None             # z.B. "Lions Club Annweiler"

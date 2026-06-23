@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import Optional
 import secrets
 from datetime import datetime, timedelta
-from models import Bild, BildPublic, BildFoto, Kuenstler, KuenstlerCreate, KuenstlerPublic, Reservierung, Kauf, Besucher, MerklisteEintrag, Genre, Verfuegbarkeit, Abrechnungsempfaenger, KuenstlerNachricht, KuenstlerNachrichtGelesen, Platz, PlatzPublic
+from models import Bild, BildPublic, BildFoto, Kuenstler, KuenstlerCreate, KuenstlerPublic, Reservierung, Kauf, Besucher, MerklisteEintrag, Genre, Verfuegbarkeit, Abrechnungsempfaenger, KuenstlerNachricht, KuenstlerNachrichtGelesen, Platz, PlatzPublic, Raumzuteilung
 from database import get_session
 from services.import_service import import_csv, import_excel
 from services.auth_service import check_passwort, set_passwort
@@ -718,3 +718,26 @@ def platz_zuweisen(
         if k:
             item.kuenstler = KuenstlerPublic.model_validate(k)
     return item
+
+
+# --- Raumplan ---
+
+class RaumzuteilungIn(BaseModel):
+    belegt_durch: Optional[str] = None
+
+
+@router.get("/raumplan", response_model=list[Raumzuteilung])
+def get_raumplan(session: Session = Depends(get_session)):
+    return session.exec(select(Raumzuteilung).order_by(Raumzuteilung.id)).all()
+
+
+@router.patch("/raumplan/{raum_nr}", response_model=Raumzuteilung)
+def raum_zuweisen(raum_nr: str, body: RaumzuteilungIn, session: Session = Depends(get_session)):
+    raum = session.exec(select(Raumzuteilung).where(Raumzuteilung.raum_nr == raum_nr)).first()
+    if not raum:
+        raise HTTPException(status_code=404, detail="Raum nicht gefunden")
+    raum.belegt_durch = body.belegt_durch or None
+    session.add(raum)
+    session.commit()
+    session.refresh(raum)
+    return raum
