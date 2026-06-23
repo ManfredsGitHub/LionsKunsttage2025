@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kunsttage 2026 — Marketingkonzept</title>
+<style>
+  :root {
+    --lions-blue: #003087;
+    --lions-gold: #F5A800;
+    --white: #ffffff;
+    --gray-50: #f8f9fa;
+    --gray-100: #f1f3f5;
+    --gray-400: #868e96;
+    --gray-600: #495057;
+    --gray-800: #212529;
+    --text: #1a1a2e;
+    --duration: 400ms;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: #0a0a1a;
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .deck {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5vw;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease);
+    pointer-events: none;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide.exit {
+    opacity: 0;
+    transform: translateX(-60px);
+    transition: opacity 280ms var(--ease), transform 280ms var(--ease);
+  }
+
+  /* ── Slide Themes ── */
+  .slide-cover {
+    background: var(--lions-blue);
+    background-image:
+      radial-gradient(ellipse 80% 60% at 70% 50%, rgba(245,168,0,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(255,255,255,0.04) 0%, transparent 50%);
+    color: var(--white);
+  }
+
+  .slide-light { background: var(--white); }
+  .slide-gray  { background: var(--gray-50); }
+
+  .slide-dark {
+    background: #0f1726;
+    color: var(--white);
+  }
+
+  .slide-gold {
+    background: var(--lions-gold);
+    color: #1a1000;
+  }
+
+  /* ── Typography ── */
+  .eyebrow {
+    font-size: clamp(0.65rem, 1vw, 0.8rem);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 1rem;
+  }
+
+  .slide-cover .eyebrow { color: var(--lions-gold); opacity: 1; }
+
+  h1 {
+    font-size: clamp(2rem, 4.5vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    max-width: 14ch;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 3vw, 3rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .lead {
+    font-size: clamp(1rem, 1.6vw, 1.35rem);
+    line-height: 1.6;
+    opacity: 0.75;
+    max-width: 52ch;
+    margin-top: 1.25rem;
+  }
+
+  /* ── Layout helpers ── */
+  .w-full { width: 100%; max-width: 1100px; }
+  .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+  .cols-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  .cols-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+  .mt-lg  { margin-top: 2.5rem; }
+  .mt-md  { margin-top: 1.5rem; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+  }
+
+  .card-blue {
+    background: var(--lions-blue);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 1.75rem;
+  }
+
+  .card-gold {
+    background: var(--lions-gold);
+    color: #1a1000;
+    border-radius: 16px;
+    padding: 1.75rem;
+  }
+
+  .card-outline {
+    border: 2px solid var(--gray-100);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+
+  .card h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--lions-blue);
+  }
+
+  .card p, .card li {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--gray-600);
+  }
+
+  .card ul { padding-left: 1rem; }
+  .card li { margin-bottom: 0.3rem; }
+
+  .card-blue h3, .card-blue p, .card-blue li { color: rgba(255,255,255,0.9); }
+  .card-gold h3 { color: #1a1000; }
+
+  /* ── Stat blocks ── */
+  .stat-block { text-align: center; }
+
+  .stat-num {
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--lions-blue);
+  }
+
+  .slide-dark .stat-num { color: var(--lions-gold); }
+
+  .stat-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-top: 0.4rem;
+  }
+
+  /* ── Timeline ── */
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    top: 28px;
+    left: 16%;
+    right: 16%;
+    height: 3px;
+    background: var(--lions-gold);
+    z-index: 0;
+  }
+
+  .tl-item { text-align: center; position: relative; z-index: 1; }
+
+  .tl-dot {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--lions-blue);
+    color: var(--white);
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    border: 3px solid var(--white);
+    box-shadow: 0 0 0 3px var(--lions-blue);
+  }
+
+  .tl-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--lions-blue);
+    margin-bottom: 0.4rem;
+  }
+
+  .tl-date {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--lions-gold);
+    margin-bottom: 0.75rem;
+  }
+
+  .tl-items {
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    line-height: 1.7;
+    list-style: none;
+  }
+
+  /* ── Checklist ── */
+  .check-list { list-style: none; }
+
+  .check-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--gray-100);
+    color: var(--gray-600);
+  }
+
+  .check-list li:last-child { border: none; }
+
+  .check-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--lions-blue);
+    color: white;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── Pill / Badge ── */
+  .pill {
+    display: inline-block;
+    background: var(--lions-gold);
+    color: #1a1000;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.65rem;
+    border-radius: 100px;
+    margin-bottom: 1rem;
+  }
+
+  .pill-outline {
+    background: transparent;
+    border: 2px solid currentColor;
+    opacity: 0.7;
+  }
+
+  /* ── Quote ── */
+  .quote-block {
+    border-left: 4px solid var(--lions-gold);
+    padding: 1.25rem 2rem;
+    background: rgba(245,168,0,0.06);
+    border-radius: 0 12px 12px 0;
+    max-width: 700px;
+    margin-top: 1.5rem;
+  }
+
+  .quote-text {
+    font-size: clamp(1rem, 1.8vw, 1.4rem);
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--lions-blue);
+  }
+
+  /* ── Tag rows ── */
+  .tag-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+
+  .tag {
+    background: var(--gray-100);
+    color: var(--gray-600);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.3rem 0.75rem;
+    border-radius: 100px;
+  }
+
+  .tag-blue { background: var(--lions-blue); color: white; }
+  .tag-gold { background: var(--lions-gold); color: #1a1000; }
+
+  /* ── Table ── */
+  .simple-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+
+  .simple-table th {
+    text-align: left;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gray-400);
+    border-bottom: 2px solid var(--gray-100);
+  }
+
+  .simple-table td {
+    padding: 0.65rem 0.75rem;
+    color: var(--gray-600);
+    border-bottom: 1px solid var(--gray-100);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .simple-table tr:last-child td { border: none; }
+
+  .badge-kritisch {
+    background: #ffe0e0;
+    color: #c0392b;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 100px;
+  }
+
+  .badge-ok {
+    background: #e0f5e0;
+    color: #27ae60;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 100px;
+  }
+
+  /* ── Progress ── */
+  .progress {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 100;
+  }
+
+  .progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transition: background 300ms, transform 300ms;
+    cursor: pointer;
+  }
+
+  .progress-dot.active {
+    background: var(--lions-gold);
+    transform: scale(1.4);
+  }
+
+  /* ── Nav arrows ── */
+  .nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+    transition: background 200ms;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-btn:hover { background: rgba(255,255,255,0.2); }
+  .nav-prev { left: 1.5rem; }
+  .nav-next { right: 1.5rem; }
+  .nav-btn:disabled { opacity: 0.2; cursor: default; }
+
+  /* ── Slide counter ── */
+  .slide-counter {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.05em;
+    z-index: 100;
+  }
+
+  /* ── Cover layout ── */
+  .cover-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  .cover-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .cover-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .cover-meta-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.5;
+  }
+
+  .cover-meta-value {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--lions-gold);
+  }
+
+  .cover-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .cover-stat-row {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .cover-stat-card {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+
+  .cover-stat-card .num {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--lions-gold);
+    line-height: 1;
+  }
+
+  .cover-stat-card .lbl {
+    font-size: 0.72rem;
+    opacity: 0.55;
+    margin-top: 0.35rem;
+    line-height: 1.4;
+  }
+
+  .cover-headline-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(245,168,0,0.15);
+    border: 1px solid rgba(245,168,0,0.3);
+    color: var(--lions-gold);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.85rem;
+    border-radius: 100px;
+    margin-bottom: 1.25rem;
+  }
+
+  /* ── USP comparison ── */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 900px;
+  }
+
+  .compare-col h3 {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid currentColor;
+  }
+
+  .compare-col.theirs h3 { color: var(--gray-400); border-color: var(--gray-200); }
+  .compare-col.ours   h3 { color: var(--lions-blue); border-color: var(--lions-blue); }
+
+  .compare-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.5rem 0;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .compare-item:last-child { border: none; }
+
+  .ci-icon { font-size: 1rem; flex-shrink: 0; }
+
+  /* ── Action table ── */
+  .action-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border-left: 4px solid var(--lions-blue);
+  }
+
+  .action-card.gold { border-color: var(--lions-gold); }
+  .action-card h3 { font-size: 0.88rem; font-weight: 700; color: var(--lions-blue); margin-bottom: 0.75rem; }
+  .action-card.gold h3 { color: #8b6000; }
+
+  .action-list { list-style: none; }
+  .action-list li {
+    font-size: 0.82rem;
+    color: var(--gray-600);
+    padding: 0.35rem 0;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    line-height: 1.4;
+  }
+
+  .action-list li:last-child { border: none; }
+  .action-list li::before { content: "→"; color: var(--lions-blue); font-weight: 700; flex-shrink: 0; }
+  .action-card.gold .action-list li::before { color: #8b6000; }
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ══ SLIDE 1: Cover ══ -->
+  <div class="slide slide-cover active" data-index="0">
+    <div class="cover-layout">
+      <div>
+        <div class="cover-headline-badge">Lions Clubs Südpfalz · Internes Konzept</div>
+        <h1>Marketing&shy;konzept<br>Kunsttage 2026</h1>
+        <p class="lead">Wie wir gemeinsam die stärkste Ausgabe der Kunsttage auf der Ludwigshöhe gestalten.</p>
+        <div class="cover-meta">
+          <div class="cover-meta-item">
+            <span class="cover-meta-label">Veranstaltung</span>
+            <span class="cover-meta-value">17. & 18. Oktober 2026</span>
+          </div>
+          <div class="cover-meta-item">
+            <span class="cover-meta-label">Location</span>
+            <span class="cover-meta-value">Schloss Villa Ludwigshöhe · Edenkoben</span>
+          </div>
+          <div class="cover-meta-item">
+            <span class="cover-meta-label">Eintritt</span>
+            <span class="cover-meta-value">Frei</span>
+          </div>
+        </div>
+      </div>
+      <div class="cover-visual">
+        <div class="cover-stat-row">
+          <div class="cover-stat-card">
+            <div class="num">14.</div>
+            <div class="lbl">Auflage der Kunsttage</div>
+          </div>
+          <div class="cover-stat-card">
+            <div class="num">100T€</div>
+            <div class="lbl">Gesamterlös seit Beginn</div>
+          </div>
+        </div>
+        <div class="cover-stat-row">
+          <div class="cover-stat-card">
+            <div class="num">5</div>
+            <div class="lbl">Lions Clubs Südpfalz</div>
+          </div>
+          <div class="cover-stat-card">
+            <div class="num">NEU</div>
+            <div class="lbl">Online-Katalog + Vormerken</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 2: Was schon steht ══ -->
+  <div class="slide slide-light" data-index="1">
+    <div class="w-full">
+      <p class="eyebrow">Ausgangslage</p>
+      <h2>Was bereits fertig ist</h2>
+      <p class="lead">Die Infrastruktur für 2026 steht komplett. Was jetzt fehlt: koordinierte Kommunikation aller fünf Clubs.</p>
+      <div class="cols-4 mt-lg">
+        <div class="card">
+          <h3>Neue Website</h3>
+          <p>kunsttage-ludwigshoehe.de — mobiloptimiert, schnell, barrierefrei. Öffentlicher Auftritt mit Galerie, Künstlerseiten und Veranstaltungsinfo.</p>
+        </div>
+        <div class="card">
+          <h3>Online-Katalog</h3>
+          <p>Alle ausgestellten Werke mit Bild, Titel, Technik und Preis. Besucher können Werke vorab entdecken und vormerken — erstmals in der Geschichte der Kunsttage.</p>
+        </div>
+        <div class="card">
+          <h3>Künstler-Portal</h3>
+          <p>Jede Künstlerin und jeder Künstler hat einen gesicherten Login, kann Bilder hochladen und seine Seite im Katalog sehen.</p>
+        </div>
+        <div class="card">
+          <h3>Verwaltungssystem</h3>
+          <p>Platzplan, Kasse, Kaufübersicht, Quittungsdruck, Archiv — alles digital. Fünf Clubs, eine gemeinsame Plattform.</p>
+        </div>
+      </div>
+      <div class="quote-block">
+        <div class="quote-text">„Die Infrastruktur ist gebaut. Jetzt entscheidet die Kommunikation, wie viele Menschen 2026 den Weg in die Villa finden."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 3: Der USP ══ -->
+  <div class="slide slide-gray" data-index="2">
+    <div class="w-full">
+      <p class="eyebrow">Alleinstellungsmerkmal</p>
+      <h2>Was kein Wettbewerber hat</h2>
+      <p class="lead">Ein Vergleich mit den relevanten Veranstaltungen in der Region zeigt: der Online-Katalog mit Vormerkungs-Funktion ist einmalig.</p>
+      <div class="compare-grid mt-lg">
+        <div class="compare-col theirs">
+          <h3>Wettbewerber</h3>
+          <div class="compare-item"><span class="ci-icon">❌</span><span><strong>Kein Online-Katalog</strong> — Lions Frankenthal, Kunsttage Winningen, regionale Benefizauktionen zeigen Werke nur vor Ort</span></div>
+          <div class="compare-item"><span class="ci-icon">❌</span><span><strong>Keine Vormerkungs-Funktion</strong> — wer kaufen will, muss spontan entscheiden</span></div>
+          <div class="compare-item"><span class="ci-icon">❌</span><span><strong>Keine Künstlerseiten</strong> — Besucher lernen die Künstler nicht vorab kennen</span></div>
+          <div class="compare-item"><span class="ci-icon">❌</span><span><strong>Kein Direktlink-Sharing</strong> — Künstler können nichts Spezifisches teilen</span></div>
+        </div>
+        <div class="compare-col ours">
+          <h3>Kunsttage Ludwigshöhe 2026</h3>
+          <div class="compare-item"><span class="ci-icon">✅</span><span><strong>Öffentlicher Online-Katalog</strong> — alle Werke mit Bild, Preis, Technik, Rahmenmaß</span></div>
+          <div class="compare-item"><span class="ci-icon">✅</span><span><strong>Vormerken-Funktion</strong> — Kaufentscheidung vorbereiten, nicht spontan treffen müssen</span></div>
+          <div class="compare-item"><span class="ci-icon">✅</span><span><strong>Individuelle Künstlerseiten</strong> — jeder Teilnehmende hat eine eigene URL</span></div>
+          <div class="compare-item"><span class="ci-icon">✅</span><span><strong>Direktlinks für Künstler</strong> — jede Künstlerin teilt ihre eigene Bildseite</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 4: Positionierung ══ -->
+  <div class="slide slide-dark" data-index="3">
+    <div class="w-full" style="max-width:900px; text-align:center;">
+      <p class="eyebrow" style="color:rgba(255,255,255,0.5)">Positionierung</p>
+      <h2 style="color:white; max-width:100%; font-size:clamp(1.4rem,3vw,2.8rem)">
+        „Die einzige Kunstausstellung in der Pfalz,<br>bei der du das Bild schon kennst,<br>bevor du die Villa betrittst."
+      </h2>
+      <p style="font-size:0.85rem; opacity:0.4; margin-top:1rem; letter-spacing:0.05em">Kurzversion für Social: „Vorab entdecken. Vor Ort kaufen. Gutes tun."</p>
+      <div class="cols-3 mt-lg">
+        <div class="card-outline" style="border-color:rgba(255,255,255,0.12); text-align:left;">
+          <div class="pill">Erlebnis</div>
+          <p style="color:rgba(255,255,255,0.75); font-size:0.9rem; line-height:1.6">Ein Kunstwochenende im schönsten Schloss der Pfalz — Eintritt frei.</p>
+        </div>
+        <div class="card-outline" style="border-color:rgba(245,168,0,0.4); background:rgba(245,168,0,0.06); text-align:left;">
+          <div class="pill">Entscheidung</div>
+          <p style="color:rgba(255,255,255,0.75); font-size:0.9rem; line-height:1.6">Bilder vorab online entdecken, vormerken, mit gutem Gewissen kaufen.</p>
+        </div>
+        <div class="card-outline" style="border-color:rgba(255,255,255,0.12); text-align:left;">
+          <div class="pill">Wirkung</div>
+          <p style="color:rgba(255,255,255,0.75); font-size:0.9rem; line-height:1.6">100 % der Erlöse für gemeinnützige Projekte in der Südpfalz.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 5: Zielgruppen ══ -->
+  <div class="slide slide-light" data-index="4">
+    <div class="w-full">
+      <p class="eyebrow">Zielgruppen</p>
+      <h2>Wen wir erreichen wollen</h2>
+      <div class="cols-3 mt-lg">
+        <div class="card" style="border-top: 4px solid var(--lions-blue);">
+          <div class="pill">Primär</div>
+          <h3>Kunstkäuferinnen & -käufer</h3>
+          <p><strong>35–65 Jahre</strong> · Pfalz, Rhein-Neckar, Karlsruhe, Mannheim</p>
+          <p style="margin-top:0.5rem">Kaufen gelegentlich Originalkunst bis 2.000 €. Entscheiden lieber informiert als spontan — für sie ist der Katalog gebaut.</p>
+          <div class="tag-row">
+            <span class="tag">Facebook</span>
+            <span class="tag">E-Mail</span>
+            <span class="tag">Presse</span>
+          </div>
+        </div>
+        <div class="card" style="border-top: 4px solid #6c8ebf;">
+          <div class="pill pill-outline" style="border-color:var(--lions-blue); color:var(--lions-blue)">Sekundär</div>
+          <h3>Kulturinteressierte Tagesausflügler</h3>
+          <p><strong>Alle Altersgruppen</strong> · Nutzen die Weinstraße als Ausflugsziel</p>
+          <p style="margin-top:0.5rem">Eintritt frei senkt die Hemmschwelle stark. Kauf eher spontan, kleinere Werke.</p>
+          <div class="tag-row">
+            <span class="tag">Instagram</span>
+            <span class="tag">Tourismusportale</span>
+          </div>
+        </div>
+        <div class="card" style="border-top: 4px solid var(--lions-gold);">
+          <div class="pill" style="background:rgba(245,168,0,0.2); color:#8b6000;">Tertiär</div>
+          <h3>Lions-Netzwerk & Künstlerumfeld</h3>
+          <p><strong>Direktes Umfeld</strong> · Mitglieder der 5 Clubs + Freundeskreis der Künstler</p>
+          <p style="margin-top:0.5rem">Persönliche Einladung wirkt am stärksten. Bereits loyal — muss aktiviert, nicht überzeugt werden.</p>
+          <div class="tag-row">
+            <span class="tag">Direkt</span>
+            <span class="tag">WhatsApp</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 6: Kampagnenphasen ══ -->
+  <div class="slide slide-gray" data-index="5">
+    <div class="w-full">
+      <p class="eyebrow">Kampagnenplan</p>
+      <h2>Drei Phasen bis Oktober</h2>
+      <div class="timeline mt-lg">
+        <div class="tl-item">
+          <div class="tl-dot">1</div>
+          <div class="tl-date">August – Mitte Sept.</div>
+          <div class="tl-title">Aufmerksamkeit</div>
+          <ul class="tl-items">
+            <li>Website & Social starten</li>
+            <li>Pinterest-Account anlegen</li>
+            <li>Pressemitteilung 1</li>
+            <li>Künstler-Briefing versenden</li>
+            <li>Koordinierte Ankündigungsposts</li>
+            <li>Verzeichnis-Einträge</li>
+          </ul>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">2</div>
+          <div class="tl-date">Mitte Sept. – 16. Okt.</div>
+          <div class="tl-title">Katalog-Preview</div>
+          <ul class="tl-items">
+            <li>Katalog-Links live schalten</li>
+            <li>Pressemitteilung 2</li>
+            <li>Künstler teilen Bildseiten</li>
+            <li>„Werk der Woche"-Serie</li>
+            <li>Pinterest Pins veröffentlichen</li>
+            <li>Weingut-Kooperationen</li>
+          </ul>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot">3</div>
+          <div class="tl-date">17.–18. Okt. + November</div>
+          <div class="tl-title">Event & Nachklang</div>
+          <ul class="tl-items">
+            <li>Live-Stories aus der Villa</li>
+            <li>Fotos von Käufen</li>
+            <li>Pressemitteilung 3 (Erlös)</li>
+            <li>Katalog als Nachkauf offen</li>
+            <li>Dankesbeitrag mit Zahlen</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 7: Multiplikator-Modell ══ -->
+  <div class="slide slide-light" data-index="6">
+    <div class="w-full">
+      <p class="eyebrow">Der größte Hebel</p>
+      <h2>Künstler als Kampagnen-Motor</h2>
+      <div class="cols-2 mt-lg" style="align-items:start">
+        <div>
+          <p style="font-size:1rem; line-height:1.7; color:var(--gray-600)">
+            Jede Künstlerin, jeder Künstler hat ein eigenes Publikum — Familie, Freunde, Follower. Wenn 20 Teilnehmende koordiniert kommunizieren, entsteht eine organische Reichweite, die kein Werbebudget einholen kann.
+          </p>
+          <p style="font-size:1rem; line-height:1.7; color:var(--gray-600); margin-top:1rem">
+            Voraussetzung: Wir liefern ihnen alles fertig. Sie müssen nur noch teilen.
+          </p>
+          <div class="quote-block" style="margin-top:1.5rem">
+            <div class="quote-text" style="font-size:1rem">Jede Künstlerin erhält: Direktlink zur eigenen Bildseite, 3 fertige Posting-Vorlagen, 1 quadratisches Bild mit Kunsttage-Logo, Timing-Plan.</div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:1rem; border-left:4px solid var(--lions-gold)">
+            <h3>Vorlage A — Ankündigung (6 Wo. vorher)</h3>
+            <p>„Ich bin dabei: Am 17. & 18. Oktober zeige ich meine Werke bei den Kunsttagen auf der Ludwigshöhe. Meine Bilder könnt ihr schon vorab online entdecken: [Link] #KunsttageVillaLudwigshöhe"</p>
+          </div>
+          <div class="card" style="margin-bottom:1rem; border-left:4px solid var(--lions-blue)">
+            <h3>Vorlage B — Katalog live (2 Wo. vorher)</h3>
+            <p>„Mein Bild [Titel] ist jetzt im Online-Katalog zu sehen — schaut es euch an, bevor der Ansturm losgeht: [Link]"</p>
+          </div>
+          <div class="card" style="border-left:4px solid #6c8ebf">
+            <h3>Vorlage C — Event-Woche</h3>
+            <p>„Noch [X] Tage! 17. & 18. Oktober, Schloss Villa Ludwigshöhe, Eintritt frei."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 8: Pinterest ══ -->
+  <div class="slide slide-gray" data-index="7">
+    <div class="w-full">
+      <p class="eyebrow">Neuer Kanal 2026</p>
+      <h2>Pinterest — Sichtbarkeit, die bleibt</h2>
+      <div class="cols-2 mt-lg" style="align-items:start">
+        <div>
+          <p style="font-size:1rem; line-height:1.7; color:var(--gray-600)">
+            Pinterest ist keine Social-Media-Plattform mit Halbwertszeit — es ist eine <strong>visuelle Suchmaschine</strong>. Ein Instagram-Post ist nach 24 Stunden unsichtbar. Ein Pinterest-Pin bleibt monatelang, teils jahrelang auffindbar und wird von Google indexiert.
+          </p>
+          <div class="cols-2" style="margin-top:1.5rem; gap:1rem">
+            <div class="card">
+              <h3>Wir richten ein:</h3>
+              <p>Kunsttage-Business-Account, Board „2026" mit allen Werken, direkte Links zum Katalog.</p>
+            </div>
+            <div class="card">
+              <h3>Künstler pinnen mit:</h3>
+              <p>Eigenem Board, fertigem Pin-Text von uns. Einmalig 10 Minuten Aufwand — dauerhafter Effekt.</p>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="background:white; border-radius:16px; padding:2rem; box-shadow:0 2px 20px rgba(0,0,0,0.06)">
+            <p style="font-size:0.75rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--gray-400); margin-bottom:1.25rem">3 Argumente für den Künstler</p>
+            <ul class="check-list">
+              <li>
+                <div class="check-icon">1</div>
+                <div>
+                  <strong style="display:block; font-size:0.9rem; margin-bottom:0.2rem">Kostenlose Online-Galerie, die bei Google erscheint</strong>
+                  <span style="font-size:0.82rem; color:var(--gray-400)">Pinterest-Boards werden indexiert — wer nach dem Namen sucht, findet die Werke.</span>
+                </div>
+              </li>
+              <li>
+                <div class="check-icon">2</div>
+                <div>
+                  <strong style="display:block; font-size:0.9rem; margin-bottom:0.2rem">Kunstkäufer suchen aktiv auf Pinterest</strong>
+                  <span style="font-size:0.82rem; color:var(--gray-400)">Nutzer suchen gezielt nach Kunst fürs Zuhause — kein Algorithmus, echte Kaufabsicht.</span>
+                </div>
+              </li>
+              <li>
+                <div class="check-icon">3</div>
+                <div>
+                  <strong style="display:block; font-size:0.9rem; margin-bottom:0.2rem">Einmal einrichten, dauerhaft profitieren</strong>
+                  <span style="font-size:0.82rem; color:var(--gray-400)">Kein laufender Aufwand. Der Pin arbeitet still — der Künstler malt.</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 9: Aufwand & Kosten ══ -->
+  <div class="slide slide-light" data-index="8">
+    <div class="w-full">
+      <p class="eyebrow">Aufwand & Budget</p>
+      <h2>Das Konzept kostet fast nichts</h2>
+      <p class="lead">Der größte Hebel ist Koordination — nicht Budget. Das Kernkonzept ist ohne Werbeausgaben umsetzbar.</p>
+      <div class="cols-2 mt-lg" style="align-items:start">
+        <table class="simple-table">
+          <thead>
+            <tr>
+              <th>Maßnahme</th>
+              <th>Aufwand</th>
+              <th>Kosten</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Künstler-Briefing-Paket</td><td>3–4 Std. einmalig</td><td><span class="badge-ok">0 €</span></td></tr>
+            <tr><td>Social-Media-Posts (3 Monate)</td><td>~2 Std./Woche</td><td><span class="badge-ok">0 €</span></td></tr>
+            <tr><td>3 Pressemitteilungen</td><td>je 2 Std.</td><td><span class="badge-ok">0 €</span></td></tr>
+            <tr><td>Pinterest-Account + Pins</td><td>2–3 Std. einmalig</td><td><span class="badge-ok">0 €</span></td></tr>
+            <tr><td>Verzeichnis-Einträge</td><td>3–4 Std. einmalig</td><td><span class="badge-ok">0 €</span></td></tr>
+            <tr><td>Google Business Profil</td><td>1 Std. einmalig</td><td><span class="badge-ok">0 €</span></td></tr>
+            <tr><td>Flyer für Weingüter <em>(optional)</em></td><td>Druckkosten</td><td>100–200 €</td></tr>
+            <tr><td>Bezahlte Social-Ads <em>(optional)</em></td><td>2 Std. Setup</td><td>200–500 €</td></tr>
+          </tbody>
+        </table>
+        <div>
+          <div class="card-blue" style="margin-bottom:1rem">
+            <h3 style="color:var(--lions-gold); font-size:1.1rem">Erfolgsziele 2026</h3>
+            <ul style="list-style:none; margin-top:0.75rem">
+              <li style="color:rgba(255,255,255,0.85); font-size:0.9rem; padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.1)">› &gt; 500 Unique Visitors vor dem Event</li>
+              <li style="color:rgba(255,255,255,0.85); font-size:0.9rem; padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.1)">› &gt; 1.000 Bildseiten-Aufrufe</li>
+              <li style="color:rgba(255,255,255,0.85); font-size:0.9rem; padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.1)">› &gt; 30 vorgemerkte Bilder</li>
+              <li style="color:rgba(255,255,255,0.85); font-size:0.9rem; padding:0.4rem 0; border-bottom:1px solid rgba(255,255,255,0.1)">› ≥ 3 Vorab-Presseartikel</li>
+              <li style="color:rgba(255,255,255,0.85); font-size:0.9rem; padding:0.4rem 0">› &gt; 300 Besucherinnen und Besucher</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 10: Was jeder Club beiträgt ══ -->
+  <div class="slide slide-gray" data-index="9">
+    <div class="w-full">
+      <p class="eyebrow">Gemeinsame Verantwortung</p>
+      <h2>Was jeder Club beiträgt</h2>
+      <p class="lead">Kein Club trägt alles alleine. Die Aufgaben verteilen sich natürlich — jeder Club kennt seine Künstler, sein Netzwerk, seine Region am besten.</p>
+      <div class="cols-2 mt-lg" style="align-items:start; gap:1.25rem">
+        <div class="action-card">
+          <h3>Alle fünf Clubs gemeinsam</h3>
+          <ul class="action-list">
+            <li>Eigene Clubmitglieder persönlich einladen (Mail oder persönlich)</li>
+            <li>Veranstaltungshinweis im Club-Newsletter / bei Meetings</li>
+            <li>Weiterleitung im persönlichen Netzwerk (WhatsApp, Stammtisch)</li>
+            <li>Künstler aus dem eigenen Club für das Briefing-Paket nominieren</li>
+          </ul>
+        </div>
+        <div class="action-card gold">
+          <h3>Koordinationsteam (Edenkoben + eine Unterstützung)</h3>
+          <ul class="action-list">
+            <li>Social-Media-Accounts einrichten und bespielen</li>
+            <li>Pressemitteilungen verfassen und versenden</li>
+            <li>Briefing-Paket an alle Künstler vorbereiten und versenden</li>
+            <li>Timing koordinieren: wer postet wann</li>
+            <li>Pinterest-Account anlegen und Pins veröffentlichen</li>
+          </ul>
+        </div>
+        <div class="action-card" style="border-color:#6c8ebf">
+          <h3>Jeder Club für seine Künstler</h3>
+          <ul class="action-list">
+            <li>Sicherstellen, dass Künstler das Briefing erhalten haben</li>
+            <li>Bei Fragen zu Posting-Vorlagen und Pinterest helfen</li>
+            <li>Nachfassen, ob Künstler ihre Links geteilt haben</li>
+          </ul>
+        </div>
+        <div class="action-card" style="border-color:var(--lions-gold); background:#fffbf0">
+          <h3>Optional: Weingut-Kooperationen</h3>
+          <ul class="action-list">
+            <li>3–5 Weingüter entlang der Weinstraße ansprechen</li>
+            <li>Flyer auslegen lassen, gegenseitige Empfehlung</li>
+            <li>Jeder Club kennt Weingüter in seiner Region → natürliche Aufteilung</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SLIDE 11: Nächste Schritte ══ -->
+  <div class="slide slide-cover" data-index="10">
+    <div class="w-full" style="max-width:900px">
+      <p class="eyebrow">Nächste Schritte</p>
+      <h2 style="color:white">Was heute entschieden werden sollte</h2>
+      <div class="cols-2 mt-lg" style="gap:1.5rem">
+        <div style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:16px; padding:1.75rem">
+          <div class="pill">Bis Ende Juli</div>
+          <ul class="check-list" style="margin-top:0.75rem">
+            <li style="border-color:rgba(255,255,255,0.1)">
+              <div class="check-icon" style="background:var(--lions-gold); color:#1a1000">✓</div>
+              <span style="color:rgba(255,255,255,0.8); font-size:0.88rem">Koordinationsteam bestätigen (wer übernimmt Social-Media?)</span>
+            </li>
+            <li style="border-color:rgba(255,255,255,0.1)">
+              <div class="check-icon" style="background:var(--lions-gold); color:#1a1000">✓</div>
+              <span style="color:rgba(255,255,255,0.8); font-size:0.88rem">Künstlerliste aller Clubs zusammenstellen (Name, E-Mail)</span>
+            </li>
+            <li style="border-color:rgba(255,255,255,0.1); border:none">
+              <div class="check-icon" style="background:var(--lions-gold); color:#1a1000">✓</div>
+              <span style="color:rgba(255,255,255,0.8); font-size:0.88rem">301-Redirect von lions-kunsttage.de beauftragen</span>
+            </li>
+          </ul>
+        </div>
+        <div style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:16px; padding:1.75rem">
+          <div class="pill">August</div>
+          <ul class="check-list" style="margin-top:0.75rem">
+            <li style="border-color:rgba(255,255,255,0.1)">
+              <div class="check-icon" style="background:rgba(255,255,255,0.2)">→</div>
+              <span style="color:rgba(255,255,255,0.8); font-size:0.88rem">Instagram, Facebook, Pinterest-Accounts live schalten</span>
+            </li>
+            <li style="border-color:rgba(255,255,255,0.1)">
+              <div class="check-icon" style="background:rgba(255,255,255,0.2)">→</div>
+              <span style="color:rgba(255,255,255,0.8); font-size:0.88rem">Pressemitteilung 1 versenden</span>
+            </li>
+            <li style="border-color:rgba(255,255,255,0.1); border:none">
+              <div class="check-icon" style="background:rgba(255,255,255,0.2)">→</div>
+              <span style="color:rgba(255,255,255,0.8); font-size:0.88rem">Briefing-Paket an alle Künstler versenden</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top:2.5rem; text-align:center">
+        <p style="color:rgba(255,255,255,0.5); font-size:0.85rem">14. Kunsttage auf der Ludwigshöhe · 17. & 18. Oktober 2026 · Schloss Villa Ludwigshöhe · Eintritt frei</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- Navigation -->
+<button class="nav-btn nav-prev" id="btnPrev" onclick="navigate(-1)" disabled>‹</button>
+<button class="nav-btn nav-next" id="btnNext" onclick="navigate(1)">›</button>
+<div class="slide-counter" id="counter">1 / 11</div>
+<div class="progress" id="progress"></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total  = slides.length;
+  let current  = 0;
+
+  // Build dots
+  const prog = document.getElementById('progress');
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'progress-dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    prog.appendChild(d);
+  });
+
+  function goTo(n) {
+    if (n < 0 || n >= total) return;
+    slides[current].classList.remove('active');
+    slides[current].classList.add('exit');
+    setTimeout(() => slides[current].classList.remove('exit'), 320);
+    current = n;
+    slides[current].classList.add('active');
+    document.querySelectorAll('.progress-dot').forEach((d, i) =>
+      d.classList.toggle('active', i === current));
+    document.getElementById('counter').textContent = `${current + 1} / ${total}`;
+    document.getElementById('btnPrev').disabled = current === 0;
+    document.getElementById('btnNext').disabled = current === total - 1;
+  }
+
+  function navigate(dir) { goTo(current + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') navigate(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                     navigate(-1);
+  });
+
+  // Touch swipe
+  let tx = 0;
+  document.addEventListener('touchstart', e => tx = e.touches[0].clientX);
+  document.addEventListener('touchend',   e => {
+    const dx = tx - e.changedTouches[0].clientX;
+    if (Math.abs(dx) > 50) navigate(dx > 0 ? 1 : -1);
+  });
+</script>
+</body>
+</html>
