@@ -38,8 +38,16 @@ type EditDropdownProps = {
 function EditDropdown({ raum, onSave, onClose }: EditDropdownProps) {
   const [wert, setWert] = useState(raum.belegt_durch ?? "");
   const ref = useRef<HTMLDivElement>(null);
+  const [openUp, setOpenUp] = useState(false);
 
   useEffect(() => {
+    // Nach Mount prüfen ob Dropdown unten aus dem Viewport läuft
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      if (rect.bottom > window.innerHeight - 16) {
+        setOpenUp(true);
+      }
+    }
     function handler(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) onClose();
     }
@@ -60,7 +68,7 @@ function EditDropdown({ raum, onSave, onClose }: EditDropdownProps) {
   return (
     <div
       ref={ref}
-      className="absolute z-50 top-full left-1/2 -translate-x-1/2 mt-1 w-64 bg-white border border-gray-200 rounded-lg shadow-xl"
+      className={`absolute z-50 ${openUp ? "bottom-full mb-1" : "top-full mt-1"} left-1/2 -translate-x-1/2 w-64 bg-white border border-gray-200 rounded-lg shadow-xl`}
       onClick={e => e.stopPropagation()}
     >
       <div className="p-2 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -149,13 +157,13 @@ function RaumKarte({ zelle, zuteilung, isSaving, isSelected, onSelect, onSave }:
       <button
         onClick={onSelect}
         disabled={isSaving}
-        className={`w-full h-full min-h-[80px] border-2 rounded-lg p-2 flex flex-col justify-between transition-all cursor-pointer ${farbe} ${
+        className={`w-full min-h-[90px] border-2 rounded-lg p-2 flex flex-col gap-1 transition-all cursor-pointer text-left ${farbe} ${
           isSelected ? "ring-2 ring-lions-blue ring-offset-1" : ""
         } ${isSaving ? "opacity-50" : ""}`}
       >
-        <span className="text-xs font-bold opacity-60">{zelle.label}</span>
+        <span className="text-xs font-bold opacity-60 shrink-0">{zelle.label}</span>
         {belegung ? (
-          <span className="text-xs font-semibold leading-tight text-left">{belegung}</span>
+          <span className="text-xs font-semibold leading-snug break-words hyphens-auto">{belegung}</span>
         ) : (
           <span className="text-xs italic opacity-40">frei</span>
         )}
