@@ -22,8 +22,6 @@ const CLUB_FARBEN: Record<string, string> = {
   "Lions Club Edenkoben":       "bg-purple-100 border-purple-400 text-purple-900",
   "Lions Club Germersheim":     "bg-orange-100 border-orange-400 text-orange-900",
   "gemeinsam":                  "bg-lions-blue/10 border-lions-blue/40 text-lions-blue",
-  "Arno Mohr":                  "bg-amber-50 border-amber-300 text-amber-800",
-  "BUJA / Volker Kratz":        "bg-pink-50 border-pink-300 text-pink-800",
 };
 
 const DEFAULT_FARBE = "bg-gray-50 border-gray-200 text-gray-500";
@@ -60,8 +58,6 @@ function EditDropdown({ raum, triggerRef, onSave, onClose }: EditDropdownProps) 
     "Lions Club Edenkoben",
     "Lions Club Germersheim",
     "gemeinsam",
-    "Arno Mohr",
-    "BUJA / Volker Kratz",
   ];
 
   return (
