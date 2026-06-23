@@ -4,47 +4,37 @@ import { getAllePlaetze, platzZuweisen, getAlleKuenstler, getRaumplan } from "@/
 import type { Platz, Kuenstler, Raumzuteilung } from "@/lib/types";
 
 const RAUM_REIHENFOLGE = [
-  "Raum gemeinsam",
-  "Raum Anweiler",
-  "Raum Bad Bergzabern",
-  "Raum Edenkoben",
-  "Raum Germersheim",
-  "Raum Sonstiges",
-  "Raum Fundus",
+  "Raum 43",
+  "Raum 44",
+  "Raum 45",
+  "Raum 46",
+  "Raum 47",
+  "Raum 48",
+  "Raum 49",
+  "Raum 42",
   "Flur 2",
-  "Mohr",
+  "Hauptflur",
 ];
 
-// Zuordnung Platz-Raumname → Raumnummern im Raumplan
-const RAUM_NR_MAP: Record<string, string[]> = {
-  "Raum gemeinsam":      ["43", "48", "49"],
-  "Raum Anweiler":       ["44"],
-  "Raum Bad Bergzabern": ["45"],
-  "Raum Edenkoben":      ["46"],
-  "Raum Germersheim":    ["47"],
-  "Raum Sonstiges":      [],
-  "Raum Fundus":         ["42"],
-  "Flur 2":              ["Flur2"],
-  "Mohr":                ["Flur"],
+// Zuordnung Platz-Raumname → raum_nr im Raumplan
+const RAUM_NR_MAP: Record<string, string> = {
+  "Raum 42":   "42",
+  "Raum 43":   "43",
+  "Raum 44":   "44",
+  "Raum 45":   "45",
+  "Raum 46":   "46",
+  "Raum 47":   "47",
+  "Raum 48":   "48",
+  "Raum 49":   "49",
+  "Flur 2":    "Flur2",
+  "Hauptflur": "Flur",
 };
 
 function raumLabel(raum: string, raumplan: Raumzuteilung[]): string {
-  const nrn = RAUM_NR_MAP[raum] ?? [];
-  if (nrn.length === 0) return raum;
-
-  const nummern = nrn.map(nr => {
-    if (nr === "Flur") return "Hauptflur";
-    if (nr === "Flur2") return "Flur 2";
-    return `Raum ${nr}`;
-  }).join(" / ");
-
-  const clubs = [...new Set(
-    nrn
-      .map(nr => raumplan.find(r => r.raum_nr === nr)?.belegt_durch)
-      .filter((v): v is string => Boolean(v))
-  )];
-
-  return clubs.length > 0 ? `${nummern} – ${clubs.join(", ")}` : nummern;
+  const nr = RAUM_NR_MAP[raum];
+  if (!nr) return raum;
+  const club = raumplan.find(r => r.raum_nr === nr)?.belegt_durch;
+  return club ? `${raum} – ${club}` : raum;
 }
 
 const KAT_COLORS: Record<number, string> = {
