@@ -6,7 +6,7 @@ export default function Header() {
     <header className="bg-lions-blue text-white print:hidden">
       <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-baseline gap-3" aria-label="Kunsttage auf der Ludwigshöhe">
-          <span className="kunsttage-header">Kunsttage</span>
+          <span className="kunsttage-header-lions">Lions</span><span className="kunsttage-header">Kunsttage</span>
           <span className="text-white text-base tracking-widest uppercase font-bold">
             auf der Ludwigshöhe
           </span>
