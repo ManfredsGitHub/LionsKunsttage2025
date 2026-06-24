@@ -6,14 +6,20 @@
   <style>
     @page { size: A3 portrait; margin: 0; }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after {
+      box-sizing: border-box; margin: 0; padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
 
     body {
       width: 297mm;
-      min-height: 420mm;
+      height: 420mm;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
       background: white;
       color: #1a1a1a;
+      display: flex;
+      flex-direction: column;
     }
 
     /* ── Header (Website-Stil) ──────────────────────────── */
@@ -45,7 +51,7 @@
 
     /* ── Foto ───────────────────────────────────────────── */
     .photo {
-      width: 100%; height: 115mm;
+      width: 100%; flex: 1;
       overflow: hidden; position: relative;
     }
     .photo img {
@@ -128,6 +134,8 @@
     .online-box-url { font-weight: 700; color: #003087; }
 
     /* ── Footer ─────────────────────────────────────────── */
+    .content { flex-shrink: 0; }
+
     .site-footer {
       background: #003087;
       padding: 4mm 8mm;
@@ -153,7 +161,7 @@
   </header>
 
   <div class="photo">
-    <img src="./Villa%20Ludwigshoehe.jpeg" alt="Schloss Villa Ludwigshöhe">
+    <img src="./villa-ludwigshoehe.jpg" alt="Schloss Villa Ludwigshöhe">
     <div class="photo-overlay"></div>
     <span class="photo-caption">Schloss Villa Ludwigshöhe · Edenkoben</span>
   </div>
