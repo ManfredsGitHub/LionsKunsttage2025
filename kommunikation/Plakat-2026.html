@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Kunsttage auf der Ludwigshöhe 2026 – Plakat</title>
+  <style>
+    @page { size: A3 portrait; margin: 0; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 297mm;
+      min-height: 420mm;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: white;
+      color: #1a1a1a;
+    }
+
+    /* ── Header (Website-Stil) ──────────────────────────── */
+    .site-header {
+      background: #003087;
+      padding: 5mm 8mm;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand { display: flex; align-items: baseline; gap: 0.5em; }
+    .brand-lions {
+      font-size: 2.6rem; font-weight: 700; letter-spacing: 0.04em;
+      color: transparent;
+      -webkit-text-stroke: 2px rgba(200,169,81,0.45);
+    }
+    .brand-kt {
+      font-size: 2.6rem; font-weight: 700; letter-spacing: 0.04em;
+      color: #C8A951;
+    }
+    .brand-sub {
+      font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: rgba(255,255,255,0.55); font-weight: 600;
+    }
+    .header-year {
+      font-size: 1.4rem; font-weight: 800;
+      color: rgba(255,255,255,0.25); letter-spacing: 0.1em;
+    }
+
+    /* ── Foto ───────────────────────────────────────────── */
+    .photo {
+      width: 100%; height: 115mm;
+      overflow: hidden; position: relative;
+    }
+    .photo img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center 35%;
+    }
+    .photo-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, rgba(0,48,135,0.15) 0%, transparent 40%, rgba(0,0,0,0.45) 100%);
+    }
+    .photo-caption {
+      position: absolute; bottom: 5mm; left: 8mm;
+      font-size: 0.7rem; color: rgba(255,255,255,0.65); letter-spacing: 0.04em;
+    }
+
+    /* ── Content ────────────────────────────────────────── */
+    .content {
+      padding: 8mm 8mm 6mm;
+    }
+
+    .badge-frei {
+      display: inline-block;
+      background: #C8A951; color: white;
+      font-size: 0.75rem; font-weight: 700;
+      padding: 2px 10px; border-radius: 100px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 4mm;
+    }
+
+    .dates { margin-bottom: 5mm; }
+    .date-row {
+      display: flex; align-items: baseline; gap: 5mm;
+      margin-bottom: 1.5mm;
+    }
+    .date-day {
+      font-size: 1.85rem; font-weight: 900;
+      color: #003087; line-height: 1;
+      letter-spacing: -0.01em;
+    }
+    .date-time {
+      font-size: 1.1rem; color: #555; font-weight: 500;
+    }
+
+    .location { font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin-top: 4mm; }
+    .location-addr { font-size: 0.9rem; color: #777; margin-top: 1mm; margin-bottom: 5mm; }
+
+    .divider {
+      width: 50mm; height: 3px;
+      background: linear-gradient(to right, #C8A951, transparent);
+      margin-bottom: 5mm;
+    }
+
+    .tagline {
+      font-size: 1.05rem; font-weight: 600; color: #003087;
+      margin-bottom: 5mm; font-style: italic;
+    }
+
+    .bullets {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2mm 8mm; margin-bottom: 5mm;
+    }
+    .bullet {
+      display: flex; align-items: flex-start; gap: 2.5mm;
+      font-size: 0.82rem; color: #444; line-height: 1.45;
+    }
+    .bullet-dash { color: #C8A951; font-weight: 700; flex-shrink: 0; }
+
+    .online-box {
+      background: #f0f4ff;
+      border-left: 3.5px solid #003087;
+      padding: 3.5mm 5mm;
+      border-radius: 0 3px 3px 0;
+      margin-bottom: 5mm;
+    }
+    .online-box-label {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: #003087; margin-bottom: 1.5mm;
+    }
+    .online-box-text { font-size: 0.82rem; color: #444; line-height: 1.45; }
+    .online-box-url { font-weight: 700; color: #003087; }
+
+    /* ── Footer ─────────────────────────────────────────── */
+    .site-footer {
+      background: #003087;
+      padding: 4mm 8mm;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-url {
+      font-size: 1.1rem; font-weight: 700; color: #C8A951; letter-spacing: 0.04em;
+    }
+    .footer-info {
+      font-size: 0.68rem; color: rgba(255,255,255,0.55);
+      text-align: right; line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-lions">Lions</span><span class="brand-kt">Kunsttage</span>
+      <span class="brand-sub">auf der Ludwigshöhe</span>
+    </div>
+    <span class="header-year">2026</span>
+  </header>
+
+  <div class="photo">
+    <img src="./Villa%20Ludwigshoehe.jpeg" alt="Schloss Villa Ludwigshöhe">
+    <div class="photo-overlay"></div>
+    <span class="photo-caption">Schloss Villa Ludwigshöhe · Edenkoben</span>
+  </div>
+
+  <div class="content">
+
+    <span class="badge-frei">Eintritt frei</span>
+
+    <div class="dates">
+      <div class="date-row">
+        <span class="date-day">Sa. 17. Oktober 2026</span>
+        <span class="date-time">12 – 18 Uhr</span>
+      </div>
+      <div class="date-row">
+        <span class="date-day">So. 18. Oktober 2026</span>
+        <span class="date-time">10 – 17 Uhr</span>
+      </div>
+    </div>
+
+    <div class="location">Schloss Villa Ludwigshöhe</div>
+    <div class="location-addr">Villastraße 65 · 67480 Edenkoben</div>
+
+    <div class="divider"></div>
+
+    <p class="tagline">Kunst für einen guten Zweck – bereits zum 14. Mal auf der Ludwigshöhe</p>
+
+    <div class="bullets">
+      <div class="bullet"><span class="bullet-dash">—</span>Über 20 Künstlerinnen und Künstler aus der Region</div>
+      <div class="bullet"><span class="bullet-dash">—</span>Originalkunst zu fairen Preisen</div>
+      <div class="bullet"><span class="bullet-dash">—</span>Alle Erlöse für gemeinnützige Zwecke</div>
+      <div class="bullet"><span class="bullet-dash">—</span>Individuelle Künstlerseiten im Online-Katalog</div>
+      <div class="bullet"><span class="bullet-dash">—</span>100 % der Verkaufserlöse an gemeinnützige Projekte</div>
+      <div class="bullet"><span class="bullet-dash">—</span>Veranstalter: 4 Lions-Clubs aus der Pfalz</div>
+    </div>
+
+    <div class="online-box">
+      <div class="online-box-label">Neu 2026 — Online-Katalog</div>
+      <div class="online-box-text">
+        Alle ausgestellten Werke vorab entdecken, vormerken und informiert kaufen:<br>
+        <span class="online-box-url">kunsttage-ludwigshoehe.de</span>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-url">kunsttage-ludwigshoehe.de</div>
+    <div class="footer-info">
+      Veranstalter: Lions-Clubs Annweiler · Bad Bergzabern · Edenkoben · Germersheim<br>
+      Eine Benefizveranstaltung — alle Erlöse für gemeinnützige Zwecke
+    </div>
+  </footer>
+
+</body>
+</html>

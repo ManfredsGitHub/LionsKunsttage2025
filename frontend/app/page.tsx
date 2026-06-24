@@ -130,7 +130,7 @@ export default function GaleriePage() {
         {[
           { zahl: "14", label: "Jahre Kunsttage" },
           { zahl: ">100.000 €", label: "für gute Zwecke" },
-          { zahl: "5", label: "Lions Clubs Südpfalz" },
+          { zahl: "4", label: "Lions-Clubs aus der Pfalz" },
         ].map(({ zahl, label }) => (
           <div key={label} className="bg-white rounded-xl shadow-sm p-4 text-center">
             <p className="text-xl sm:text-2xl font-bold text-lions-blue">{zahl}</p>

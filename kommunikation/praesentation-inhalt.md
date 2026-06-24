@@ -8,7 +8,7 @@ Dieses Dokument enthält alle Texte der HTML-Präsentation `praesentation-market
 ## Slide 1 — Cover
 
 **Badge (oben links):**
-Lions Clubs aus der Pfalz · Internes Konzept
+Lions-Clubs aus der Pfalz · Internes Konzept
 
 **Titel:**
 Marketingkonzept Kunsttage 2026
@@ -24,7 +24,7 @@ Wie wir gemeinsam die stärkste Ausgabe der Kunsttage auf der Ludwigshöhe gesta
 **Statistik-Karten (rechts):**
 - 14. / Auflage der Kunsttage
 - 100T€ / Gesamterlös seit Beginn
-- 4 / Lions Clubs aus der Pfalz
+- 4 / Lions-Clubs aus der Pfalz
 - NEU / Online-Katalog + Vormerken
 
 ---
