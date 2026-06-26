@@ -113,9 +113,14 @@ export const kuenstlerEinladen = (id: number) =>
   req<{ token: string; portal_url: string }>(`/admin/kuenstler/${id}/einladen`, { method: "POST" });
 export const kuenstlerLoeschen = (id: number) =>
   req(`/admin/kuenstler/${id}`, { method: "DELETE" });
+export const kuenstlerAnlegen = (data: { db_name: string; db_vorname: string }) =>
+  req<{ id: number; db_ident: string }>("/admin/kuenstler", { method: "POST", body: JSON.stringify(data) });
 export const bildNeuAnlegen = (data: {
   kuenstler_id: number; bildtitel: string; bildtechnik: string; genre: string;
-  breite_rahmen_cm: number; hoehe_rahmen_cm: number; einlieferungspreis?: number;
+  breite_rahmen_cm: number; hoehe_rahmen_cm: number;
+  breite_cm?: number; hoehe_cm?: number; tiefe_cm?: number; gewicht_kg?: number;
+  einlieferungspreis?: number; verkaufspreis?: number;
+  anmerkung_bild?: string;
   in_ausstellung?: boolean; abrechnungsempf?: string; galerist_id?: number;
 }) => req<Bild>("/admin/bilder/neu", { method: "POST", body: JSON.stringify(data) });
 
