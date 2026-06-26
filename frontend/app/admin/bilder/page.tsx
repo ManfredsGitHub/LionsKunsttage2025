@@ -114,7 +114,7 @@ function NeuModal({ onClose, onCreated }: { onClose: () => void; onCreated: (b: 
               <label className="block text-xs font-medium text-gray-600 mb-1">Galerist / Sammler auswählen</label>
               <select required value={form.galerist_id} onChange={e => setForm({...form, galerist_id: e.target.value})} className={inp}>
                 <option value="">— bitte wählen —</option>
-                {kuenstler.filter(k => k.ist_galerist).sort((a, b) => a.db_name.localeCompare(b.db_name)).map(k => (
+                {kuenstler.filter(k => k.kuenstlertyp === "galerist").sort((a, b) => a.db_name.localeCompare(b.db_name)).map(k => (
                   <option key={k.id} value={k.id}>{k.db_name}, {k.db_vorname}</option>
                 ))}
               </select>
@@ -377,28 +377,36 @@ function EditModal({ bild, onClose, onSaved, onDeleted }: { bild: Bild; onClose:
             </div>
           </div>
 
-          <div>
-            <p className="text-xs font-medium text-gray-600 mb-1">Maße mit Rahmen (cm)</p>
-            <div className="grid grid-cols-2 gap-3">
-              <input type="number" placeholder="Breite" value={form.breite_rahmen_cm} onChange={e => setForm({...form, breite_rahmen_cm: e.target.value})} className={inp} />
-              <input type="number" placeholder="Höhe" value={form.hoehe_rahmen_cm} onChange={e => setForm({...form, hoehe_rahmen_cm: e.target.value})} className={inp} />
+          <div className="grid grid-cols-4 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Breite m.Rahmen (cm)</label>
+              <input type="number" value={form.breite_rahmen_cm} onChange={e => setForm({...form, breite_rahmen_cm: e.target.value})} className={inp} />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Höhe m.Rahmen (cm)</label>
+              <input type="number" value={form.hoehe_rahmen_cm} onChange={e => setForm({...form, hoehe_rahmen_cm: e.target.value})} className={inp} />
             </div>
           </div>
-
-          <div>
-            <p className="text-xs font-medium text-gray-600 mb-1">Maße ohne Rahmen (cm)</p>
-            <div className="grid grid-cols-3 gap-3">
-              <input type="number" placeholder="Breite" value={form.breite_cm} onChange={e => setForm({...form, breite_cm: e.target.value})} className={inp} />
-              <input type="number" placeholder="Höhe" value={form.hoehe_cm} onChange={e => setForm({...form, hoehe_cm: e.target.value})} className={inp} />
-              <input type="number" placeholder="Tiefe" value={form.tiefe_cm} onChange={e => setForm({...form, tiefe_cm: e.target.value})} className={inp} />
+          <div className="grid grid-cols-4 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Breite o.Rahmen (cm)</label>
+              <input type="number" value={form.breite_cm} onChange={e => setForm({...form, breite_cm: e.target.value})} className={inp} />
             </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Höhe o.Rahmen (cm)</label>
+              <input type="number" value={form.hoehe_cm} onChange={e => setForm({...form, hoehe_cm: e.target.value})} className={inp} />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Tiefe (cm)</label>
+              <input type="number" value={form.tiefe_cm} onChange={e => setForm({...form, tiefe_cm: e.target.value})} className={inp} />
+            </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Gewicht (kg)</label>
               <input type="number" step="0.1" value={form.gewicht_kg} onChange={e => setForm({...form, gewicht_kg: e.target.value})} className={inp} />
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Einlief.-Preis (€)</label>
               <input type="number" value={form.einlieferungspreis} onChange={e => setForm({...form, einlieferungspreis: e.target.value})} className={inp} />
@@ -428,7 +436,7 @@ function EditModal({ bild, onClose, onSaved, onDeleted }: { bild: Bild; onClose:
                   <label className="block text-xs font-medium text-gray-600 mb-1">Galerist / Sammler auswählen</label>
                   <select required value={form.galerist_id} onChange={e => setForm({...form, galerist_id: e.target.value})} className={inp}>
                     <option value="">— bitte wählen —</option>
-                    {kuenstler.filter(k => k.ist_galerist).sort((a, b) => a.db_name.localeCompare(b.db_name)).map(k => (
+                    {kuenstler.filter(k => k.kuenstlertyp === "galerist").sort((a, b) => a.db_name.localeCompare(b.db_name)).map(k => (
                       <option key={k.id} value={k.id}>{k.db_name}, {k.db_vorname}</option>
                     ))}
                   </select>

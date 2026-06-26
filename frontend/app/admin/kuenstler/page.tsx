@@ -32,7 +32,6 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
     db_facebook: k.db_facebook ?? "",
     aktiv: k.aktiv !== false,
     vor_ort_anwesend: k.vor_ort_anwesend ?? false,
-    ist_galerist: k.ist_galerist ?? false,
     abrechnungsempf: (k as any).abrechnungsempf ?? "Künstler",
     galerist_id: String((k as any).galerist_id ?? ""),
     kuenstlertyp: (k as any).kuenstlertyp ?? "vor_ort",
@@ -81,7 +80,6 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
         db_facebook: form.db_facebook || undefined,
         aktiv: form.aktiv,
         vor_ort_anwesend: form.vor_ort_anwesend,
-        ist_galerist: form.ist_galerist,
         abrechnungsempf: form.abrechnungsempf,
         galerist_id: form.abrechnungsempf === "Galerist" && form.galerist_id ? Number(form.galerist_id) : null,
         kuenstlertyp: form.kuenstlertyp,
@@ -330,13 +328,6 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
                       Vor Ort anwesend
                     </span>
                   </label>
-                  <label className="flex items-center gap-2.5 cursor-pointer">
-                    <input type="checkbox" checked={form.ist_galerist} onChange={e => setForm({...form, ist_galerist: e.target.checked})}
-                      className="w-4 h-4 rounded accent-lions-blue" />
-                    <span className={`text-sm font-medium ${form.ist_galerist ? "text-lions-blue" : "text-gray-700"}`}>
-                      Ist Galerist·in
-                    </span>
-                  </label>
                 </div>
 
                 <hr className="border-gray-100" />
@@ -345,7 +336,8 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
                   <label className={lbl}>Typ</label>
                   <select value={form.kuenstlertyp} onChange={e => setForm({...form, kuenstlertyp: e.target.value})} className={inp}>
                     <option value="vor_ort">Künstler·in vor Ort</option>
-                    <option value="galerie">Galerie / Händler</option>
+                    <option value="galerie">Künstler·in über Galerie</option>
+                    <option value="galerist">Galerist·in / Händler·in</option>
                     <option value="eigenbestand">Eigenbestand</option>
                   </select>
                 </div>
@@ -362,7 +354,7 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
                     <label className={lbl}>Galerist / Sammler</label>
                     <select value={form.galerist_id} onChange={e => setForm({...form, galerist_id: e.target.value})} className={inp}>
                       <option value="">— bitte wählen —</option>
-                      {alleKuenstler.filter(a => a.id !== k.id && a.ist_galerist).sort((a, b) => a.db_name.localeCompare(b.db_name)).map(a => (
+                      {alleKuenstler.filter(a => a.id !== k.id && a.kuenstlertyp === "galerist").sort((a, b) => a.db_name.localeCompare(b.db_name)).map(a => (
                         <option key={a.id} value={a.id}>{a.db_name}, {a.db_vorname}</option>
                       ))}
                     </select>

@@ -92,8 +92,14 @@ def create_db():
         if "kuenstler_nr" not in cols:
             con.exec_driver_sql("ALTER TABLE kuenstler ADD COLUMN kuenstler_nr TEXT")
             con.commit()
-        if "ist_galerist" not in cols:
-            con.exec_driver_sql("ALTER TABLE kuenstler ADD COLUMN ist_galerist INTEGER DEFAULT 0")
+        if "ist_galerist" in cols:
+            con.exec_driver_sql(
+                "UPDATE kuenstler SET kuenstlertyp = 'galerist' WHERE ist_galerist = 1 AND (kuenstlertyp IS NULL OR kuenstlertyp != 'galerist')"
+            )
+            try:
+                con.exec_driver_sql("ALTER TABLE kuenstler DROP COLUMN ist_galerist")
+            except Exception:
+                pass
             con.commit()
         kauf_cols = [r[1] for r in con.exec_driver_sql("PRAGMA table_info(kauf)")]
         for col, typ in [
