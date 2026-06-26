@@ -7,20 +7,25 @@ SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASS = os.getenv("SMTP_PASS", "")
-ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "")
+_ADMIN_EMAIL_RAW = os.getenv("ADMIN_EMAIL", "")
+ADMIN_EMAILS: list[str] = [e.strip() for e in _ADMIN_EMAIL_RAW.split(",") if e.strip()]
+ADMIN_EMAIL = ADMIN_EMAILS[0] if ADMIN_EMAILS else ""
 BASE_URL = os.getenv("BASE_URL", "http://localhost:3000")
 
 
-def _send(to: str, subject: str, html: str):
+def _send(to: str | list[str], subject: str, html: str):
+    recipients = [to] if isinstance(to, str) else to
+    if not recipients:
+        return
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"] = SMTP_USER
-    msg["To"] = to
+    msg["To"] = ", ".join(recipients)
     msg.attach(MIMEText(html, "html"))
     with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as s:
         s.starttls()
         s.login(SMTP_USER, SMTP_PASS)
-        s.sendmail(SMTP_USER, to, msg.as_string())
+        s.sendmail(SMTP_USER, recipients, msg.as_string())
 
 
 def send_reservierung_besucher(email: str, name: str, bildtitel: str, bild_nr: str):
@@ -37,10 +42,10 @@ def send_reservierung_besucher(email: str, name: str, bildtitel: str, bild_nr: s
 
 
 def send_reservierung_admin(bild_nr: str, bildtitel: str, name: str, email: str, telefon: str):
-    if not ADMIN_EMAIL:
+    if not ADMIN_EMAILS:
         return
     _send(
-        ADMIN_EMAIL,
+        ADMIN_EMAILS,
         f"Neue Reservierung: {bildtitel}",
         f"""
         <p><strong>Neue Reservierung eingegangen</strong></p>
@@ -97,14 +102,14 @@ def send_kaufanfrage_admin(
     land: str,
     anmerkung,
 ):
-    if not ADMIN_EMAIL:
+    if not ADMIN_EMAILS:
         return
     preis_str = f"{verkaufspreis:.2f} €" if verkaufspreis else "—"
     anrede_str = anrede or ""
     telefon_str = telefon or "—"
     anmerkung_str = anmerkung or "—"
     _send(
-        ADMIN_EMAIL,
+        ADMIN_EMAILS,
         f"Neue Kaufanfrage #{anfrage_id} – {bildtitel}",
         f"""
         <div style="font-family:sans-serif;max-width:600px;margin:0 auto">

@@ -18,6 +18,7 @@ const kacheln = [
   { href: "/admin/impressum", titel: "Impressum", beschreibung: "Impressum bearbeiten", icon: "📄" },
   { href: "/admin/datenschutz", titel: "Datenschutz", beschreibung: "Datenschutzerklärung bearbeiten", icon: "🔒" },
   { href: "/admin/einstellungen", titel: "Einstellungen", beschreibung: "Passwörter ändern", icon: "⚙️" },
+  { href: "/admin/going-live", titel: "Going Live", beschreibung: "Checkliste Liveschaltung", icon: "🚀" },
 ];
 
 export default function AdminPage() {
