@@ -1,11 +1,12 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
 import { getBilder } from "@/lib/api";
-import { Bild } from "@/lib/types";
+import { Bild, Kuenstler } from "@/lib/types";
 import BildCard from "@/components/BildCard";
 import FilterBar from "@/components/FilterBar";
 
 const STORAGE_KEY = "galerie_state";
+const SPOTLIGHT_INTERVAL = 10;
 
 export default function GaleriePage() {
   const [bilder, setBilder] = useState<Bild[]>([]);
@@ -18,7 +19,6 @@ export default function GaleriePage() {
   const [fehler, setFehler] = useState("");
   const [restored, setRestored] = useState(false);
 
-  // Filter-State und Scroll-Position aus sessionStorage wiederherstellen
   useEffect(() => {
     try {
       const saved = sessionStorage.getItem(STORAGE_KEY);
@@ -35,7 +35,6 @@ export default function GaleriePage() {
     setRestored(true);
   }, []);
 
-  // Einmalig alle Bilder laden für die Künstler-Dropdown-Optionen
   useEffect(() => {
     getBilder().then(setAlleBilder).catch(() => {});
   }, []);
@@ -62,7 +61,7 @@ export default function GaleriePage() {
       kuenstler_id: kuenstlerId ? Number(kuenstlerId) : undefined,
     })
       .then(data => {
-        if (sortierung === "zufall")
+        if (sortierung === "" || sortierung === "zufall")
           data.sort(() => Math.random() - 0.5);
         else if (sortierung === "preis_asc")
           data.sort((a, b) => (a.verkaufspreis ?? Infinity) - (b.verkaufspreis ?? Infinity));
@@ -86,6 +85,40 @@ export default function GaleriePage() {
     document.getElementById("galerie")?.scrollIntoView({ behavior: "smooth" });
   }
 
+  // Unique non-Galerist artists in order of first appearance
+  const spotlightKuenstler = useMemo(() => {
+    const seen = new Set<number>();
+    const counts = new Map<number, number>();
+    const ersteBilder = new Map<number, Bild>();
+
+    for (const b of bilder) {
+      if (!b.kuenstler || b.kuenstler.kuenstlertyp === "galerist") continue;
+      counts.set(b.kuenstler_id, (counts.get(b.kuenstler_id) ?? 0) + 1);
+      if (!ersteBilder.has(b.kuenstler_id)) ersteBilder.set(b.kuenstler_id, b);
+    }
+
+    const result: { kuenstler: Kuenstler; count: number; ersteBild: Bild }[] = [];
+    for (const b of bilder) {
+      if (!b.kuenstler || b.kuenstler.kuenstlertyp === "galerist") continue;
+      if (seen.has(b.kuenstler_id)) continue;
+      seen.add(b.kuenstler_id);
+      result.push({
+        kuenstler: b.kuenstler,
+        count: counts.get(b.kuenstler_id)!,
+        ersteBild: ersteBilder.get(b.kuenstler_id)!,
+      });
+    }
+    return result;
+  }, [bilder]);
+
+  const bildChunks = useMemo(() => {
+    const chunks: Bild[][] = [];
+    for (let i = 0; i < bilder.length; i += SPOTLIGHT_INTERVAL) {
+      chunks.push(bilder.slice(i, i + SPOTLIGHT_INTERVAL));
+    }
+    return chunks;
+  }, [bilder]);
+
   return (
     <div>
       {/* ── Hero ── */}
@@ -97,6 +130,9 @@ export default function GaleriePage() {
           fetchPriority="high"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent" />
+        <p className="absolute bottom-1.5 right-2 text-white/50 text-[10px] leading-none select-none pointer-events-none">
+          © GDKE, E. Fischer
+        </p>
         <div className="absolute inset-0 flex flex-col items-center justify-end pb-6 sm:pb-8 px-4 text-center">
           <p className="text-lions-gold font-semibold uppercase tracking-widest text-xs sm:text-sm mb-1">
             14. Kunsttage auf der Ludwigshöhe
@@ -172,13 +208,61 @@ export default function GaleriePage() {
       ) : bilder.length === 0 ? (
         <p className="text-gray-500 py-12 text-center">Keine Bilder gefunden.</p>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
-          {bilder.map((b) => (
-            <div key={b.id} onClick={handleBildClick}>
-              <BildCard bild={b} />
-            </div>
-          ))}
-        </div>
+        <>
+          {bildChunks.map((chunk, chunkIdx) => {
+            const sp = spotlightKuenstler.length > 0
+              ? spotlightKuenstler[chunkIdx % spotlightKuenstler.length]
+              : null;
+            const imgSrc = sp?.ersteBild.bild_url_web
+              ? `${process.env.NEXT_PUBLIC_API_URL}${sp.ersteBild.bild_url_web}`
+              : "/placeholder.jpg";
+
+            return (
+              <div key={chunkIdx}>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                  {chunk.map((b) => (
+                    <div key={b.id} onClick={handleBildClick}>
+                      <BildCard bild={b} />
+                    </div>
+                  ))}
+                </div>
+
+                {chunkIdx < bildChunks.length - 1 && sp && (
+                  <div className="mt-6 rounded-2xl overflow-hidden bg-lions-blue flex items-stretch">
+                    <div className="flex-1 p-6 sm:p-8 flex flex-col justify-center">
+                      <p className="text-xs font-semibold uppercase tracking-widest text-lions-gold mb-2">
+                        Künstler der Ausstellung
+                      </p>
+                      <p className="text-2xl sm:text-3xl font-bold text-white leading-tight">
+                        {sp.kuenstler.db_vorname} {sp.kuenstler.db_name}
+                      </p>
+                      <p className="text-white/60 text-sm mt-1.5">
+                        {sp.count} {sp.count === 1 ? "Werk" : "Werke"} in dieser Ausstellung
+                      </p>
+                      <button
+                        onClick={() => {
+                          setKuenstlerId(String(sp.kuenstler.id));
+                          document.getElementById("galerie")?.scrollIntoView({ behavior: "smooth" });
+                        }}
+                        className="mt-4 self-start inline-flex items-center gap-1.5 bg-lions-gold text-lions-blue font-semibold text-sm px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
+                      >
+                        Alle Werke ansehen →
+                      </button>
+                    </div>
+                    <div className="hidden sm:block w-44 md:w-64 flex-shrink-0">
+                      <img
+                        src={imgSrc}
+                        alt={sp.ersteBild.bildtitel}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.jpg"; }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </>
       )}
     </div>
   );
