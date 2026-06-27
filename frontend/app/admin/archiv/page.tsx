@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { authHeaders } from "@/lib/auth";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -28,7 +29,7 @@ export default function ArchivPage() {
 
   function ladeArchive() {
     setArchiveLaden(true);
-    fetch(`${API}/admin/archiv/liste`)
+    fetch(`${API}/admin/archiv/liste`, { headers: authHeaders() })
       .then(r => r.json())
       .then(data => setArchive(Array.isArray(data) ? data : []))
       .catch(() => setArchive([]))
@@ -40,7 +41,7 @@ export default function ArchivPage() {
     setArchivFehler(""); setVorschau(null); setArchivErgebnis(null);
     setVorschauLaden(true);
     try {
-      const res = await fetch(`${API}/admin/archiv/vorschau?prafix=${encodeURIComponent(prafix)}`);
+      const res = await fetch(`${API}/admin/archiv/vorschau?prafix=${encodeURIComponent(prafix)}`, { headers: authHeaders() });
       if (!res.ok) { const d = await res.json(); throw new Error(d.detail); }
       setVorschau(await res.json());
     } catch (e: any) { setArchivFehler(e.message); }
@@ -53,7 +54,7 @@ export default function ArchivPage() {
     try {
       const res = await fetch(`${API}/admin/archiv/erstellen`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders() },
         body: JSON.stringify({ prafix }),
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.detail); }
@@ -69,7 +70,7 @@ export default function ArchivPage() {
     try {
       const res = await fetch(`${API}/admin/archiv/reimport`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders() },
         body: JSON.stringify({ pfad }),
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.detail); }

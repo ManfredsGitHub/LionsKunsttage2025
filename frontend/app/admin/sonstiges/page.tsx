@@ -1,4 +1,7 @@
+"use client";
 import Link from "next/link";
+import { useState } from "react";
+import { authHeaders } from "@/lib/auth";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -11,6 +14,27 @@ const kacheln = [
 ];
 
 export default function SonstigesPage() {
+  const [laden, setLaden] = useState(false);
+
+  async function drucklisteHerunterladen() {
+    setLaden(true);
+    try {
+      const res = await fetch(`${API}/admin/druckliste`, { headers: authHeaders() });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "druckliste.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert("Fehler beim Herunterladen der Druckliste.");
+    } finally {
+      setLaden(false);
+    }
+  }
+
   return (
     <div>
       <h1 className="text-2xl font-bold text-lions-blue mb-2">Sonstiges</h1>
@@ -29,12 +53,13 @@ export default function SonstigesPage() {
       </div>
 
       <div className="mt-8">
-        <a
-          href={`${API}/admin/druckliste`}
-          className="inline-block bg-lions-gold text-white px-5 py-2 rounded-md font-medium hover:bg-yellow-600 transition-colors"
+        <button
+          onClick={drucklisteHerunterladen}
+          disabled={laden}
+          className="bg-lions-gold text-white px-5 py-2 rounded-md font-medium hover:bg-yellow-600 transition-colors disabled:opacity-50"
         >
-          Druckliste als CSV herunterladen
-        </a>
+          {laden ? "Wird erstellt…" : "Druckliste als CSV herunterladen"}
+        </button>
       </div>
     </div>
   );

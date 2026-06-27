@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Kuenstler } from "@/lib/types";
+import { authHeaders } from "@/lib/auth";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -11,7 +12,7 @@ export default function DruckenPage() {
   const [fehler, setFehler] = useState("");
 
   useEffect(() => {
-    fetch(`${API}/admin/kuenstler/${id}`)
+    fetch(`${API}/admin/kuenstler/${id}`, { headers: authHeaders() })
       .then(r => r.json())
       .then(setKuenstler)
       .catch(() => setFehler("Fehler beim Laden."));

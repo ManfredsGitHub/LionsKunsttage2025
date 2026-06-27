@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { authHeaders } from "@/lib/auth";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -25,7 +26,7 @@ export default function ExportPage() {
         wj_beginn: wjBeginn.trim(),
         nur_bezahlt: String(nurBezahlt),
       });
-      const resp = await fetch(`${API}/admin/export/datev?${params}`);
+      const resp = await fetch(`${API}/admin/export/datev?${params}`, { headers: authHeaders() });
       if (!resp.ok) throw new Error(`Fehler: ${resp.status}`);
       const blob = await resp.blob();
       const url = URL.createObjectURL(blob);
