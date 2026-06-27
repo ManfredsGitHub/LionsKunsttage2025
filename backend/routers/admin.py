@@ -212,7 +212,7 @@ async def import_kuenstler_excel_endpoint(file: UploadFile = File(...), session:
 # --- Druckliste ---
 
 @router.get("/druckliste")
-def druckliste(session: Session = Depends(get_session)):
+def druckliste(token: str | None = None, session: Session = Depends(get_session)):
     bilder = session.exec(select(Bild).order_by(Bild.bild_nr)).all()
     buf = io.StringIO()
     writer = csv.writer(buf)

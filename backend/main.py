@@ -86,6 +86,10 @@ async def auth_middleware(request: Request, call_next):
     auth = request.headers.get("Authorization", "")
     token_str = auth.removeprefix("Bearer ").strip() if auth.startswith("Bearer ") else ""
 
+    # Fallback: Token als Query-Parameter für Browser-Downloads (Safari)
+    if not token_str:
+        token_str = request.query_params.get("token", "")
+
     if not token_str:
         return JSONResponse({"detail": "Nicht angemeldet"}, status_code=401)
 
