@@ -74,10 +74,18 @@ function ZuweisungsDropdown({ platz, kuenstler, onZuweisen, onClose }: Zuweisung
     .filter(k => k.aktiv !== false)
     .filter(k => {
       if (!suche) return true;
+      const q = suche.toLowerCase();
       const name = `${k.db_vorname} ${k.db_name}`.toLowerCase();
-      return name.includes(suche.toLowerCase());
+      return name.includes(q) || (k.kuenstler_nr ?? "").toLowerCase().includes(q);
     })
-    .sort((a, b) => a.db_name.localeCompare(b.db_name, "de"));
+    .sort((a, b) => {
+      const aNr = a.kuenstler_nr ?? "";
+      const bNr = b.kuenstler_nr ?? "";
+      if (aNr && !bNr) return -1;
+      if (!aNr && bNr) return 1;
+      if (aNr && bNr) return aNr.localeCompare(bNr, "de", { numeric: true });
+      return a.db_name.localeCompare(b.db_name, "de");
+    });
 
   return (
     <div
@@ -107,6 +115,9 @@ function ZuweisungsDropdown({ platz, kuenstler, onZuweisen, onClose }: Zuweisung
                 platz.kuenstler_id === k.id ? "bg-lions-blue/10 font-medium text-lions-blue" : "text-gray-700"
               }`}
             >
+              {k.kuenstler_nr && (
+                <span className="font-mono text-xs text-gray-400 mr-2">{k.kuenstler_nr}</span>
+              )}
               {k.db_name}, {k.db_vorname}
             </button>
           ))

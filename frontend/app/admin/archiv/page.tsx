@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -28,7 +29,9 @@ export default function ArchivPage() {
   function ladeArchive() {
     setArchiveLaden(true);
     fetch(`${API}/admin/archiv/liste`)
-      .then(r => r.json()).then(setArchive)
+      .then(r => r.json())
+      .then(data => setArchive(Array.isArray(data) ? data : []))
+      .catch(() => setArchive([]))
       .finally(() => setArchiveLaden(false));
   }
   useEffect(ladeArchive, []);

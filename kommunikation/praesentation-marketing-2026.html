@@ -16,6 +16,7 @@
     --ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 20px; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: #e8eaed; color: #1a1a2e; height: 100vh; overflow: hidden; user-select: none; }
 
   /* ── Header ── */
@@ -34,7 +35,7 @@
   /* ── Deck / Slides ── */
   .deck { width: 100vw; height: 100vh; position: relative; }
   .slide {
-    position: absolute; top: 60px; left: 0; right: 0; bottom: 0;
+    position: absolute; top: 60px; left: 0; right: 0; bottom: 34px;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     padding: 2.5vw 5vw; background: white; overflow: auto;
     opacity: 0; transform: translateX(60px);
@@ -45,10 +46,10 @@
   .slide.exit    { opacity: 0; transform: translateX(-60px); transition: opacity 260ms var(--ease), transform 260ms var(--ease); }
 
   /* ── Typography ── */
-  .eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--blue); opacity: 0.5; margin-bottom: 0.5rem; }
+  .eyebrow { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--blue); opacity: 0.5; margin-bottom: 0.5rem; }
   h1 { font-size: clamp(1.8rem, 4vw, 3.6rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; color: var(--blue); }
   h2 { font-size: clamp(1.3rem, 2.8vw, 2.4rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: var(--blue); }
-  .lead { font-size: clamp(0.88rem, 1.3vw, 1.1rem); line-height: 1.65; color: var(--g600); max-width: 60ch; margin-top: 0.6rem; }
+  .lead { font-size: clamp(1rem, 1.4vw, 1.15rem); line-height: 1.65; color: var(--g600); max-width: 60ch; margin-top: 0.6rem; }
 
   /* ── Layout ── */
   .w-full { width: 100%; max-width: 1080px; }
@@ -60,13 +61,13 @@
 
   /* ── Cards ── */
   .card { background: white; border-radius: 10px; padding: 1.25rem; border: 1px solid var(--g100); box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
-  .card h3 { font-size: 0.88rem; font-weight: 700; color: var(--blue); margin-bottom: 0.4rem; }
-  .card p, .card li { font-size: 0.82rem; line-height: 1.6; color: var(--g600); }
+  .card h3 { font-size: 1rem; font-weight: 700; color: var(--blue); margin-bottom: 0.4rem; }
+  .card p, .card li { font-size: 0.9rem; line-height: 1.6; color: var(--g600); }
   .card ul { padding-left: 1rem; } .card li { margin-bottom: 0.2rem; }
   .card-bg { background: #f8f9fa; border-radius: 10px; padding: 1.25rem; }
   .card-blue { background: var(--blue); border-radius: 10px; padding: 1.25rem; }
-  .card-blue h3 { font-size: 0.95rem; font-weight: 700; color: var(--gold); margin-bottom: 0.5rem; }
-  .card-blue li { color: rgba(255,255,255,0.85); font-size: 0.85rem; padding: 0.3rem 0; border-bottom: 1px solid rgba(255,255,255,0.08); list-style: none; }
+  .card-blue h3 { font-size: 1rem; font-weight: 700; color: var(--gold); margin-bottom: 0.5rem; }
+  .card-blue li { color: rgba(255,255,255,0.85); font-size: 0.9rem; padding: 0.3rem 0; border-bottom: 1px solid rgba(255,255,255,0.08); list-style: none; }
   .card-blue li:last-child { border: none; }
 
   /* ── Action cards ── */
@@ -74,9 +75,9 @@
   .ac.gold { border-left-color: var(--gold-b); } .ac.gold h3 { color: #7a5200; }
   .ac.light { border-left-color: #6c8ebf; }
   .ac.warm  { border-left-color: var(--gold); background: #fffbf0; }
-  .ac h3 { font-size: 0.83rem; font-weight: 700; color: var(--blue); margin-bottom: 0.5rem; }
+  .ac h3 { font-size: 1rem; font-weight: 700; color: var(--blue); margin-bottom: 0.5rem; }
   .al { list-style: none; }
-  .al li { font-size: 0.78rem; color: var(--g600); padding: 0.28rem 0; border-bottom: 1px solid var(--g100); display: flex; gap: 0.4rem; line-height: 1.4; }
+  .al li { font-size: 0.85rem; color: var(--g600); padding: 0.28rem 0; border-bottom: 1px solid var(--g100); display: flex; gap: 0.4rem; line-height: 1.4; }
   .al li:last-child { border: none; }
   .al li::before { content: "→"; color: var(--blue); font-weight: 700; flex-shrink: 0; }
   .ac.gold .al li::before { color: #7a5200; }
@@ -85,63 +86,72 @@
   .stat-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-top: 1.75rem; }
   .stat-card { background: white; border: 1px solid var(--g100); border-radius: 10px; padding: 1.1rem; text-align: center; box-shadow: 0 1px 6px rgba(0,0,0,0.04); }
   .stat-num { font-size: clamp(1.6rem,3vw,2.8rem); font-weight: 900; color: var(--blue); line-height: 1; }
-  .stat-lbl { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--g400); margin-top: 0.3rem; line-height: 1.35; }
+  .stat-lbl { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--g400); margin-top: 0.3rem; line-height: 1.35; }
 
   /* ── Quote ── */
   .quote-block { border-left: 4px solid var(--gold); padding: 0.85rem 1.25rem; background: rgba(245,168,0,0.06); border-radius: 0 8px 8px 0; margin-top: 1.1rem; }
-  .quote-text { font-size: clamp(0.88rem,1.5vw,1.15rem); font-weight: 600; line-height: 1.55; color: var(--blue); }
+  .quote-text { font-size: clamp(0.95rem,1.5vw,1.15rem); font-weight: 600; line-height: 1.55; color: var(--blue); }
 
   /* ── Big quote (slide 4) ── */
   .big-quote { font-size: clamp(1.15rem,2.4vw,2rem); font-weight: 800; line-height: 1.4; color: var(--blue); text-align: center; max-width: 780px; letter-spacing: -0.01em; }
-  .big-quote-sub { font-size: 0.8rem; color: var(--g400); letter-spacing: 0.05em; text-align: center; margin-top: 0.6rem; }
+  .big-quote-sub { font-size: 0.9rem; color: var(--g400); letter-spacing: 0.05em; text-align: center; margin-top: 0.6rem; }
 
   /* ── Pillars ── */
   .pillar { border: 1px solid var(--g100); border-radius: 10px; padding: 1.1rem; background: white; }
-  .pill { display: inline-block; background: var(--gold-b); color: #1a1000; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.18rem 0.55rem; border-radius: 100px; margin-bottom: 0.5rem; }
-  .pillar p { font-size: 0.85rem; line-height: 1.6; color: var(--g600); }
+  .pill { display: inline-block; background: var(--gold-b); color: #1a1000; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.18rem 0.55rem; border-radius: 100px; margin-bottom: 0.5rem; }
+  .pillar p { font-size: 0.9rem; line-height: 1.6; color: var(--g600); }
 
   /* ── Tags ── */
   .tag-row { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.65rem; }
-  .tag { background: var(--g100); color: var(--g600); font-size: 0.72rem; font-weight: 600; padding: 0.22rem 0.6rem; border-radius: 100px; }
+  .tag { background: var(--g100); color: var(--g600); font-size: 0.75rem; font-weight: 600; padding: 0.22rem 0.6rem; border-radius: 100px; }
 
   /* ── Timeline ── */
   .timeline { display: grid; grid-template-columns: repeat(3,1fr); gap: 0; position: relative; width: 100%; max-width: 920px; }
   .timeline::before { content: ""; position: absolute; top: 22px; left: 16%; right: 16%; height: 2px; background: var(--gold); z-index: 0; }
   .tl-item { text-align: center; position: relative; z-index: 1; }
   .tl-dot { width: 44px; height: 44px; border-radius: 50%; background: var(--blue); color: white; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.65rem; border: 3px solid white; box-shadow: 0 0 0 2px var(--blue); }
-  .tl-title { font-size: 0.9rem; font-weight: 700; color: var(--blue); margin-bottom: 0.25rem; }
-  .tl-date  { font-size: 0.67rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-b); margin-bottom: 0.5rem; }
-  .tl-items { font-size: 0.76rem; color: var(--g600); line-height: 1.7; list-style: none; }
+  .tl-title { font-size: 0.95rem; font-weight: 700; color: var(--blue); margin-bottom: 0.25rem; }
+  .tl-date  { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-b); margin-bottom: 0.5rem; }
+  .tl-items { font-size: 0.85rem; color: var(--g600); line-height: 1.7; list-style: none; }
 
   /* ── Check list ── */
   .cl { list-style: none; }
-  .cl li { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.84rem; line-height: 1.5; padding: 0.4rem 0; border-bottom: 1px solid var(--g100); color: var(--g600); }
+  .cl li { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.9rem; line-height: 1.5; padding: 0.4rem 0; border-bottom: 1px solid var(--g100); color: var(--g600); }
   .cl li:last-child { border: none; }
   .ci { width: 19px; height: 19px; border-radius: 50%; background: var(--blue); color: white; font-size: 0.65rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
 
   /* ── Compare ── */
   .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; width: 100%; max-width: 840px; }
-  .compare-col h3 { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.7rem; padding-bottom: 0.35rem; border-bottom: 2px solid currentColor; }
+  .compare-col h3 { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.7rem; padding-bottom: 0.35rem; border-bottom: 2px solid currentColor; }
   .compare-col.theirs h3 { color: var(--g400); border-color: var(--g100); }
   .compare-col.ours   h3 { color: var(--blue); border-color: var(--blue); }
-  .ci-row { display: flex; align-items: flex-start; gap: 0.45rem; padding: 0.4rem 0; font-size: 0.82rem; line-height: 1.4; border-bottom: 1px solid var(--g100); }
+  .ci-row { display: flex; align-items: flex-start; gap: 0.45rem; padding: 0.4rem 0; font-size: 0.9rem; line-height: 1.4; border-bottom: 1px solid var(--g100); }
   .ci-row:last-child { border: none; }
 
   /* ── Table ── */
-  .simple-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-  .simple-table th { text-align: left; padding: 0.45rem 0.6rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--g400); border-bottom: 2px solid var(--g100); }
+  .simple-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  .simple-table th { text-align: left; padding: 0.45rem 0.6rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--g400); border-bottom: 2px solid var(--g100); }
   .simple-table td { padding: 0.5rem 0.6rem; color: var(--g600); border-bottom: 1px solid var(--g100); vertical-align: top; line-height: 1.5; }
   .simple-table tr:last-child td { border: none; }
   .badge-ok { background: #e0f5e0; color: #27ae60; font-size: 0.65rem; font-weight: 700; padding: 0.1rem 0.4rem; border-radius: 100px; }
 
   /* ── Progress / Nav ── */
-  .progress { position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.35rem; z-index: 100; }
+  .progress { position: fixed; bottom: 2.4rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.35rem; z-index: 100; }
   .progress-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,48,135,0.18); transition: background 260ms, transform 260ms; cursor: pointer; }
   .progress-dot.active { background: var(--blue); transform: scale(1.5); }
   .nav-btn { position: fixed; top: calc(50% + 30px); transform: translateY(-50%); background: white; border: 1px solid var(--g100); color: var(--blue); width: 42px; height: 42px; border-radius: 50%; font-size: 1.05rem; cursor: pointer; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: box-shadow 160ms; display: flex; align-items: center; justify-content: center; }
   .nav-btn:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
   .nav-prev { left: 1.1rem; } .nav-next { right: 1.1rem; }
   .nav-btn:disabled { opacity: 0.2; cursor: default; }
+
+  /* ── Footer ── */
+  .slide-footer {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 34px;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; color: rgba(255,255,255,0.5);
+    letter-spacing: 0.06em; z-index: 200;
+  }
 </style>
 </head>
 <body>
@@ -168,7 +178,7 @@
         <div class="stat-card"><div class="stat-num">4</div><div class="stat-lbl">Lions-Clubs aus der Pfalz</div></div>
         <div class="stat-card"><div class="stat-num" style="font-size:1.4rem;padding-top:.3rem">NEU</div><div class="stat-lbl">Online-Katalog + Vormerken</div></div>
       </div>
-      <div style="margin-top:1.25rem;font-size:0.8rem;color:var(--g400)">Schloss Villa Ludwigshöhe · Edenkoben · Eintritt frei</div>
+      <div style="margin-top:1.25rem;font-size:0.9rem;color:var(--g400)">Schloss Villa Ludwigshöhe · Edenkoben · Eintritt frei</div>
     </div>
   </div>
 
@@ -180,7 +190,7 @@
       <p class="lead">Die Infrastruktur für 2026 steht komplett. Was jetzt fehlt: koordinierte Kommunikation aller fünf Clubs.</p>
       <div class="cols-4 mt-lg">
         <div class="card"><h3>Neue Website</h3><p>kunsttage-ludwigshoehe.de — mobiloptimiert, schnell, barrierefrei. Öffentlicher Auftritt mit Galerie, Künstlerseiten und Veranstaltungsinfo.</p></div>
-        <div class="card"><h3>Online-Katalog</h3><p>Alle ausgestellten Werke mit Bild, Titel, Technik und Preis. Besucher können Werke vorab entdecken und vormerken — erstmals in der Geschichte der Kunsttage.</p></div>
+        <div class="card"><h3>Online-Katalog</h3><p>Alle ausgestellten Werke mit Bild, Titel, Technik und Preis. Besucher können Werke vorab entdecken und vormerken.</p></div>
         <div class="card"><h3>Künstler-Portal</h3><p>Jede Künstlerin und jeder Künstler hat einen gesicherten Login, kann Bilder hochladen und seine Seite im Katalog sehen.</p></div>
         <div class="card"><h3>Verwaltungssystem</h3><p>Platzplan, Kasse, Kaufübersicht, Quittungsdruck, Archiv — alles digital. Fünf Clubs, eine gemeinsame Plattform.</p></div>
       </div>
@@ -293,9 +303,9 @@
       <h2>Künstler als Kampagnen-Motor</h2>
       <div class="cols-2 mt-lg" style="align-items:start">
         <div>
-          <p style="font-size:.93rem;line-height:1.7;color:var(--g600)">Jede Künstlerin, jeder Künstler hat ein eigenes Publikum — Familie, Freunde, Follower. Wenn 20 Teilnehmende koordiniert kommunizieren, entsteht eine organische Reichweite, die kein Werbebudget einholen kann.</p>
-          <p style="font-size:.93rem;line-height:1.7;color:var(--g600);margin-top:.7rem">Voraussetzung: Wir liefern ihnen alles fertig. Sie müssen nur noch teilen.</p>
-          <div class="quote-block"><div class="quote-text" style="font-size:.88rem">Jede Künstlerin erhält: Direktlink zur eigenen Bildseite, 3 fertige Posting-Vorlagen, 1 quadratisches Bild mit Kunsttage-Logo, Timing-Plan.</div></div>
+          <p style="font-size:1rem;line-height:1.7;color:var(--g600)">Jede Künstlerin, jeder Künstler hat ein eigenes Publikum — Familie, Freunde, Follower. Wenn 20 Teilnehmende koordiniert kommunizieren, entsteht eine organische Reichweite, die kein Werbebudget einholen kann.</p>
+          <p style="font-size:1rem;line-height:1.7;color:var(--g600);margin-top:.7rem">Voraussetzung: Wir liefern ihnen alles fertig. Sie müssen nur noch teilen.</p>
+          <div class="quote-block"><div class="quote-text" style="font-size:1rem">Jede Künstlerin erhält: Direktlink zur eigenen Bildseite, 3 fertige Posting-Vorlagen, 1 quadratisches Bild mit Kunsttage-Logo, Timing-Plan.</div></div>
         </div>
         <div>
           <div class="ac gold" style="margin-bottom:.75rem"><h3>Vorlage A — Ankündigung (6 Wo. vorher)</h3><ul class="al"><li>„Ich bin dabei: Am 17. & 18. Oktober zeige ich meine Werke bei den Kunsttagen auf der Ludwigshöhe. Meine Bilder könnt ihr schon vorab online entdecken: [Link] #KunsttageVillaLudwigshöhe"</li></ul></div>
@@ -313,18 +323,18 @@
       <h2>Pinterest — Sichtbarkeit, die bleibt</h2>
       <div class="cols-2 mt-lg" style="align-items:start">
         <div>
-          <p style="font-size:.93rem;line-height:1.7;color:var(--g600)">Pinterest ist keine Social-Media-Plattform mit Halbwertszeit — es ist eine <strong>visuelle Suchmaschine</strong>. Ein Instagram-Post ist nach 24 Stunden unsichtbar. Ein Pinterest-Pin bleibt monatelang, teils jahrelang auffindbar und wird von Google indexiert.</p>
+          <p style="font-size:1rem;line-height:1.7;color:var(--g600)">Pinterest ist keine Social-Media-Plattform mit Halbwertszeit — es ist eine <strong>visuelle Suchmaschine</strong>. Ein Instagram-Post ist nach 24 Stunden unsichtbar. Ein Pinterest-Pin bleibt monatelang, teils jahrelang auffindbar und wird von Google indexiert.</p>
           <div class="cols-2" style="margin-top:1.1rem;gap:.75rem">
             <div class="card"><h3>Wir richten ein:</h3><p>Kunsttage-Business-Account, Board „2026" mit allen Werken, direkte Links zum Katalog.</p></div>
             <div class="card"><h3>Künstler pinnen mit:</h3><p>Eigenem Board, fertigem Pin-Text von uns. Einmalig 10 Minuten Aufwand — dauerhafter Effekt.</p></div>
           </div>
         </div>
         <div class="card-bg">
-          <p style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g400);margin-bottom:.9rem">3 Argumente für den Künstler</p>
+          <p style="font-size:0.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g400);margin-bottom:.9rem">3 Argumente für den Künstler</p>
           <ul class="cl">
-            <li><div class="ci">1</div><div><strong style="display:block;font-size:.86rem;margin-bottom:.12rem">Kostenlose Online-Galerie, die bei Google erscheint</strong><span style="font-size:.78rem;color:var(--g400)">Pinterest-Boards werden indexiert — wer nach dem Namen sucht, findet die Werke.</span></div></li>
-            <li><div class="ci">2</div><div><strong style="display:block;font-size:.86rem;margin-bottom:.12rem">Kunstkäufer suchen aktiv auf Pinterest</strong><span style="font-size:.78rem;color:var(--g400)">Nutzer suchen gezielt nach Kunst fürs Zuhause — kein Algorithmus, echte Kaufabsicht.</span></div></li>
-            <li><div class="ci">3</div><div><strong style="display:block;font-size:.86rem;margin-bottom:.12rem">Einmal einrichten, dauerhaft profitieren</strong><span style="font-size:.78rem;color:var(--g400)">Kein laufender Aufwand. Der Pin arbeitet still — der Künstler malt.</span></div></li>
+            <li><div class="ci">1</div><div><strong style="display:block;font-size:0.95rem;margin-bottom:.12rem">Kostenlose Online-Galerie, die bei Google erscheint</strong><span style="font-size:0.85rem;color:var(--g400)">Pinterest-Boards werden indexiert — wer nach dem Namen sucht, findet die Werke.</span></div></li>
+            <li><div class="ci">2</div><div><strong style="display:block;font-size:0.95rem;margin-bottom:.12rem">Kunstkäufer suchen aktiv auf Pinterest</strong><span style="font-size:0.85rem;color:var(--g400)">Nutzer suchen gezielt nach Kunst fürs Zuhause — kein Algorithmus, echte Kaufabsicht.</span></div></li>
+            <li><div class="ci">3</div><div><strong style="display:block;font-size:0.95rem;margin-bottom:.12rem">Einmal einrichten, dauerhaft profitieren</strong><span style="font-size:0.85rem;color:var(--g400)">Kein laufender Aufwand. Der Pin arbeitet still — der Künstler malt.</span></div></li>
           </ul>
         </div>
       </div>
@@ -404,11 +414,15 @@
         </div>
       </div>
       <div style="margin-top:1.75rem;padding-top:1.25rem;border-top:1px solid var(--g100);text-align:center">
-        <p style="font-size:.78rem;color:var(--g400)">14. Kunsttage auf der Ludwigshöhe · 17. & 18. Oktober 2026 · Schloss Villa Ludwigshöhe · Eintritt frei</p>
+        <p style="font-size:0.85rem;color:var(--g400)">14. Kunsttage auf der Ludwigshöhe · 17. & 18. Oktober 2026 · Schloss Villa Ludwigshöhe · Eintritt frei</p>
       </div>
     </div>
   </div>
 
+</div>
+
+<div class="slide-footer">
+  Orgateam-Sitzung 26.6.2026 &nbsp;·&nbsp; 14. Kunsttage auf der Ludwigshöhe &nbsp;·&nbsp; 17. &amp; 18. Oktober 2026 &nbsp;·&nbsp; Schloss Villa Ludwigshöhe
 </div>
 
 <button class="nav-btn nav-prev" id="btnPrev" onclick="navigate(-1)" disabled>‹</button>

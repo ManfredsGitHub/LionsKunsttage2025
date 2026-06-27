@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kunsttage 2026 — Die Anwendung</title>
+<style>
+  :root {
+    --blue:   #003087;
+    --gold:   #C8A951;
+    --gold-b: #F5A800;
+    --g100: #f1f3f5;
+    --g200: #e9ecef;
+    --g400: #868e96;
+    --g600: #495057;
+    --dur: 380ms;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  html { font-size: 20px; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: #e8eaed; color: #1a1a2e; height: 100vh; overflow: hidden; user-select: none; }
+
+  /* ── Header ── */
+  .site-header {
+    position: fixed; top: 0; left: 0; right: 0; height: 56px;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 1.5rem; z-index: 200;
+  }
+  .brand { display: flex; align-items: baseline; gap: 0.5rem; }
+  .brand-lions { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.04em; color: transparent; -webkit-text-stroke: 1.5px rgba(200,169,81,0.4); }
+  .brand-kt    { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.04em; color: var(--gold); }
+  .brand-sub   { font-size: 0.55rem; letter-spacing: 0.14em; text-transform: uppercase; color: white; font-weight: 700; opacity: 0.55; padding-bottom: 0.1rem; }
+  #counter { font-size: 0.6rem; font-weight: 600; color: rgba(255,255,255,0.4); letter-spacing: 0.05em; }
+
+  /* ── Deck / Slides ── */
+  .deck { width: 100vw; height: 100vh; position: relative; }
+  .slide {
+    position: absolute; top: 56px; left: 0; right: 0; bottom: 34px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 1.5vw 4vw; background: white; overflow: hidden;
+    opacity: 0; transform: translateX(60px);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+    pointer-events: none;
+  }
+  .slide.active  { opacity: 1; transform: translateX(0); pointer-events: all; }
+  .slide.exit    { opacity: 0; transform: translateX(-60px); transition: opacity 260ms var(--ease), transform 260ms var(--ease); }
+
+  /* ── Typography ── */
+  .eyebrow { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--blue); opacity: 0.55; margin-bottom: 0.4rem; }
+  h1 { font-size: clamp(1.8rem, 3.8vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; color: var(--blue); }
+  h2 { font-size: clamp(1.4rem, 2.6vw, 2rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: var(--blue); }
+  .lead { font-size: clamp(1rem, 1.3vw, 1.2rem); line-height: 1.6; color: var(--g600); max-width: 68ch; margin-top: 0.5rem; }
+
+  /* ── Layout ── */
+  .w-full { width: 100%; max-width: 1080px; }
+  .cols-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+  .mt-lg  { margin-top: 1.25rem; }
+  .mt-md  { margin-top: 0.8rem; }
+  .mt-sm  { margin-top: 0.5rem; }
+
+  /* ── Cards ── */
+  .card { background: white; border-radius: 10px; padding: 0.9rem 1rem; border: 1px solid var(--g100); box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+  .card h3 { font-size: 1rem; font-weight: 700; color: var(--blue); margin-bottom: 0.3rem; }
+  .card p, .card li { font-size: 0.9rem; line-height: 1.5; color: var(--g600); }
+  .card ul { padding-left: 1rem; } .card li { margin-bottom: 0.15rem; }
+
+  .card-blue { background: var(--blue); border-radius: 10px; padding: 0.9rem 1rem; }
+  .card-blue h3 { font-size: 1rem; font-weight: 700; color: var(--gold); margin-bottom: 0.35rem; }
+  .card-blue p, .card-blue li { color: rgba(255,255,255,0.85); font-size: 0.9rem; line-height: 1.5; }
+  .card-blue ul { padding-left: 1rem; } .card-blue li { margin-bottom: 0.15rem; }
+
+  .card-gold { background: #fffbf0; border: 1px solid var(--gold); border-radius: 10px; padding: 0.9rem 1rem; }
+  .card-gold h3 { font-size: 1rem; font-weight: 700; color: #7a5200; margin-bottom: 0.3rem; }
+  .card-gold p { font-size: 0.9rem; color: #5a3c00; line-height: 1.5; }
+
+  /* ── Screenshot-Slides ── */
+  .ss-slide {
+    display: grid !important;
+    grid-template-columns: 270px 1fr;
+    padding: 0 !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    width: 100%; height: 100%;
+  }
+  .ss-info {
+    background: var(--blue);
+    color: white;
+    padding: 2.5rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.6rem;
+  }
+  .ss-info .eyebrow { color: var(--gold); opacity: 1; margin-bottom: 0; }
+  .ss-info h2 { color: white; font-size: clamp(1.2rem, 2vw, 1.6rem); }
+  .ss-info p { color: rgba(255,255,255,0.72); font-size: 0.88rem; line-height: 1.55; margin-top: 0.1rem; }
+  .ss-url {
+    display: inline-block;
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 0.7rem;
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.55);
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    margin-top: 0.4rem;
+    letter-spacing: 0.03em;
+  }
+  .ss-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: rgba(200,169,81,0.15);
+    color: var(--gold);
+    border: 1px solid rgba(200,169,81,0.35);
+    padding: 0.15rem 0.5rem;
+    border-radius: 100px;
+    margin-top: 0.3rem;
+  }
+  .ss-screen {
+    background: #d4d8de;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem;
+    overflow: hidden;
+  }
+  .ss-screen img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    border-radius: 5px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.28);
+  }
+  .ss-dual {
+    display: flex;
+    gap: 1rem;
+    height: 100%;
+    align-items: center;
+  }
+  .ss-dual img {
+    height: 100%;
+    width: auto;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 5px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.28);
+    flex: 1;
+  }
+
+  /* ── Feature list ── */
+  .feat-list { list-style: none; margin-top: 0.5rem; }
+  .feat-list li { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.85rem; color: rgba(255,255,255,0.75); padding: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.08); line-height: 1.4; }
+  .feat-list li:last-child { border: none; }
+  .feat-list li::before { content: "→"; color: var(--gold); font-weight: 700; flex-shrink: 0; margin-top: 0.05rem; }
+
+  /* ── Footer ── */
+  .slide-footer {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 34px;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; color: rgba(255,255,255,0.5);
+    letter-spacing: 0.06em; z-index: 200;
+  }
+
+  /* ── Progress / Nav ── */
+  .progress { position: fixed; bottom: 2.4rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.35rem; z-index: 100; }
+  .progress-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,48,135,0.18); transition: background 260ms, transform 260ms; cursor: pointer; border: none; }
+  .progress-dot.active { background: var(--blue); transform: scale(1.5); }
+  .nav-btn { position: fixed; top: calc(50% + 28px); transform: translateY(-50%); background: white; border: 1px solid var(--g100); color: var(--blue); width: 42px; height: 42px; border-radius: 50%; font-size: 1.05rem; cursor: pointer; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: box-shadow 160ms; display: flex; align-items: center; justify-content: center; }
+  .nav-btn:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+  .nav-prev { left: 1.1rem; } .nav-next { right: 1.1rem; }
+  .nav-btn:disabled { opacity: 0.2; cursor: default; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <span class="brand-lions">LIONS</span>
+    <span class="brand-kt">Kunsttage</span>
+    <span class="brand-sub">Die Anwendung · Technische Demo</span>
+  </div>
+  <span id="counter"></span>
+</header>
+
+<div class="deck" id="deck">
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 1 — Cover
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide active" id="s1">
+    <div class="w-full">
+      <div class="eyebrow">14. Kunsttage auf der Ludwigshöhe · 2026</div>
+      <h1>Die Anwendung —<br>von der Galerie bis zur Kasse</h1>
+      <p class="lead mt-md">
+        Ein Rundgang durch alle Bildschirme: was Besucher sehen, was Künstler tun, und wie das Orgateam am Veranstaltungstag und davor die Fäden in der Hand hält.
+      </p>
+      <div class="cols-3 mt-lg">
+        <div class="card">
+          <h3>Öffentliche Website</h3>
+          <p>Galerie, Künstlerprofile, Bilddetails, Veranstaltungsinfos und Merkliste — barrierefrei und mobil-optimiert.</p>
+        </div>
+        <div class="card-gold">
+          <h3>Künstler-Portal</h3>
+          <p>Login für Künstler zum Erfassen und Verwalten der eigenen Bilder, Preise und Profildaten.</p>
+        </div>
+        <div class="card-blue">
+          <h3>Admin-Bereich</h3>
+          <p>Bildfreigabe, Kasse, Kaufübersicht, Raumplan, Kommunikation — alles an einem Ort.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 2 — Veranstaltung + Merkliste (ehemals Folie 6)
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide ss-slide" id="s2">
+    <div class="ss-info">
+      <div class="eyebrow">Öffentlich · Service-Seiten</div>
+      <h2>Veranstaltung &amp; Merkliste</h2>
+      <p>Die Veranstaltungsseite informiert über Ort, Zeiten und Anreise. Die Merkliste speichert Favoriten lokal — kein Login nötig.</p>
+      <ul class="feat-list">
+        <li>Veranstaltungsinfos mit Karte</li>
+        <li>Merkliste als persönliche Auswahl</li>
+        <li>Drucken / als Liste speichern</li>
+        <li>Funktioniert ohne Account</li>
+      </ul>
+      <span class="ss-url">/ veranstaltung &nbsp; · &nbsp; / merkliste</span>
+    </div>
+    <div class="ss-screen">
+      <div class="ss-dual">
+        <img src="./screenshots/05-veranstaltung.jpg" alt="Veranstaltungsinfos">
+        <img src="./screenshots/06-merkliste.jpg" alt="Merkliste">
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 3 — Startseite / Galerie
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide ss-slide" id="s3">
+    <div class="ss-info">
+      <div class="eyebrow">Öffentlich · Startseite</div>
+      <h2>Die Online-Galerie</h2>
+      <p>Die Startseite zeigt alle freigegebenen Bilder in einer filterbaren Galerie. Besucher können nach Künstler, Technik und Preisklasse suchen.</p>
+      <ul class="feat-list">
+        <li>Alle Bilder auf einen Blick</li>
+        <li>Filter nach Künstler, Technik, Preis</li>
+        <li>Direktlink zu Bild- und Künstlerprofil</li>
+        <li>Merkliste per Klick</li>
+      </ul>
+      <span class="ss-url">localhost:3000 /</span>
+      <span class="ss-tag">Eintritt frei</span>
+    </div>
+    <div class="ss-screen">
+      <img src="./screenshots/01-startseite.jpg" alt="Startseite / Galerie" loading="eager">
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 4 — Künstlerliste
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide ss-slide" id="s4">
+    <div class="ss-info">
+      <div class="eyebrow">Öffentlich · Künstler</div>
+      <h2>Alle Künstlerinnen &amp; Künstler</h2>
+      <p>Eine Übersicht aller teilnehmenden Künstler — mit Profilbild, Technik und Club-Zugehörigkeit. 2026 sind 18 Künstler dabei.</p>
+      <ul class="feat-list">
+        <li>Sortiert nach Nachname</li>
+        <li>Profilbild und Kurzbiografie</li>
+        <li>Klick auf Karte → vollständiges Profil</li>
+        <li>Club und Mitgliedsstatus sichtbar</li>
+      </ul>
+      <span class="ss-url">/ künstler</span>
+    </div>
+    <div class="ss-screen">
+      <img src="./screenshots/02-kuenstlerliste.jpg" alt="Künstlerliste">
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 5 — Künstler-Profil
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide ss-slide" id="s5">
+    <div class="ss-info">
+      <div class="eyebrow">Öffentlich · Künstlerprofil</div>
+      <h2>Künstler­profil</h2>
+      <p>Jeder Künstler hat eine eigene Profilseite mit Foto, Biografie, Technik und allen ausgestellten Werken.</p>
+      <ul class="feat-list">
+        <li>Vollständige Biografie</li>
+        <li>Alle Bilder des Künstlers</li>
+        <li>Preise und Verfügbarkeit</li>
+        <li>Direktlink zum Bild-Detail</li>
+      </ul>
+      <span class="ss-url">/ künstler / [id]</span>
+    </div>
+    <div class="ss-screen">
+      <img src="./screenshots/03-kuenstler-profil.jpg" alt="Künstler-Profil">
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 6 — Bild-Detail
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide ss-slide" id="s6">
+    <div class="ss-info">
+      <div class="eyebrow">Öffentlich · Bilddetail</div>
+      <h2>Bild­detail­seite</h2>
+      <p>Großansicht des Werks mit allen relevanten Informationen: Titel, Maße, Technik, Preis und Künstler­profil.</p>
+      <ul class="feat-list">
+        <li>Großformatige Bildansicht</li>
+        <li>Maße, Technik, Jahr</li>
+        <li>Preis und Verfügbarkeits­status</li>
+        <li>Zur Merkliste hinzufügen</li>
+        <li>Laufende Bildnummer (für Kaufanfragen)</li>
+      </ul>
+      <span class="ss-url">/ bilder / [id]</span>
+    </div>
+    <div class="ss-screen">
+      <img src="./screenshots/04-bild-detail.jpg" alt="Bild-Detail">
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 7 — Logins
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide ss-slide" id="s7">
+    <div class="ss-info">
+      <div class="eyebrow">Zugänge · Login</div>
+      <h2>Zwei geschützte Bereiche</h2>
+      <p>Künstler loggen sich ein, um ihre eigenen Bilder und Profildaten zu verwalten. Das Admin-Login ist nur für das Orgateam.</p>
+      <ul class="feat-list">
+        <li>Künstler: persönlicher Zugangscode</li>
+        <li>Admin: gesicherter Verwaltungs­zugang</li>
+        <li>Session-Cookies, kein Passwort im Klartext</li>
+        <li>Automatischer Logout nach Inaktivität</li>
+      </ul>
+      <span class="ss-url">/ künstler/login &nbsp; · &nbsp; / admin/login</span>
+    </div>
+    <div class="ss-screen">
+      <div class="ss-dual">
+        <img src="./screenshots/07-kuenstler-login.jpg" alt="Künstler-Login">
+        <img src="./screenshots/08-admin-login.jpg" alt="Admin-Login">
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 8 — Admin Dashboard
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide ss-slide" id="s8">
+    <div class="ss-info">
+      <div class="eyebrow">Admin · Übersicht</div>
+      <h2>Admin-Dashboard</h2>
+      <p>Die Startseite des Admin-Bereichs zeigt alle Verwaltungs­module auf einen Blick — von der Bildfreigabe bis zum Raumplan.</p>
+      <ul class="feat-list">
+        <li>Bildverwaltung &amp; Freigabe</li>
+        <li>Vor-Ort-Kasse</li>
+        <li>Kaufübersicht &amp; Kaufanfragen</li>
+        <li>Künstler anlegen &amp; verwalten</li>
+        <li>Kommunikation (Newsletter)</li>
+        <li>Platzplan / Raumplan</li>
+      </ul>
+      <span class="ss-url">/ admin</span>
+    </div>
+    <div class="ss-screen">
+      <img src="./screenshots/09-admin-dashboard.jpg" alt="Admin-Dashboard">
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 9 — Admin Bildverwaltung
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide ss-slide" id="s9">
+    <div class="ss-info">
+      <div class="eyebrow">Admin · Bilder</div>
+      <h2>Bild­verwaltung &amp; Freigabe</h2>
+      <p>Das Orgateam sieht alle eingereichten Bilder, kann Preise bestätigen, Änderungen anfragen und Bilder für die öffentliche Galerie freigeben.</p>
+      <ul class="feat-list">
+        <li>Alle Bilder mit Status-Übersicht</li>
+        <li>Preisbestätigung per Klick</li>
+        <li>Freigabe für die Galerie</li>
+        <li>Filter nach Künstler &amp; Status</li>
+      </ul>
+      <span class="ss-url">/ admin / bilder</span>
+    </div>
+    <div class="ss-screen">
+      <img src="./screenshots/10-admin-bilder.jpg" alt="Admin Bildverwaltung">
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 10 — Admin Künstler
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide ss-slide" id="s10">
+    <div class="ss-info">
+      <div class="eyebrow">Admin · Künstler</div>
+      <h2>Künstler­verwaltung</h2>
+      <p>Alle teilnehmenden Künstler auf einen Blick. Neue Künstler anlegen, bestehende bearbeiten, Zugangscodes versenden.</p>
+      <ul class="feat-list">
+        <li>Liste aller Künstler mit Status</li>
+        <li>Künstler registrieren &amp; einladen</li>
+        <li>Persönliche Zugangscodes generieren</li>
+        <li>Club-Zugehörigkeit verwalten</li>
+      </ul>
+      <span class="ss-url">/ admin / kuenstler</span>
+    </div>
+    <div class="ss-screen">
+      <img src="./screenshots/11-admin-kuenstler.jpg" alt="Admin Künstler">
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 11 — Admin Kasse
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide ss-slide" id="s11">
+    <div class="ss-info">
+      <div class="eyebrow">Admin · Veranstaltungstag</div>
+      <h2>Vor-Ort-Kasse</h2>
+      <p>Am Veranstaltungstag erfasst das Orgateam Verkäufe direkt über die Kassenfunktion — schnell, ohne Zettelwirtschaft.</p>
+      <ul class="feat-list">
+        <li>Bild-Nr. eingeben → sofort angezeigt</li>
+        <li>Käufer-Daten erfassen</li>
+        <li>Zahlung bestätigen (bar / Überweisung)</li>
+        <li>Bild automatisch als "verkauft" markiert</li>
+      </ul>
+      <span class="ss-url">/ admin / kasse</span>
+      <span class="ss-tag">Live am 17. &amp; 18. Oktober</span>
+    </div>
+    <div class="ss-screen">
+      <img src="./screenshots/12-admin-kasse.jpg" alt="Admin Kasse">
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 12 — Admin Kaufübersicht
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide ss-slide" id="s12">
+    <div class="ss-info">
+      <div class="eyebrow">Admin · Übersicht</div>
+      <h2>Kauf­übersicht</h2>
+      <p>Alle Verkäufe in einer Tabelle — mit Bild, Künstler, Käufer, Preis und Zahlungsstatus. Grundlage für die Abrechnung mit den Künstlern.</p>
+      <ul class="feat-list">
+        <li>Alle Verkäufe chronologisch</li>
+        <li>Zahlungsstatus (offen / bezahlt)</li>
+        <li>Gesamtumsatz auf einen Blick</li>
+        <li>Export für die Abrechnung</li>
+      </ul>
+      <span class="ss-url">/ admin / kaufuebersicht</span>
+    </div>
+    <div class="ss-screen">
+      <img src="./screenshots/13-admin-kaufuebersicht.jpg" alt="Admin Kaufübersicht">
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 13 — Admin Raumplan
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide ss-slide" id="s13">
+    <div class="ss-info">
+      <div class="eyebrow">Admin · Aufbau</div>
+      <h2>Raumplan</h2>
+      <p>Interaktive Belegung der Ausstellungsfläche: Welcher Künstler hängt wo? Plätze zuweisen, verschieben und den Raumplan ausdrucken.</p>
+      <ul class="feat-list">
+        <li>Visuelle Platz-Zuweisung</li>
+        <li>Künstler den Positionen zuordnen</li>
+        <li>Grundlage für den Aufbautag</li>
+        <li>Druckfunktion für das Aufbauteam</li>
+      </ul>
+      <span class="ss-url">/ admin / raumplan</span>
+    </div>
+    <div class="ss-screen">
+      <img src="./screenshots/14-admin-raumplan.jpg" alt="Admin Raumplan">
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SLIDE 14 — Abschluss
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="slide" id="s14">
+    <div class="w-full">
+      <div class="eyebrow">Zusammenfassung</div>
+      <h2>Alles in einer Anwendung</h2>
+      <p class="lead mt-md">
+        Vom ersten Besucherklick bis zur abgeschlossenen Abrechnung — die Anwendung begleitet die Kunsttage von der Vorbereitung bis zur Nachbereitung.
+      </p>
+      <div class="cols-3 mt-lg">
+        <div class="card">
+          <h3>Für Besucher</h3>
+          <ul>
+            <li>Online-Galerie mit allen Werken</li>
+            <li>Künstlerprofile &amp; Biografien</li>
+            <li>Merkliste ohne Login</li>
+            <li>Veranstaltungsinfos</li>
+          </ul>
+        </div>
+        <div class="card-gold">
+          <h3>Für Künstler</h3>
+          <p>Eigene Bilder und Profil selbst pflegen — kein E-Mail-Hin-und-Her, kein Rückfragen beim Orgateam.</p>
+        </div>
+        <div class="card-blue">
+          <h3>Für das Orgateam</h3>
+          <ul>
+            <li>Bildfreigabe zentral</li>
+            <li>Kasse am Veranstaltungstag</li>
+            <li>Kaufübersicht &amp; Abrechnung</li>
+            <li>Raumplan &amp; Aufbau</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /deck -->
+
+<!-- Fußzeile -->
+<div class="slide-footer">
+  Orgateam-Sitzung 26.6.2026 &nbsp;·&nbsp; 14. Kunsttage auf der Ludwigshöhe &nbsp;·&nbsp; 17. &amp; 18. Oktober 2026 &nbsp;·&nbsp; Schloss Villa Ludwigshöhe
+</div>
+
+<!-- Navigation -->
+<nav class="progress" id="progress" aria-label="Folien-Navigation"></nav>
+<button class="nav-btn nav-prev" id="prev" aria-label="Zurück">←</button>
+<button class="nav-btn nav-next" id="next" aria-label="Weiter">→</button>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dots   = [];
+  let cur = 0;
+
+  const progress = document.getElementById('progress');
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'progress-dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Folie ' + (i+1));
+    d.addEventListener('click', () => go(i));
+    progress.appendChild(d);
+    dots.push(d);
+  });
+
+  function go(next) {
+    if (next < 0 || next >= slides.length || next === cur) return;
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add('exit');
+    setTimeout(() => slides[cur].classList.remove('exit'), 320);
+    cur = next;
+    slides[cur].classList.add('active');
+    dots.forEach((d, i) => d.classList.toggle('active', i === cur));
+    document.getElementById('prev').disabled = cur === 0;
+    document.getElementById('next').disabled = cur === slides.length - 1;
+    document.getElementById('counter').textContent = (cur + 1) + ' / ' + slides.length;
+  }
+
+  document.getElementById('prev').addEventListener('click', () => go(cur - 1));
+  document.getElementById('next').addEventListener('click', () => go(cur + 1));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') go(cur + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   go(cur - 1);
+  });
+
+  go(0);
+</script>
+</body>
+</html>

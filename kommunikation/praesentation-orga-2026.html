@@ -18,28 +18,29 @@
     --dur: 380ms;
     --ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
+  html { font-size: 20px; }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: #e8eaed; color: #1a1a2e; height: 100vh; overflow: hidden; user-select: none; }
 
   /* ── Header ── */
   .site-header {
-    position: fixed; top: 0; left: 0; right: 0; height: 60px;
+    position: fixed; top: 0; left: 0; right: 0; height: 56px;
     background: var(--blue);
     display: flex; align-items: center; justify-content: space-between;
-    padding: 0 2rem; z-index: 200;
+    padding: 0 1.5rem; z-index: 200;
   }
-  .brand { display: flex; align-items: baseline; gap: 0.6rem; }
-  .brand-lions { font-weight: 700; font-size: 1.4rem; letter-spacing: 0.04em; color: transparent; -webkit-text-stroke: 1.5px rgba(200,169,81,0.4); }
-  .brand-kt    { font-weight: 700; font-size: 1.4rem; letter-spacing: 0.04em; color: var(--gold); }
-  .brand-sub   { font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: white; font-weight: 700; opacity: 0.55; padding-bottom: 0.1rem; }
-  #counter { font-size: 0.72rem; font-weight: 600; color: rgba(255,255,255,0.4); letter-spacing: 0.05em; }
+  .brand { display: flex; align-items: baseline; gap: 0.5rem; }
+  .brand-lions { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.04em; color: transparent; -webkit-text-stroke: 1.5px rgba(200,169,81,0.4); }
+  .brand-kt    { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.04em; color: var(--gold); }
+  .brand-sub   { font-size: 0.55rem; letter-spacing: 0.14em; text-transform: uppercase; color: white; font-weight: 700; opacity: 0.55; padding-bottom: 0.1rem; }
+  #counter { font-size: 0.6rem; font-weight: 600; color: rgba(255,255,255,0.4); letter-spacing: 0.05em; }
 
   /* ── Deck / Slides ── */
   .deck { width: 100vw; height: 100vh; position: relative; }
   .slide {
-    position: absolute; top: 60px; left: 0; right: 0; bottom: 0;
+    position: absolute; top: 56px; left: 0; right: 0; bottom: 34px;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    padding: 2.5vw 5vw; background: white; overflow: auto;
+    padding: 1.5vw 4vw; background: white; overflow: auto;
     opacity: 0; transform: translateX(60px);
     transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
     pointer-events: none;
@@ -48,54 +49,54 @@
   .slide.exit    { opacity: 0; transform: translateX(-60px); transition: opacity 260ms var(--ease), transform 260ms var(--ease); }
 
   /* ── Typography ── */
-  .eyebrow { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--blue); opacity: 0.5; margin-bottom: 0.5rem; }
-  h1 { font-size: clamp(1.8rem, 4vw, 3.2rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; color: var(--blue); }
-  h2 { font-size: clamp(1.3rem, 2.8vw, 2.2rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: var(--blue); }
-  .lead { font-size: clamp(0.88rem, 1.3vw, 1.05rem); line-height: 1.65; color: var(--g600); max-width: 64ch; margin-top: 0.6rem; }
+  .eyebrow { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--blue); opacity: 0.55; margin-bottom: 0.4rem; }
+  h1 { font-size: clamp(1.8rem, 3.8vw, 3rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; color: var(--blue); }
+  h2 { font-size: clamp(1.4rem, 2.6vw, 2rem); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: var(--blue); }
+  .lead { font-size: clamp(1.1rem, 1.3vw, 1.25rem); line-height: 1.6; color: var(--g600); max-width: 68ch; margin-top: 0.5rem; }
 
   /* ── Layout ── */
   .w-full { width: 100%; max-width: 1080px; }
-  .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem; }
-  .cols-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
-  .cols-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.1rem; }
-  .mt-lg  { margin-top: 1.75rem; }
-  .mt-md  { margin-top: 1.1rem; }
-  .mt-sm  { margin-top: 0.75rem; }
+  .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .cols-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+  .cols-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 0.9rem; }
+  .mt-lg  { margin-top: 1.25rem; }
+  .mt-md  { margin-top: 0.8rem; }
+  .mt-sm  { margin-top: 0.5rem; }
 
   /* ── Cards ── */
-  .card { background: white; border-radius: 10px; padding: 1.25rem; border: 1px solid var(--g100); box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
-  .card h3 { font-size: 0.88rem; font-weight: 700; color: var(--blue); margin-bottom: 0.4rem; }
-  .card p, .card li { font-size: 0.82rem; line-height: 1.6; color: var(--g600); }
-  .card ul { padding-left: 1rem; } .card li { margin-bottom: 0.2rem; }
+  .card { background: white; border-radius: 10px; padding: 0.9rem 1rem; border: 1px solid var(--g100); box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+  .card h3 { font-size: 1.1rem; font-weight: 700; color: var(--blue); margin-bottom: 0.3rem; }
+  .card p, .card li { font-size: 1rem; line-height: 1.5; color: var(--g600); }
+  .card ul { padding-left: 1rem; } .card li { margin-bottom: 0.15rem; }
 
-  .card-red   { background: #fff5f5; border: 1px solid #ffd6d6; border-radius: 10px; padding: 1.25rem; }
-  .card-red h3 { font-size: 0.88rem; font-weight: 700; color: var(--red); margin-bottom: 0.5rem; }
+  .card-red   { background: #fff5f5; border: 1px solid #ffd6d6; border-radius: 10px; padding: 0.9rem 1rem; }
+  .card-red h3 { font-size: 1.1rem; font-weight: 700; color: var(--red); margin-bottom: 0.35rem; }
 
-  .card-green { background: #f0faf3; border: 1px solid #c3e6cb; border-radius: 10px; padding: 1.25rem; }
-  .card-green h3 { font-size: 0.88rem; font-weight: 700; color: var(--green); margin-bottom: 0.5rem; }
+  .card-green { background: #f0faf3; border: 1px solid #c3e6cb; border-radius: 10px; padding: 0.9rem 1rem; }
+  .card-green h3 { font-size: 1.1rem; font-weight: 700; color: var(--green); margin-bottom: 0.35rem; }
 
-  .card-blue { background: var(--blue); border-radius: 10px; padding: 1.25rem; }
-  .card-blue h3 { font-size: 0.95rem; font-weight: 700; color: var(--gold); margin-bottom: 0.5rem; }
-  .card-blue p, .card-blue li { color: rgba(255,255,255,0.85); font-size: 0.85rem; line-height: 1.6; }
-  .card-blue ul { padding-left: 1rem; } .card-blue li { margin-bottom: 0.2rem; }
+  .card-blue { background: var(--blue); border-radius: 10px; padding: 0.9rem 1rem; }
+  .card-blue h3 { font-size: 1.1rem; font-weight: 700; color: var(--gold); margin-bottom: 0.35rem; }
+  .card-blue p, .card-blue li { color: rgba(255,255,255,0.85); font-size: 1rem; line-height: 1.5; }
+  .card-blue ul { padding-left: 1rem; } .card-blue li { margin-bottom: 0.15rem; }
 
-  .card-gold { background: #fffbf0; border: 1px solid var(--gold); border-radius: 10px; padding: 1.25rem; }
-  .card-gold h3 { font-size: 0.88rem; font-weight: 700; color: #7a5200; margin-bottom: 0.4rem; }
+  .card-gold { background: #fffbf0; border: 1px solid var(--gold); border-radius: 10px; padding: 0.9rem 1rem; }
+  .card-gold h3 { font-size: 1.1rem; font-weight: 700; color: #7a5200; margin-bottom: 0.3rem; }
 
   /* ── Row lists ── */
   .rl { list-style: none; }
-  .rl li { font-size: 0.82rem; color: var(--g600); padding: 0.4rem 0; border-bottom: 1px solid var(--g100); display: flex; gap: 0.5rem; line-height: 1.45; align-items: flex-start; }
+  .rl li { font-size: 1rem; color: var(--g600); padding: 0.3rem 0; border-bottom: 1px solid var(--g100); display: flex; gap: 0.5rem; line-height: 1.4; align-items: flex-start; }
   .rl li:last-child { border: none; }
-  .rl-icon { flex-shrink: 0; font-size: 0.9rem; line-height: 1.3; }
+  .rl-icon { flex-shrink: 0; font-size: 1rem; line-height: 1.3; }
 
   /* ── Process flow ── */
   .flow { display: flex; align-items: stretch; gap: 0; width: 100%; }
-  .flow-step { flex: 1; background: var(--g100); border-radius: 8px; padding: 0.85rem 0.75rem; text-align: center; position: relative; }
-  .flow-step::after { content: "→"; position: absolute; right: -14px; top: 50%; transform: translateY(-50%); font-weight: 700; color: var(--g400); font-size: 1rem; z-index: 1; }
+  .flow-step { flex: 1; background: var(--g100); border-radius: 8px; padding: 0.65rem 0.5rem; text-align: center; position: relative; }
+  .flow-step::after { content: "→"; position: absolute; right: -13px; top: 50%; transform: translateY(-50%); font-weight: 700; color: var(--g400); font-size: 0.9rem; z-index: 1; }
   .flow-step:last-child::after { display: none; }
-  .flow-step .fs-num { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--g400); margin-bottom: 0.3rem; }
-  .flow-step .fs-label { font-size: 0.75rem; font-weight: 600; color: var(--blue); line-height: 1.35; }
-  .flow-step .fs-note { font-size: 0.65rem; color: var(--g400); margin-top: 0.2rem; line-height: 1.3; }
+  .flow-step .fs-num { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--g400); margin-bottom: 0.2rem; }
+  .flow-step .fs-label { font-size: 0.9rem; font-weight: 600; color: var(--blue); line-height: 1.3; }
+  .flow-step .fs-note { display: none; }
 
   .flow-step.red   { background: #fff0f0; }
   .flow-step.red   .fs-label { color: var(--red); }
@@ -104,12 +105,12 @@
 
   /* ── Compare columns ── */
   .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; width: 100%; }
-  .compare-head { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 0.5rem; border-bottom: 2px solid; margin-bottom: 0.85rem; }
+  .compare-head { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding-bottom: 0.4rem; border-bottom: 2px solid; margin-bottom: 0.7rem; }
   .compare-head.old { color: var(--red); border-color: var(--red); }
   .compare-head.new { color: var(--green); border-color: var(--green); }
 
   /* ── Status badges ── */
-  .status { display: inline-block; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.15rem 0.5rem; border-radius: 100px; }
+  .status { display: inline-block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.15rem 0.5rem; border-radius: 100px; }
   .status-inv  { background: #e0edff; color: #003087; }
   .status-vor  { background: #e0faf0; color: #1a7a4c; }
   .status-free { background: #e8f5e9; color: #27ae60; }
@@ -120,19 +121,19 @@
   .nr-part.jj   { color: var(--blue); }
   .nr-part.kkk  { color: var(--gold-b); }
   .nr-part.nn   { color: var(--green); }
-  .nr-legend { display: flex; gap: 1.5rem; margin-top: 0.6rem; }
-  .nr-leg-item { display: flex; align-items: center; gap: 0.35rem; font-size: 0.75rem; }
+  .nr-legend { display: flex; gap: 1.5rem; margin-top: 0.5rem; }
+  .nr-leg-item { display: flex; align-items: center; gap: 0.35rem; font-size: 1rem; }
   .nr-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
   /* ── Quote ── */
-  .quote-block { border-left: 4px solid var(--gold); padding: 0.85rem 1.25rem; background: rgba(245,168,0,0.06); border-radius: 0 8px 8px 0; }
-  .quote-text { font-size: clamp(0.9rem, 1.5vw, 1.1rem); font-weight: 600; line-height: 1.55; color: var(--blue); }
+  .quote-block { border-left: 4px solid var(--gold); padding: 0.7rem 1rem; background: rgba(245,168,0,0.06); border-radius: 0 8px 8px 0; }
+  .quote-text { font-size: clamp(1.1rem, 1.5vw, 1.3rem); font-weight: 600; line-height: 1.5; color: var(--blue); }
 
   /* ── Action items ── */
-  .ac { background: white; border-radius: 10px; padding: 1.1rem 1.25rem; border: 1px solid var(--g100); border-left: 4px solid var(--blue); box-shadow: 0 1px 5px rgba(0,0,0,0.04); }
-  .ac h3 { font-size: 0.83rem; font-weight: 700; color: var(--blue); margin-bottom: 0.5rem; }
+  .ac { background: white; border-radius: 10px; padding: 0.85rem 1rem; border: 1px solid var(--g100); border-left: 4px solid var(--blue); box-shadow: 0 1px 5px rgba(0,0,0,0.04); }
+  .ac h3 { font-size: 1.1rem; font-weight: 700; color: var(--blue); margin-bottom: 0.35rem; }
   .al { list-style: none; }
-  .al li { font-size: 0.78rem; color: var(--g600); padding: 0.28rem 0; border-bottom: 1px solid var(--g100); display: flex; gap: 0.4rem; line-height: 1.4; }
+  .al li { font-size: 1rem; color: var(--g600); padding: 0.25rem 0; border-bottom: 1px solid var(--g100); display: flex; gap: 0.4rem; line-height: 1.35; }
   .al li:last-child { border: none; }
   .al li::before { content: "→"; color: var(--blue); font-weight: 700; flex-shrink: 0; }
 
@@ -140,11 +141,20 @@
   .load-bar { background: var(--g200); border-radius: 100px; height: 10px; overflow: hidden; margin-top: 0.4rem; }
   .load-fill { height: 100%; border-radius: 100px; }
 
+  /* ── Footer ── */
+  .slide-footer {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 34px;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; color: rgba(255,255,255,0.5);
+    letter-spacing: 0.06em; z-index: 200;
+  }
+
   /* ── Progress / Nav ── */
-  .progress { position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.35rem; z-index: 100; }
+  .progress { position: fixed; bottom: 2.4rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.35rem; z-index: 100; }
   .progress-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(0,48,135,0.18); transition: background 260ms, transform 260ms; cursor: pointer; }
   .progress-dot.active { background: var(--blue); transform: scale(1.5); }
-  .nav-btn { position: fixed; top: calc(50% + 30px); transform: translateY(-50%); background: white; border: 1px solid var(--g100); color: var(--blue); width: 42px; height: 42px; border-radius: 50%; font-size: 1.05rem; cursor: pointer; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: box-shadow 160ms; display: flex; align-items: center; justify-content: center; }
+  .nav-btn { position: fixed; top: calc(50% + 28px); transform: translateY(-50%); background: white; border: 1px solid var(--g100); color: var(--blue); width: 42px; height: 42px; border-radius: 50%; font-size: 1.05rem; cursor: pointer; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: box-shadow 160ms; display: flex; align-items: center; justify-content: center; }
   .nav-btn:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
   .nav-prev { left: 1.1rem; } .nav-next { right: 1.1rem; }
   .nav-btn:disabled { opacity: 0.2; cursor: default; }
@@ -177,16 +187,14 @@
       <div class="cols-3 mt-lg">
         <div class="card-red">
           <h3>Bisheriges Problem</h3>
-          <p style="font-size:0.82rem;color:#6e2020;line-height:1.55;">
-            Excel-Tabellen, handschriftliche Einträge, unterschiedliche Stände, Rückfragen über Mittelsmänner.
-            Alles konvergierte bei zwei Personen.
+          <p style="font-size:1rem;color:#6e2020;line-height:1.5;">
+            Excel-Tabellen, handschriftliche Einträge, unterschiedliche Stände, Rückfragen über Mittelsmänner — alles lief bei zwei Personen zusammen.
           </p>
         </div>
         <div class="card-gold">
           <h3>Die Lösung</h3>
-          <p style="font-size:0.82rem;color:#5a3c00;line-height:1.55;">
+          <p style="font-size:1rem;color:#5a3c00;line-height:1.5;">
             Künstler erfassen ihre eigenen Daten. Das Orgateam prüft und gibt frei.
-            Kommunikation läuft zentral und einheitlich über das System.
           </p>
         </div>
         <div class="card-blue">
@@ -224,10 +232,8 @@
           </div>
           <div class="card mt-md" style="border-left: 4px solid var(--g400);">
             <h3 style="color:var(--g600);">Was das nicht bedeutet</h3>
-            <p style="font-size:0.82rem;color:var(--g600);line-height:1.55;">
-              Lions verschwindet nicht. Der Club steht weiterhin sichtbar hinter der Veranstaltung —
-              als Veranstalter, als Absender, als Garant für den gemeinnützigen Zweck.
-              Nur nicht mehr als Türsteher.
+            <p style="font-size:1rem;color:var(--g600);line-height:1.5;">
+              Lions bleibt sichtbar — als Veranstalter und Garant. Nur nicht mehr als Türsteher.
             </p>
           </div>
         </div>
@@ -235,25 +241,22 @@
           <div class="card-green">
             <h3>„Kunsttage Ludwigshöhe" — was wir kommunizieren</h3>
             <ul class="rl" style="margin-top:0.3rem;">
-              <li><span class="rl-icon">✅</span><strong>„Kunsttage" bleibt — das ist unser stärkstes Markenelement.</strong> Es entfällt nur der „Lions"-Zusatz davor</li>
+              <li><span class="rl-icon">✅</span><strong>„Kunsttage" bleibt — das ist unser stärkstes Markenelement.</strong></li>
               <li><span class="rl-icon">✅</span>Das Erlebnis steht im Vordergrund: Kunst, Location, Wochenende</li>
               <li><span class="rl-icon">✅</span>Die Villa Ludwigshöhe ist ein Alleinstellungsmerkmal — der Name nutzt das</li>
               <li><span class="rl-icon">✅</span>Offen und einladend für alle — der Eintritt ist frei, der Name soll das spiegeln</li>
               <li><span class="rl-icon">✅</span>Lions als Veranstalter bleibt sichtbar — im Impressum, auf Plakaten, im Katalog</li>
             </ul>
           </div>
-          <div class="quote-block mt-md">
-            <p class="quote-text">„Der Club ermöglicht es — die Kunst gehört allen.<br>Der Name soll das zeigen."</p>
-          </div>
-          <div class="card-gold mt-md">
-            <h3>Praktische Konsequenz: Domain</h3>
-            <p style="font-size:0.82rem;color:#5a3c00;line-height:1.55;">
-              <code style="background:#f0e0a0;padding:0.1rem 0.3rem;border-radius:3px;font-size:0.78rem;">kunsttage-ludwigshoehe.de</code> muss noch registriert werden.<br>
-              <code style="background:#f0e0a0;padding:0.1rem 0.3rem;border-radius:3px;font-size:0.78rem;">lions-kunsttage.de</code> leitet danach automatisch weiter.<br>
-              Kosten: wenige Euro — sollte sofort passieren.
-            </p>
-          </div>
         </div>
+      </div>
+      <div class="card-gold mt-md" style="width:100%;">
+        <h3>Praktische Konsequenz: Domain</h3>
+        <p style="font-size:1rem;color:#5a3c00;line-height:1.5;">
+          <code style="background:#f0e0a0;padding:0.1rem 0.35rem;border-radius:3px;font-size:0.95rem;">kunsttage-ludwigshoehe.de</code> muss noch registriert werden. &nbsp;·&nbsp;
+          <code style="background:#f0e0a0;padding:0.1rem 0.35rem;border-radius:3px;font-size:0.95rem;">lions-kunsttage.de</code> leitet danach automatisch weiter. &nbsp;·&nbsp;
+          Kosten: wenige Euro — sollte sofort passieren.
+        </p>
       </div>
     </div>
   </section>
@@ -277,7 +280,7 @@
             <li><span class="rl-icon">🔍</span>Unleserliche oder fehlende Einträge müssen entziffert oder nachgefragt werden</li>
             <li><span class="rl-icon">📞</span>Rückfragen laufen zurück über Club-Mitglieder zum Künstler — oft mehrere Runden</li>
             <li><span class="rl-icon">⌨️</span>Alle Daten müssen manuell in das System eingetippt werden</li>
-            <li><span class="rl-icon">🔄</span>Zusätzlich: Übertragung der Daten in das Shop-System — ein weiterer manueller Schritt</li>
+            <li><span class="rl-icon">🔄</span>Zusätzlich: Übertragung der Daten in das Shop-System — fehleranfälliger Schritt</li>
             <li><span class="rl-icon">🌐</span>Freigabe und Veröffentlichung auf der Website ebenfalls: nur diese zwei Personen</li>
           </ul>
         </div>
@@ -320,7 +323,7 @@
           </div>
           <div class="flow-step red">
             <div class="fs-num">3</div>
-            <div class="fs-label">2 Personen tippen ab</div>
+            <div class="fs-label">Abtippen</div>
             <div class="fs-note">+ Fehler korrigieren + nachfragen</div>
           </div>
           <div class="flow-step red">
@@ -412,42 +415,34 @@
           <div class="card-blue">
             <h3>Die gemeinsame Künstlerliste</h3>
             <ul style="list-style:none;margin-top:0.3rem;">
-              <li style="color:rgba(255,255,255,0.85);font-size:0.82rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
                 Alle Clubs arbeiten auf einer gemeinsamen Liste mit bekannten Künstlern + E-Mails
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.82rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
                 Jeder Club markiert seine Künstler: <strong style="color:var(--gold);">ansprechen</strong> oder <strong style="color:var(--gold);">nicht ansprechen</strong>
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.82rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
                 Fehlende Künstler können ergänzt werden — jeder Club kennt sein Netzwerk am besten
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.82rem;padding:0.35rem 0;">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.3rem 0;">
                 Jeder Club hat erfahrungsgemäß <strong style="color:var(--gold);">ca. 4 Plätze</strong> für die Ausstellung
               </li>
             </ul>
           </div>
           <div class="card mt-md">
             <h3>Club-Zuordnung über die Künstlernummer</h3>
-            <p style="font-size:0.82rem;color:var(--g600);line-height:1.55;margin-bottom:0.6rem;">
+            <p style="font-size:1rem;color:var(--g600);line-height:1.55;margin-bottom:0.6rem;">
               Die <strong>Hunderterstelle</strong> der KKK-Nummer zeigt, welchem Club ein Künstler zugeordnet ist.
               Die Nummernkreise je Club müssen heute festgelegt werden.
             </p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.4rem;">
-              <div style="background:var(--g100);border-radius:6px;padding:0.5rem 0.7rem;font-size:0.78rem;">
-                <span style="font-family:monospace;font-weight:700;color:var(--blue);">1xx</span> = ANW
-              </div>
-              <div style="background:var(--g100);border-radius:6px;padding:0.5rem 0.7rem;font-size:0.78rem;">
-                <span style="font-family:monospace;font-weight:700;color:var(--blue);">2xx</span> = BZG
-              </div>
-              <div style="background:var(--g100);border-radius:6px;padding:0.5rem 0.7rem;font-size:0.78rem;">
-                <span style="font-family:monospace;font-weight:700;color:var(--blue);">3xx</span> = EDK
-              </div>
-              <div style="background:var(--g100);border-radius:6px;padding:0.5rem 0.7rem;font-size:0.78rem;">
-                <span style="font-family:monospace;font-weight:700;color:var(--blue);">4xx</span> = GER
-              </div>
-              <div style="background:var(--g100);border-radius:6px;padding:0.5rem 0.7rem;font-size:0.78rem;grid-column:span 2;">
-                <span style="font-family:monospace;font-weight:700;color:var(--blue);">900</span> = Mohr · <span style="font-family:monospace;font-weight:700;color:var(--blue);">990</span> = Möndel
-              </div>
+            <div style="background:var(--g100);border-radius:6px;padding:0.5rem 0.8rem;font-size:1rem;">
+              <span style="color:var(--g400);font-weight:600;">Bsp.:</span>
+              <span style="font-family:monospace;font-weight:700;color:var(--blue);">1xx</span> = ANW &nbsp;·&nbsp;
+              <span style="font-family:monospace;font-weight:700;color:var(--blue);">2xx</span> = BZG &nbsp;·&nbsp;
+              <span style="font-family:monospace;font-weight:700;color:var(--blue);">3xx</span> = EDK &nbsp;·&nbsp;
+              <span style="font-family:monospace;font-weight:700;color:var(--blue);">4xx</span> = GER &nbsp;·&nbsp;
+              <span style="font-family:monospace;font-weight:700;color:var(--blue);">900</span> = Mohr &nbsp;·&nbsp;
+              <span style="font-family:monospace;font-weight:700;color:var(--blue);">990</span> = Möndel
             </div>
           </div>
         </div>
@@ -455,15 +450,15 @@
           <div class="eyebrow" style="opacity:1;margin-bottom:0.75rem;">Zwei Phasen — bewusst getrennt</div>
           <div class="flow" style="flex-direction:column;gap:0.6rem;">
             <div style="background:#f0f4ff;border-radius:8px;padding:0.9rem 1rem;border-left:4px solid var(--blue);">
-              <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--blue);margin-bottom:0.3rem;">Phase 1 — Einladung</div>
-              <div style="font-size:0.84rem;font-weight:600;color:var(--blue);margin-bottom:0.25rem;">Künstler wird angesprochen &amp; erhält Login-Link</div>
-              <div style="font-size:0.78rem;color:var(--g600);line-height:1.45;">Noch keine verbindliche Zusage. Der Künstler kann Bilder hochladen und seine Seite vorbereiten — aber er weiß, dass die Teilnahme noch nicht bestätigt ist.</div>
+              <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--blue);margin-bottom:0.3rem;">Phase 1 — Einladung</div>
+              <div style="font-size:1rem;font-weight:600;color:var(--blue);margin-bottom:0.25rem;">Künstler wird angesprochen &amp; erhält Login-Link</div>
+              <div style="font-size:1rem;color:var(--g600);line-height:1.45;">Noch keine verbindliche Zusage. Der Künstler kann Bilder hochladen und seine Seite vorbereiten — aber er weiß, dass die Teilnahme noch nicht bestätigt ist.</div>
             </div>
-            <div style="text-align:center;font-size:0.75rem;color:var(--g400);font-weight:600;">↓ Orgateam-Beschluss über Ausstellungsbesetzung</div>
+            <div style="text-align:center;font-size:0.85rem;color:var(--g400);font-weight:600;">↓ Orgateam-Beschluss über Ausstellungsbesetzung</div>
             <div style="background:#f0faf3;border-radius:8px;padding:0.9rem 1rem;border-left:4px solid var(--green);">
-              <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--green);margin-bottom:0.3rem;">Phase 2 — Offizielle Bestätigung</div>
-              <div style="font-size:0.84rem;font-weight:600;color:#1a7a4c;margin-bottom:0.25rem;">Künstler erhält Zusage → „Vor Ort"-Status</div>
-              <div style="font-size:0.78rem;color:var(--g600);line-height:1.45;">Erst jetzt ist die Teilnahme verbindlich. Das System setzt automatisch die Bilder auf „verfügbar" und der Steckbrief wird Pflicht.</div>
+              <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--green);margin-bottom:0.3rem;">Phase 2 — Offizielle Bestätigung</div>
+              <div style="font-size:1rem;font-weight:600;color:#1a7a4c;margin-bottom:0.25rem;">Künstler erhält Zusage → „Vor Ort"-Status</div>
+              <div style="font-size:1rem;color:var(--g600);line-height:1.45;">Erst jetzt ist die Teilnahme verbindlich. Das System setzt automatisch die Bilder auf „verfügbar" und der Steckbrief wird Pflicht.</div>
             </div>
           </div>
           <div class="quote-block mt-md">
@@ -486,19 +481,19 @@
           <div class="card-blue">
             <h3>So funktioniert der Künstler-Zugang</h3>
             <ul style="list-style:none;margin-top:0.2rem;">
-              <li style="color:rgba(255,255,255,0.85);font-size:0.84rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
                 1. Orgateam legt den Künstler in der Datenbank an
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.84rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
                 2. Künstler erhält per E-Mail einen persönlichen Link
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.84rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
                 3. Link ist 48 Stunden gültig — danach neuen anfordern
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.84rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.1);">
                 4. Künstler erfasst Bilder: Foto, Titel, Technik, Preis, Maße
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.84rem;padding:0.35rem 0;">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;">
                 5. Bild erscheint erst nach Freigabe durch das Orgateam
               </li>
             </ul>
@@ -521,14 +516,14 @@
                 <div class="nr-leg-item"><div class="nr-dot" style="background:var(--green);"></div><span style="color:var(--green)"><strong>NN</strong> = Bild-Nr.</span></div>
               </div>
             </div>
-            <p style="font-size:0.8rem;color:var(--g600);line-height:1.55;margin-top:0.5rem;">
+            <p style="font-size:1rem;color:var(--g600);line-height:1.55;margin-top:0.5rem;">
               Beispiel: <strong style="font-family:monospace;">26.990.01</strong> = erstes Bild von Galeristin Möndel (Nr. 990) im Jahr 2026.<br>
               Die Nummerierung wird vom System vergeben — kein manuelles Pflegen.
             </p>
           </div>
           <div class="card-gold mt-md">
             <h3>Suche funktioniert in beiden Formaten</h3>
-            <p style="font-size:0.82rem;color:#5a3c00;line-height:1.55;">
+            <p style="font-size:1rem;color:#5a3c00;line-height:1.55;">
               Im Admin-Bereich und im Katalog kann sowohl nach <strong>26.001.03</strong> (Anzeigeformat)
               als auch nach der Rohnummer <strong>2600103</strong> gesucht werden. Kein Umrechnen nötig.
             </p>
@@ -554,7 +549,7 @@
         <div>
           <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem;">
             <span class="status status-inv">Eingeladen</span>
-            <span style="font-size:0.75rem;color:var(--g400);">Standard nach Anlage</span>
+            <span style="font-size:0.9rem;color:var(--g400);">Standard nach Anlage</span>
           </div>
           <ul class="rl">
             <li><span class="rl-icon">✅</span>Kann Bilder auf der Website hochladen und zeigen</li>
@@ -571,7 +566,7 @@
         <div>
           <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem;">
             <span class="status status-vor">Vor Ort</span>
-            <span style="font-size:0.75rem;color:var(--g400);">Muss aktiv vom Orgateam gesetzt werden</span>
+            <span style="font-size:0.9rem;color:var(--g400);">Muss aktiv vom Orgateam gesetzt werden</span>
           </div>
           <ul class="rl">
             <li><span class="rl-icon">✅</span>Künstler ist zur physischen Ausstellung in der Villa zugelassen</li>
@@ -581,7 +576,7 @@
           </ul>
           <div class="card-gold mt-md">
             <h3>„Vor Ort" — wer gibt das Signal?</h3>
-            <p style="font-size:0.82rem;color:#5a3c00;line-height:1.55;">
+            <p style="font-size:1rem;color:#5a3c00;line-height:1.55;">
               Sobald das Orgateam intern über die Zulassung einig ist, setzt eine Person den Status im System.
               Wir brauchen heute eine Benennung, wer das übernimmt.
             </p>
@@ -602,7 +597,7 @@
       <div class="cols-3 mt-lg" style="align-items:start;">
 
         <div>
-          <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);padding-bottom:0.5rem;border-bottom:2px solid var(--blue);margin-bottom:0.85rem;">Analog: Plakat &amp; Handzettel</div>
+          <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);padding-bottom:0.5rem;border-bottom:2px solid var(--blue);margin-bottom:0.85rem;">Analog: Plakat &amp; Handzettel</div>
           <ul class="rl">
             <li><span class="rl-icon">✅</span>Druckdaten zentral gespeichert — eine Version, kein Wildwuchs</li>
             <li><span class="rl-icon">✅</span>Bestellung zentral — wie bisher</li>
@@ -611,16 +606,14 @@
           </ul>
           <div class="card-red mt-md">
             <h3>Offene Frage: Tracking</h3>
-            <p style="font-size:0.82rem;color:#6e2020;line-height:1.5;">
-              Bisher nicht nachvollziehbar, ob Plakate tatsächlich hängen.
-              Wir brauchen eine einfache Lösung — z. B. eine Checkliste pro Club
-              mit Geschäft, Datum und Status.
+            <p style="font-size:1rem;color:#6e2020;line-height:1.5;">
+              Bisher nicht nachvollziehbar, ob Plakate hängen. Wir brauchen eine einfache Checkliste pro Club.
             </p>
           </div>
         </div>
 
         <div>
-          <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);padding-bottom:0.5rem;border-bottom:2px solid var(--blue);margin-bottom:0.85rem;">Digital: Pinterest &amp; Künstler-Kanäle</div>
+          <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);padding-bottom:0.5rem;border-bottom:2px solid var(--blue);margin-bottom:0.85rem;">Digital: Pinterest &amp; Künstler-Kanäle</div>
           <ul class="rl">
             <li><span class="rl-icon">📌</span>Orgateam legt Pinterest-Account an, richtet Boards ein</li>
             <li><span class="rl-icon">📌</span>Jeder Pin verlinkt direkt auf die Bildseite → Besucher kann favorisieren oder reservieren</li>
@@ -629,7 +622,7 @@
           </ul>
           <div class="card-gold mt-md">
             <h3>Posting-Vorlagen für Künstler</h3>
-            <p style="font-size:0.82rem;color:#5a3c00;line-height:1.5;">
+            <p style="font-size:1rem;color:#5a3c00;line-height:1.5;">
               Fertige Texte für drei Zeitpunkte (Ankündigung, Katalog live, Event-Woche) —
               Künstler müssen nur noch teilen. Je weniger Aufwand, desto höher die Beteiligung.
             </p>
@@ -637,7 +630,7 @@
         </div>
 
         <div>
-          <div style="font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);padding-bottom:0.5rem;border-bottom:2px solid var(--blue);margin-bottom:0.85rem;">E-Mail-Verteiler</div>
+          <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);padding-bottom:0.5rem;border-bottom:2px solid var(--blue);margin-bottom:0.85rem;">E-Mail-Verteiler</div>
           <ul class="rl">
             <li><span class="rl-icon">✅</span>Vorhanden: Künstler, Merkliste-Nutzer, Reservierer</li>
             <li><span class="rl-icon">⚠️</span>Fehlend: Club-Mitglieder aller Clubs</li>
@@ -647,7 +640,7 @@
           </ul>
           <div class="card-blue mt-md">
             <h3>Governance: Wer entscheidet über E-Mails?</h3>
-            <p style="font-size:0.82rem;color:rgba(255,255,255,0.85);line-height:1.5;">
+            <p style="font-size:1rem;color:rgba(255,255,255,0.85);line-height:1.5;">
               Wenn Kommunikation zentral läuft, muss heute geklärt werden:
               Einer schreibt und schickt eigenverantwortlich —
               oder jede E-Mail wird vorher im Orgateam freigegeben?
@@ -693,19 +686,19 @@
           <div class="card-blue">
             <h3>Vorgeschlagene Verteilung</h3>
             <ul style="list-style:none;margin-top:0.3rem;">
-              <li style="color:rgba(255,255,255,0.85);font-size:0.82rem;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
                 <strong style="color:var(--gold);">Koordination</strong><br>
                 Künstler anlegen, Links versenden, Gesamtüberblick
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.82rem;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
                 <strong style="color:var(--gold);">Freigabe Bilder</strong><br>
-                Hochgeladene Werke prüfen und im System genehmigen (kann geteilt werden)
+                Hochgeladene Werke prüfen und im System genehmigen (pro Club, kann geteilt werden)
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.82rem;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
                 <strong style="color:var(--gold);">„Vor Ort"-Entscheidung</strong><br>
                 Abstimmung im Orgateam → eine Person setzt den Status im System
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.82rem;padding:0.4rem 0;">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;">
                 <strong style="color:var(--gold);">Steckbrief &amp; Druck</strong><br>
                 Vollständigkeit prüfen, PDF generieren, ausdrucken
               </li>
@@ -780,10 +773,10 @@
   <section class="slide" id="s-golive">
     <div class="w-full">
       <div class="eyebrow">Technische Liveschaltung</div>
-      <h2>Das System ist fertig — was noch fehlt, sind drei Entscheidungen</h2>
+      <h2>Das System ist fertig — was noch fehlt</h2>
       <p class="lead mt-md" style="max-width:72ch;">
         Alles läuft lokal. Damit Künstler, Besucher und Käufer von außen darauf zugreifen können,
-        müssen diese Punkte <strong>vor September</strong> geklärt und umgesetzt sein.
+        müssen diese Punkte <strong>vor August</strong> geklärt und umgesetzt sein.
       </p>
 
       <div class="cols-3 mt-lg" style="align-items:start;">
@@ -794,27 +787,17 @@
             <p style="margin-bottom:0.65rem;">Ein Server muss her — dauerhaft erreichbar, nicht nur auf dem Laptop.</p>
             <ul class="rl">
               <li><span class="rl-icon">🖥</span><strong>VPS</strong> (Hetzner, Netcup) — ~5–10 €/Monat, volle Kontrolle, empfohlen</li>
-              <li><span class="rl-icon">🏠</span><strong>Lokal im Clubnetz</strong> — nur sinnvoll ohne öffentliche Kaufanfragen</li>
-              <li><span class="rl-icon">☁️</span><strong>Managed Hosting</strong> — einfacher, aber aufwendigere Einrichtung</li>
             </ul>
-            <div style="margin-top:0.75rem;background:#fff0f0;border-radius:6px;padding:0.6rem 0.75rem;">
-              <span style="font-size:0.75rem;font-weight:700;color:var(--red);">Entscheidung heute erbeten</span>
-            </div>
           </div>
         </div>
 
         <div>
           <div class="card" style="border-top: 3px solid var(--gold-b);">
             <h3 style="color:#7a5200;">② Unter welcher Adresse?</h3>
-            <p style="margin-bottom:0.65rem;">Die Hauptseite <em>lions-kunsttage.de</em> bleibt WordPress. Für das neue System brauchen wir eine Adresse.</p>
-            <ul class="rl">
-              <li><span class="rl-icon">🔗</span><strong>katalog.lions-kunsttage.de</strong> — naheliegend, kein Neuvertrag nötig</li>
-              <li><span class="rl-icon">🌐</span><strong>kunsttage-ludwigshoehe.de</strong> — eigene Domain, stärker als Marke</li>
+            <ul class="rl" style="margin-top:0.4rem;">
+              <li><span class="rl-icon">🔗</span><strong>www.lions-kunsttage.de</strong> — bleibt</li>
+              <li><span class="rl-icon">🌐</span><strong>www.kunsttage-ludwigshoehe.de</strong> — zusätzlich</li>
             </ul>
-            <div style="margin-top:0.75rem;background:#fffbf0;border-radius:6px;padding:0.6rem 0.75rem;border:1px solid #f5d78e;">
-              <span style="font-size:0.75rem;font-weight:700;color:#7a5200;">DNS-Änderung braucht bis 24h</span><br>
-              <span style="font-size:0.72rem;color:#7a5200;">→ rechtzeitig vor Launch entscheiden</span>
-            </div>
           </div>
         </div>
 
@@ -823,11 +806,8 @@
             <h3>③ E-Mail-Versand</h3>
             <p style="margin-bottom:0.65rem;">Alle Systemmails (Reservierungen, Kaufanfragen, Künstler-Login) laufen aktuell über eine Test-Sandbox — kein echtes Mail kommt raus.</p>
             <ul class="rl">
-              <li><span class="rl-icon">📬</span>SMTP-Zugangsdaten eines echten Anbieters eintragen (IONOS, Strato, Google Workspace …)</li>
+              <li><span class="rl-icon">📬</span>SMTP-Zugangsdaten eintragen</li>
             </ul>
-            <div style="margin-top:0.75rem;background:#fff5e0;border-radius:6px;padding:0.6rem 0.75rem;border:1px solid #f5d78e;">
-              <span style="font-size:0.72rem;font-weight:700;color:#c97000;">Einziger offener Punkt — SMTP-Zugangsdaten</span>
-            </div>
           </div>
         </div>
 
@@ -847,16 +827,16 @@
         <div>
           <div class="flow" style="flex-direction:column;gap:0.5rem;">
             <div style="background:var(--g100);border-radius:8px;padding:0.65rem 1rem;display:flex;align-items:center;gap:0.75rem;">
-              <span style="font-size:0.7rem;font-weight:700;color:var(--green);min-width:5.5rem;">System ✓ fertig</span>
-              <span style="font-size:0.78rem;color:var(--g600);">Katalog, Reservierung, Kaufanfrage, Kasse, Künstler-Portal</span>
+              <span style="font-size:0.85rem;font-weight:700;color:var(--green);min-width:5.5rem;">System ✓ fertig</span>
+              <span style="font-size:1rem;color:var(--g600);">Katalog · Reservierung · Kaufanfrage · Kasse · Künstler-Portal</span>
             </div>
             <div style="background:#fff5e0;border-radius:8px;padding:0.65rem 1rem;display:flex;align-items:center;gap:0.75rem;">
-              <span style="font-size:0.7rem;font-weight:700;color:#c97000;min-width:5.5rem;">Offen · heute</span>
-              <span style="font-size:0.78rem;color:var(--g600);">Server, Domain, SMTP-Zugangsdaten</span>
+              <span style="font-size:0.85rem;font-weight:700;color:#c97000;min-width:5.5rem;">Offen · heute</span>
+              <span style="font-size:1rem;color:var(--g600);">Server, Domain, SMTP-Zugangsdaten</span>
             </div>
             <div style="background:#fff0f0;border-radius:8px;padding:0.65rem 1rem;display:flex;align-items:center;gap:0.75rem;">
-              <span style="font-size:0.7rem;font-weight:700;color:var(--red);min-width:5.5rem;">Deadline</span>
-              <span style="font-size:0.78rem;color:var(--g600);"><strong>Mitte September</strong> — Online-Katalog muss live sein, bevor Einladungen rausgehen</span>
+              <span style="font-size:0.85rem;font-weight:700;color:var(--red);min-width:5.5rem;">Deadline</span>
+              <span style="font-size:1rem;color:var(--g600);"><strong>Mitte September</strong> — Online-Katalog muss live sein, bevor Einladungen rausgehen</span>
             </div>
           </div>
         </div>
@@ -878,18 +858,17 @@
           <div class="ac" style="margin-bottom:1rem;">
             <h3>Aufgaben, die besetzt sein müssen</h3>
             <ul class="al">
-              <li>Jemand legt Künstler an und versendet die Login-Links</li>
-              <li>Jemand übernimmt die Bild-Freigabe (Qualitätskontrolle im System)</li>
-              <li>Eine Person setzt den „Vor Ort"-Status nach interner Abstimmung</li>
-              <li>Jemand prüft Steckbriefe und koordiniert den A4-Druck</li>
+              <li>Künstler werden zentral angelegt und Login-Links versandt</li>
+              <li>Bildfreigabe macht jeder Club für seine eigenen Künstler</li>
+              <li>Jeder Club entscheidet, welche seiner Künstler in der Villa sind</li>
+              <li>Jeder Club prüft Steckbriefe und koordiniert den A4-Druck</li>
             </ul>
           </div>
           <div class="ac">
             <h3>Was jeder Club bis Ende Juli liefert</h3>
             <ul class="al">
-              <li>Vollständige Künstlerliste (Name + E-Mail) seiner Teilnehmenden</li>
-              <li>Rückmeldung, wer aus dem Club bei Rückfragen zu Bilder-Freigaben erreichbar ist</li>
-              <li>Bestätigung, dass die eigenen Künstler über das neue Verfahren informiert wurden</li>
+              <li>Rückmeldung fehlender Künstler</li>
+              <li>Datenverantwortlicher benennen</li>
             </ul>
           </div>
         </div>
@@ -898,46 +877,47 @@
           <div class="card-blue" style="margin-bottom:1rem;">
             <h3>Der Zeitplan</h3>
             <ul style="list-style:none;margin-top:0.3rem;">
-              <li style="color:rgba(255,255,255,0.85);font-size:0.82rem;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-                <strong style="color:var(--gold);">Juli 2026</strong><br>
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+                <strong style="color:var(--gold);">Bis Mitte Juli</strong><br>
                 Rollenverteilung beschlossen · Künstlerliste vollständig
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.82rem;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-                <strong style="color:var(--gold);">August 2026</strong><br>
-                Einladungs-Links an alle Künstler versandt
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+                <strong style="color:var(--gold);">Ende Juli</strong><br>
+                Einladungsmail an alle Künstler (zentral)
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.82rem;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
-                <strong style="color:var(--gold);">September, Mitte</strong><br>
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+                <strong style="color:var(--gold);">Anfang September</strong><br>
                 Bilder-Freigaben abgeschlossen · Online-Katalog geht live
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.82rem;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+                <strong style="color:var(--gold);">Mitte September</strong><br>
+                Plakate &amp; Handzettel an Clubs und Künstler
+              </li>
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.08);">
                 <strong style="color:var(--gold);">Oktober, 1. Woche</strong><br>
                 „Vor Ort"-Status gesetzt · Steckbriefe vollständig · Druck vorbereiten
               </li>
-              <li style="color:rgba(255,255,255,0.85);font-size:0.82rem;padding:0.4rem 0;">
+              <li style="color:rgba(255,255,255,0.85);font-size:1rem;padding:0.35rem 0;">
                 <strong style="color:var(--gold);">17. &amp; 18. Oktober</strong><br>
                 Kunsttage auf der Villa Ludwigshöhe
               </li>
             </ul>
           </div>
           <div class="card-gold">
-            <h3>Das System läuft — es braucht jetzt euch</h3>
-            <p style="font-size:0.82rem;color:#5a3c00;line-height:1.55;">
-              Die Infrastruktur steht. Künstler können ab August ihre Daten einpflegen.
-              Damit das klappt, brauchen wir bis heute Abend Namen für die vier Aufgaben links —
-              und die Künstlerlisten aller Clubs bis Ende Juli.
-            </p>
+            <h3>Das System läuft — jetzt braucht es euch</h3>
           </div>
         </div>
 
       </div>
-      <p style="font-size:0.7rem;color:var(--g400);text-align:center;margin-top:1.5rem;letter-spacing:0.03em;">
-        Kunsttage Orga-Team Sitzung am 26.6.2026 im Sesel &nbsp;·&nbsp; 14. Kunsttage auf der Ludwigshöhe · 17. &amp; 18. Oktober 2026 · Schloss Villa Ludwigshöhe · Eintritt frei
-      </p>
     </div>
   </section>
 
 </div><!-- /deck -->
+
+<!-- Fußzeile -->
+<div class="slide-footer">
+  Orgateam-Sitzung 26.6.2026 &nbsp;·&nbsp; 14. Kunsttage auf der Ludwigshöhe &nbsp;·&nbsp; 17. &amp; 18. Oktober 2026 &nbsp;·&nbsp; Schloss Villa Ludwigshöhe
+</div>
 
 <!-- Navigation -->
 <nav class="progress" id="progress" aria-label="Folien-Navigation"></nav>
