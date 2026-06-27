@@ -1,11 +1,9 @@
 "use client";
 import { useState } from "react";
 import { authHeaders } from "@/lib/auth";
+import PasswortStaerke, { istPasswortValid } from "@/components/PasswortStaerke";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-
-type Rolle = "admin" | "orga";
-type Status = "" | "laden" | "ok" | "fehler";
 
 function AugeIcon({ offen }: { offen: boolean }) {
   return offen ? (
@@ -59,44 +57,43 @@ function PasswortFeld({
   );
 }
 
-function PasswortForm({ rolle, titel }: { rolle: Rolle; titel: string }) {
-  const [form, setForm] = useState({ alt: "", neu: "", bestaetigung: "" });
-  const [status, setStatus] = useState<Status>("");
+export default function EinstellungenPage() {
+  const [alt, setAlt] = useState("");
+  const [neu, setNeu] = useState("");
+  const [bestaetigung, setBestaetigung] = useState("");
+  const [status, setStatus] = useState<"" | "laden" | "ok" | "fehler">("");
   const [meldung, setMeldung] = useState("");
-
-  function setField(field: keyof typeof form, value: string) {
-    setForm(f => ({ ...f, [field]: value }));
-  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (form.neu !== form.bestaetigung) {
+    if (neu !== bestaetigung) {
       setMeldung("Neues Passwort und Bestätigung stimmen nicht überein.");
       setStatus("fehler");
       return;
     }
-    if (form.neu.length < 8) {
-      setMeldung("Neues Passwort muss mindestens 8 Zeichen haben.");
+    if (!istPasswortValid(neu)) {
+      setMeldung("Das neue Passwort erfüllt nicht alle Anforderungen.");
       setStatus("fehler");
       return;
     }
     setStatus("laden");
     setMeldung("");
     try {
-      const res = await fetch(`${API}/admin/passwort`, {
-        method: "PATCH",
+      const res = await fetch(`${API}/auth/change-password`, {
+        method: "POST",
         headers: { "Content-Type": "application/json", ...authHeaders() },
-        body: JSON.stringify({ rolle, altes_passwort: form.alt, neues_passwort: form.neu }),
+        body: JSON.stringify({ altes_passwort: alt, neues_passwort: neu }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        setMeldung(err.detail ?? "Fehler beim Ändern");
+        const detail = err.detail;
+        setMeldung(Array.isArray(detail) ? detail.join(" · ") : (detail ?? "Fehler beim Ändern"));
         setStatus("fehler");
         return;
       }
       setStatus("ok");
       setMeldung("Passwort erfolgreich geändert.");
-      setForm({ alt: "", neu: "", bestaetigung: "" });
+      setAlt(""); setNeu(""); setBestaetigung("");
     } catch {
       setMeldung("Server nicht erreichbar.");
       setStatus("fehler");
@@ -104,65 +101,59 @@ function PasswortForm({ rolle, titel }: { rolle: Rolle; titel: string }) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-base font-semibold text-lions-blue mb-4">{titel}</h2>
-      <form onSubmit={submit} className="space-y-4 max-w-sm">
-        <PasswortFeld
-          label="Aktuelles Passwort"
-          value={form.alt}
-          onChange={v => setField("alt", v)}
-          autoComplete="current-password"
-        />
-        <div>
-          <PasswortFeld
-            label="Neues Passwort"
-            value={form.neu}
-            onChange={v => setField("neu", v)}
-            autoComplete="new-password"
-          />
-          <p className="text-xs text-gray-400 mt-1">Mindestens 8 Zeichen</p>
-        </div>
-        <PasswortFeld
-          label="Neues Passwort bestätigen"
-          value={form.bestaetigung}
-          onChange={v => setField("bestaetigung", v)}
-          autoComplete="new-password"
-        />
-
-        {meldung && (
-          <p className={`text-sm rounded-md px-3 py-2 ${
-            status === "ok"
-              ? "bg-green-50 border border-green-200 text-green-700"
-              : "bg-red-50 border border-red-200 text-red-600"
-          }`}>
-            {meldung}
-          </p>
-        )}
-
-        <button
-          type="submit"
-          disabled={status === "laden" || !form.alt || !form.neu || !form.bestaetigung}
-          className="bg-lions-blue text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-900 disabled:opacity-50 transition-colors"
-        >
-          {status === "laden" ? "Wird geändert…" : "Passwort ändern"}
-        </button>
-      </form>
-    </div>
-  );
-}
-
-export default function EinstellungenPage() {
-  return (
-    <div className="max-w-2xl">
+    <div className="max-w-md">
       <h1 className="text-xl font-semibold text-lions-blue mb-6">Einstellungen</h1>
 
-      <div className="space-y-6">
-        <PasswortForm rolle="admin" titel="Admin-Passwort ändern" />
-        <PasswortForm rolle="orga" titel="Orga-Team-Passwort ändern" />
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="text-base font-semibold text-lions-blue mb-4">Mein Passwort ändern</h2>
+        <form onSubmit={submit} className="space-y-4">
+          <PasswortFeld
+            label="Aktuelles Passwort"
+            value={alt}
+            onChange={setAlt}
+            autoComplete="current-password"
+          />
+          <div>
+            <PasswortFeld
+              label="Neues Passwort"
+              value={neu}
+              onChange={setNeu}
+              autoComplete="new-password"
+            />
+            <PasswortStaerke passwort={neu} />
+          </div>
+          <PasswortFeld
+            label="Neues Passwort bestätigen"
+            value={bestaetigung}
+            onChange={setBestaetigung}
+            autoComplete="new-password"
+          />
+          {bestaetigung && neu !== bestaetigung && (
+            <p className="text-xs text-red-500">Passwörter stimmen nicht überein.</p>
+          )}
+
+          {meldung && (
+            <p className={`text-sm rounded-md px-3 py-2 ${
+              status === "ok"
+                ? "bg-green-50 border border-green-200 text-green-700"
+                : "bg-red-50 border border-red-200 text-red-600"
+            }`}>
+              {meldung}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={status === "laden" || !alt || !istPasswortValid(neu) || neu !== bestaetigung}
+            className="bg-lions-blue text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-900 disabled:opacity-50 transition-colors"
+          >
+            {status === "laden" ? "Wird geändert…" : "Passwort ändern"}
+          </button>
+        </form>
       </div>
 
-      <p className="text-xs text-gray-400 mt-8">
-        Passwörter werden sofort wirksam — laufende Sessions bleiben gültig bis zum Ablauf.
+      <p className="text-xs text-gray-400 mt-6">
+        Das neue Passwort ist sofort wirksam. Laufende Sessions bleiben bis zum Ablauf gültig.
       </p>
     </div>
   );

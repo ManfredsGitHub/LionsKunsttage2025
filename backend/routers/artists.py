@@ -103,7 +103,7 @@ def profil_aktualisieren(
     k = session.get(Kuenstler, kuenstler_id)
     if not k:
         raise HTTPException(404)
-    erlaubt = {"db_beruf", "db_leben", "db_kommentar", "db_ausstellungen", "db_adresse", "db_email", "db_instagram", "db_facebook", "db_webseite"}
+    erlaubt = {"db_beruf", "db_leben", "db_kommentar", "db_ausstellungen", "db_adresse", "db_email", "db_instagram", "db_facebook", "db_pinterest", "db_webseite"}
     for key, val in daten.items():
         if key in erlaubt:
             setattr(k, key, val)

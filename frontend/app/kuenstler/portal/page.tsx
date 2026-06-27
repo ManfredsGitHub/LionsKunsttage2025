@@ -15,6 +15,8 @@ type FormData = {
   db_adresse: string;
   db_email: string;
   db_instagram: string;
+  db_facebook: string;
+  db_pinterest: string;
   db_webseite: string;
 };
 
@@ -112,6 +114,8 @@ function VitaVorschau({ kuenstler, form }: { kuenstler: Kuenstler; form: FormDat
             {form.db_email && <div>{form.db_email}</div>}
             {form.db_webseite && <div>{form.db_webseite}</div>}
             {form.db_instagram && <div>{form.db_instagram}</div>}
+            {form.db_facebook && <div>{form.db_facebook}</div>}
+            {form.db_pinterest && <div>{form.db_pinterest}</div>}
             {!form.db_adresse && !form.db_email && !form.db_webseite && (
               <div style={{ color: "#ccc" }}>Noch keine Kontaktdaten eingetragen.</div>
             )}
@@ -136,7 +140,7 @@ export default function KuenstlerPortalPage() {
   const [form, setForm] = useState<FormData>({
     db_beruf: "", db_kommentar: "", db_ausstellungen: "",
     db_leben: "", db_adresse: "", db_email: "",
-    db_instagram: "", db_webseite: "",
+    db_instagram: "", db_facebook: "", db_pinterest: "", db_webseite: "",
   });
   const [portraitFile, setPortraitFile] = useState<File | null>(null);
   const [gespeichert, setGespeichert] = useState(false);
@@ -172,6 +176,8 @@ export default function KuenstlerPortalPage() {
         db_adresse:       k.db_adresse       ?? "",
         db_email:         k.db_email         ?? "",
         db_instagram:     k.db_instagram     ?? "",
+        db_facebook:      k.db_facebook      ?? "",
+        db_pinterest:     (k as any).db_pinterest ?? "",
         db_webseite:      k.db_webseite      ?? "",
       });
     });
@@ -431,6 +437,14 @@ export default function KuenstlerPortalPage() {
                   <Field label="Instagram">
                     <input value={form.db_instagram} onChange={set("db_instagram")}
                       placeholder="https://instagram.com/…" className="input" />
+                  </Field>
+                  <Field label="Facebook">
+                    <input value={form.db_facebook} onChange={set("db_facebook")}
+                      placeholder="https://facebook.com/…" className="input" />
+                  </Field>
+                  <Field label="Pinterest">
+                    <input value={form.db_pinterest} onChange={set("db_pinterest")}
+                      placeholder="https://pinterest.de/…" className="input" />
                   </Field>
                 </div>
               </div>

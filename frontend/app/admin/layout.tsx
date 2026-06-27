@@ -21,6 +21,7 @@ const CRUMBS: Record<string, Crumb[]> = {
   "/admin/going-live":        [{ label: "Going Live", href: "/admin/going-live" }],
   "/admin/org-abwicklung":    [{ label: "Organisation und Abwicklung", href: "/admin/org-abwicklung" }],
   "/admin/nachrichten":    [{ label: "Kommunikation", href: "/admin/nachrichten" }],
+  "/admin/benutzer":       [{ label: "Benutzerverwaltung", href: "/admin/benutzer" }],
   "/admin/einstellungen":  [{ label: "Einstellungen", href: "/admin/einstellungen" }],
 
   // Organisation
@@ -55,7 +56,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   const crumbs = CRUMBS[pathname] ?? [];
-  const rolleLabel = rolle === "admin" ? "Admin" : rolle === "orga" ? "Orga-Team" : "";
+  const rolleLabel =
+    rolle === "admin" ? "Admin"
+    : rolle === "orga" ? "Orga-Team"
+    : rolle === "kasse" ? "Kasse"
+    : rolle === "kuenstler" ? "Künstler"
+    : "";
 
   return (
     <div>

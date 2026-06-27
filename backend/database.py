@@ -1,5 +1,6 @@
 from sqlmodel import SQLModel, create_engine, Session, select
 import os
+import hashlib
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./kunsttage.db")
 
@@ -95,6 +96,9 @@ def create_db():
         if "zur_ausstellung_ansprechen" not in cols:
             con.exec_driver_sql("ALTER TABLE kuenstler ADD COLUMN zur_ausstellung_ansprechen INTEGER DEFAULT 0")
             con.commit()
+        if "db_pinterest" not in cols:
+            con.exec_driver_sql("ALTER TABLE kuenstler ADD COLUMN db_pinterest TEXT")
+            con.commit()
         if "ist_galerist" in cols:
             con.exec_driver_sql(
                 "UPDATE kuenstler SET kuenstlertyp = 'galerist' WHERE ist_galerist = 1 AND (kuenstlertyp IS NULL OR kuenstlertyp != 'galerist')"
@@ -134,6 +138,32 @@ def create_db():
         if s.exec(select(Raumzuteilung)).first() is None:
             _seed_raumzuteilung(s)
             s.commit()
+
+    _seed_admin_nutzer()
+
+
+def _seed_admin_nutzer():
+    """Legt den Admin-Account einmalig aus den Env-Vars an, falls noch keiner existiert."""
+    from models import Nutzer
+    from services.auth_service import hash_password
+
+    admin_email = os.getenv("ADMIN_EMAIL", "").split(",")[0].strip()
+    admin_pw = os.getenv("ADMIN_PASSWORT", "")
+    if not admin_email or not admin_pw:
+        return
+
+    with Session(engine) as s:
+        existing = s.exec(select(Nutzer).where(Nutzer.rolle == "admin")).first()
+        if existing:
+            return
+        nutzer = Nutzer(
+            email=admin_email,
+            password_hash=hash_password(admin_pw),
+            rolle="admin",
+            aktiv=True,
+        )
+        s.add(nutzer)
+        s.commit()
 
 
 def get_session():

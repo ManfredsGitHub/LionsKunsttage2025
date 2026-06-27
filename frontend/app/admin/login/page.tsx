@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { setToken } from "@/lib/auth";
+import Link from "next/link";
+import { setToken, redirectNachRolle, type Rolle } from "@/lib/auth";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export default function LoginPage() {
-  const [rolle, setRolle] = useState<"admin" | "orga">("admin");
+  const [email, setEmail] = useState("");
   const [passwort, setPasswort] = useState("");
   const [fehler, setFehler] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,23 +16,23 @@ export default function LoginPage() {
 
   async function einloggen(e: React.FormEvent) {
     e.preventDefault();
-    if (!passwort) return;
+    if (!email || !passwort) return;
     setFehler("");
     setLoading(true);
     try {
       const resp = await fetch(`${API}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rolle, passwort }),
+        body: JSON.stringify({ email: email.trim().toLowerCase(), passwort }),
       });
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({}));
         setFehler(err.detail ?? "Anmeldung fehlgeschlagen");
         return;
       }
-      const { token, stunden } = await resp.json();
+      const { token, stunden, rolle } = await resp.json();
       setToken(token, stunden);
-      router.push(rolle === "orga" ? "/admin/kasse" : "/admin");
+      router.push(redirectNachRolle(rolle as Rolle));
     } catch {
       setFehler("Server nicht erreichbar");
     } finally {
@@ -49,22 +50,20 @@ export default function LoginPage() {
 
         <form onSubmit={einloggen} className="bg-white rounded-lg shadow p-6 space-y-5">
 
-          {/* Rolle */}
-          <div className="grid grid-cols-2 gap-2">
-            {(["admin", "orga"] as const).map(r => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setRolle(r)}
-                className={`py-2 rounded-md text-sm font-medium border transition-colors ${
-                  rolle === r
-                    ? "bg-lions-blue text-white border-lions-blue"
-                    : "bg-white text-gray-600 border-gray-300 hover:border-lions-blue"
-                }`}
-              >
-                {r === "admin" ? "Admin" : "Orga-Team"}
-              </button>
-            ))}
+          {/* E-Mail */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              E-Mail-Adresse
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              autoComplete="email"
+              autoFocus
+              required
+              className="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue"
+            />
           </div>
 
           {/* Passwort */}
@@ -77,7 +76,8 @@ export default function LoginPage() {
                 type={sichtbar ? "text" : "password"}
                 value={passwort}
                 onChange={e => setPasswort(e.target.value)}
-                autoFocus
+                autoComplete="current-password"
+                required
                 className="w-full border rounded-md px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-lions-blue"
               />
               <button
@@ -108,18 +108,21 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading || !passwort}
+            disabled={loading || !email || !passwort}
             className="w-full bg-lions-blue text-white py-2.5 rounded-md font-medium hover:bg-blue-900 disabled:opacity-50 transition-colors"
           >
             {loading ? "Anmelden…" : "Anmelden"}
           </button>
-        </form>
 
-        {rolle === "orga" && (
-          <p className="text-center text-xs text-gray-400 mt-4">
-            Orga-Team: Zugriff auf Kasse, Kaufübersicht, Käufer und Bildaufsteller
-          </p>
-        )}
+          <div className="text-center">
+            <Link
+              href="/passwort-reset"
+              className="text-sm text-gray-500 hover:text-lions-blue transition-colors"
+            >
+              Passwort vergessen?
+            </Link>
+          </div>
+        </form>
       </div>
     </div>
   );

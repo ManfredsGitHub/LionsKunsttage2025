@@ -21,6 +21,7 @@ export interface Kuenstler {
   db_ort?: string;
   db_instagram?: string;
   db_facebook?: string;
+  db_pinterest?: string;
   db_webseite?: string;
   db_telefon?: string;
   portrait_foto?: string;

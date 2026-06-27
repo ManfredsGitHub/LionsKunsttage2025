@@ -60,7 +60,8 @@ export default function AdminPage() {
 
         <Reihe kacheln={[
           { href: "/admin/organisation", titel: "Organisation", beschreibung: "Platzplan, Raumplan & Bildaufsteller", icon: "🗂️" },
-          { href: "/admin/einstellungen", titel: "Einstellungen", beschreibung: "Passwörter ändern", icon: "⚙️" },
+          { href: "/admin/benutzer", titel: "Benutzerverwaltung", beschreibung: "Konten anlegen, Rollen & Einladungen", icon: "👥" },
+          { href: "/admin/einstellungen", titel: "Einstellungen", beschreibung: "Eigenes Passwort ändern", icon: "⚙️" },
           { href: "/admin/sonstiges", titel: "Sonstiges", beschreibung: "DATEV, Import, Archiv, Impressum & Datenschutz", icon: "📁" },
         ]} />
 

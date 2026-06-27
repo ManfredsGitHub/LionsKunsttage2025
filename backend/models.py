@@ -72,6 +72,7 @@ class Kuenstler(KuenstlerBase, table=True):
     db_telefon: Optional[str] = None
     db_instagram: Optional[str] = None
     db_facebook: Optional[str] = None
+    db_pinterest: Optional[str] = None
     db_webseite: Optional[str] = None
     db_adresse: Optional[str] = None
     db_plz: Optional[str] = None
@@ -104,6 +105,7 @@ class KuenstlerPublic(KuenstlerBase):
     db_ort: Optional[str] = None
     db_instagram: Optional[str] = None
     db_facebook: Optional[str] = None
+    db_pinterest: Optional[str] = None
     db_webseite: Optional[str] = None
     portrait_foto: Optional[str] = None
     aktiv: bool = True
@@ -308,6 +310,40 @@ class KuenstlerNachrichtGelesen(SQLModel, table=True):
     kuenstler_id: int = Field(foreign_key="kuenstler.id")
     gelesen_am: datetime = Field(default_factory=datetime.utcnow)
     nachricht: Optional["KuenstlerNachricht"] = Relationship(back_populates="gelesen_eintraege")
+
+
+# --- Nutzer (rollenbasierte Accounts) ---
+
+class Nutzer(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    email: str = Field(unique=True, index=True)
+    password_hash: str
+    rolle: str  # "admin" | "orga" | "kasse" | "kuenstler"
+    kuenstler_id: Optional[int] = Field(default=None, foreign_key="kuenstler.id")
+    aktiv: bool = True
+    erstellt_am: datetime = Field(default_factory=datetime.utcnow)
+    letzter_login: Optional[datetime] = None
+
+
+class AuthToken(SQLModel, table=True):
+    """Einmalige Tokens für Passwort-Reset und Account-Einrichtung."""
+    id: Optional[int] = Field(default=None, primary_key=True)
+    nutzer_id: int = Field(foreign_key="nutzer.id", index=True)
+    token_hash: str = Field(index=True)  # SHA-256 des Klartext-Tokens
+    zweck: str                            # "reset" | "setup"
+    expires_at: datetime
+    used: bool = False
+    erstellt_am: datetime = Field(default_factory=datetime.utcnow)
+
+
+class NutzerPublic(SQLModel):
+    id: int
+    email: str
+    rolle: str
+    kuenstler_id: Optional[int] = None
+    aktiv: bool
+    erstellt_am: datetime
+    letzter_login: Optional[datetime] = None
 
 
 # --- Seiteneinstellungen (Key-Value) ---

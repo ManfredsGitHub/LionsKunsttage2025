@@ -56,6 +56,18 @@ export default function KuenstlerDetailPage() {
                 Instagram
               </a>
             )}
+            {kuenstler.db_facebook && (
+              <a href={kuenstler.db_facebook} target="_blank" rel="noopener noreferrer"
+                className="text-sm text-lions-blue hover:underline">
+                Facebook
+              </a>
+            )}
+            {kuenstler.db_pinterest && (
+              <a href={kuenstler.db_pinterest} target="_blank" rel="noopener noreferrer"
+                className="text-sm text-lions-blue hover:underline">
+                Pinterest
+              </a>
+            )}
             {kuenstler.db_webseite && (
               <a href={kuenstler.db_webseite} target="_blank" rel="noopener noreferrer"
                 className="text-sm text-lions-blue hover:underline">
@@ -69,24 +81,19 @@ export default function KuenstlerDetailPage() {
       {/* Textabschnitte */}
       {(kuenstler.db_leben || kuenstler.db_kommentar || kuenstler.db_ausstellungen) && (
         <div className="grid md:grid-cols-2 gap-6">
-          {kuenstler.db_leben && (
+          {(kuenstler.db_leben || kuenstler.db_kommentar) && (
             <div className="bg-white rounded-lg shadow p-5">
               <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
                 Biografie
               </h2>
-              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
-                {kuenstler.db_leben}
-              </p>
-            </div>
-          )}
-          {kuenstler.db_kommentar && (
-            <div className="bg-white rounded-lg shadow p-5">
-              <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                Künstlerische Aussage
-              </h2>
-              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
-                {kuenstler.db_kommentar}
-              </p>
+              {kuenstler.db_leben && (
+                <p className="text-sm font-medium text-gray-600 mb-1">{kuenstler.db_leben}</p>
+              )}
+              {kuenstler.db_kommentar && (
+                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                  {kuenstler.db_kommentar}
+                </p>
+              )}
             </div>
           )}
           {kuenstler.db_ausstellungen && (

@@ -30,6 +30,7 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
     db_webseite: k.db_webseite ?? "",
     db_instagram: k.db_instagram ?? "",
     db_facebook: k.db_facebook ?? "",
+    db_pinterest: (k as any).db_pinterest ?? "",
     aktiv: k.aktiv !== false,
     vor_ort_anwesend: k.vor_ort_anwesend ?? false,
     zur_ausstellung_ansprechen: k.zur_ausstellung_ansprechen ?? false,
@@ -79,6 +80,7 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
         db_webseite: form.db_webseite || undefined,
         db_instagram: form.db_instagram || undefined,
         db_facebook: form.db_facebook || undefined,
+        db_pinterest: form.db_pinterest || undefined,
         aktiv: form.aktiv,
         vor_ort_anwesend: form.vor_ort_anwesend,
         zur_ausstellung_ansprechen: form.zur_ausstellung_ansprechen,
@@ -256,6 +258,13 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
 
                 <div>
                   <label className={lbl}>Leben & Ausbildung</label>
+                  {(form.db_leben || form.db_kommentar) && (
+                    <div className="mb-2 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-500">
+                      <span className="font-medium text-gray-400 uppercase tracking-wide text-[10px]">Archiv-Notiz</span>
+                      {form.db_leben && <span className="ml-2 font-medium text-gray-600">{form.db_leben}</span>}
+                      {form.db_kommentar && <p className="mt-1 whitespace-pre-line">{form.db_kommentar}</p>}
+                    </div>
+                  )}
                   <textarea rows={4} value={form.db_lebenstext} onChange={e => setForm({...form, db_lebenstext: e.target.value})}
                     placeholder={"Geburtsort, Ausbildung, Werdegang…"} className={inp} />
                 </div>
@@ -310,6 +319,11 @@ function EditModal({ k, onClose, onSaved, onDeleted }: { k: Kuenstler; onClose: 
                   <label className={lbl}>Facebook</label>
                   <input value={form.db_facebook} onChange={e => setForm({...form, db_facebook: e.target.value})}
                     placeholder="https://facebook.com/…" className={inp} />
+                </div>
+                <div>
+                  <label className={lbl}>Pinterest</label>
+                  <input value={form.db_pinterest} onChange={e => setForm({...form, db_pinterest: e.target.value})}
+                    placeholder="https://pinterest.de/…" className={inp} />
                 </div>
               </>
             )}

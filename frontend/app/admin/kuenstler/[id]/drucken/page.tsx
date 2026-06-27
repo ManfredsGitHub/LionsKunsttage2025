@@ -136,6 +136,7 @@ return (
                   ["E-Mail", kuenstler.db_email || ""],
                   ["Insta",  kuenstler.db_instagram || ""],
                   ["FB",     kuenstler.db_facebook || ""],
+                  ["Pinterest", kuenstler.db_pinterest || ""],
                 ].filter(([, val]) => val).map(([label, val]) => (
                   <div key={label} className="krow">
                     <span className="klabel">{label}</span>

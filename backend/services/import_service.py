@@ -118,3 +118,89 @@ def _float(val) -> float | None:
         return float(str(val).replace(",", "."))
     except (TypeError, ValueError):
         return None
+
+
+def _str(val) -> str | None:
+    """Gibt None zurück wenn der Wert leer oder NaN ist."""
+    if val is None:
+        return None
+    s = str(val).strip()
+    return s if s and s.lower() not in ("nan", "none", "") else None
+
+
+def import_kuenstler_csv(data: bytes, session: Session) -> dict:
+    df = pd.read_csv(io.BytesIO(data), dtype=str)
+    return _process_kuenstler(df, session)
+
+
+def import_kuenstler_excel(data: bytes, session: Session) -> dict:
+    df = pd.read_excel(io.BytesIO(data), dtype=str)
+    return _process_kuenstler(df, session)
+
+
+def _process_kuenstler(df: pd.DataFrame, session: Session) -> dict:
+    """Importiert Künstler-Stammdaten (Leben, Kommentar, Kontakt etc.).
+
+    Pflichtspalten: db_Name, db_Vorname
+    Optional: db_Leben, db_Kommentar, db_email, db_Telefon,
+              db_Instagram, db_Facebook, db_Webseite
+    """
+    if "db_Name" not in df.columns or "db_Vorname" not in df.columns:
+        raise ValueError("Fehlende Pflichtspalten: db_Name, db_Vorname")
+
+    aktualisiert, neu, fehler = 0, 0, []
+
+    for i, row in df.iterrows():
+        try:
+            name = _str(row.get("db_Name"))
+            vorname = _str(row.get("db_Vorname"))
+            if not name or not vorname:
+                fehler.append({"zeile": i + 2, "fehler": "db_Name oder db_Vorname fehlt"})
+                continue
+
+            ident = f"{name}_{vorname}".lower()
+            kuenstler = session.exec(
+                select(Kuenstler).where(Kuenstler.db_ident == ident)
+            ).first()
+
+            if kuenstler:
+                # Nur befüllen wenn das Feld bislang leer ist (kein Überschreiben manueller Einträge)
+                changed = False
+                for src_col, attr in [
+                    ("db_Leben", "db_leben"),
+                    ("db_Kommentar", "db_kommentar"),
+                    ("db_email", "db_email"),
+                    ("db_Telefon", "db_telefon"),
+                    ("db_Instagram", "db_instagram"),
+                    ("db_Facebook", "db_facebook"),
+                    ("db_Pinterest", "db_pinterest"),
+                    ("db_Webseite", "db_webseite"),
+                ]:
+                    val = _str(row.get(src_col))
+                    if val and not getattr(kuenstler, attr):
+                        setattr(kuenstler, attr, val)
+                        changed = True
+                if changed:
+                    session.add(kuenstler)
+                aktualisiert += 1
+            else:
+                kuenstler = Kuenstler(
+                    db_ident=ident,
+                    db_name=name,
+                    db_vorname=vorname,
+                    db_leben=_str(row.get("db_Leben")),
+                    db_kommentar=_str(row.get("db_Kommentar")),
+                    db_email=_str(row.get("db_email")),
+                    db_telefon=_str(row.get("db_Telefon")),
+                    db_instagram=_str(row.get("db_Instagram")),
+                    db_facebook=_str(row.get("db_Facebook")),
+                    db_pinterest=_str(row.get("db_Pinterest")),
+                    db_webseite=_str(row.get("db_Webseite")),
+                )
+                session.add(kuenstler)
+                neu += 1
+        except Exception as e:
+            fehler.append({"zeile": i + 2, "fehler": str(e)})
+
+    session.commit()
+    return {"aktualisiert": aktualisiert, "neu": neu, "fehler": fehler}

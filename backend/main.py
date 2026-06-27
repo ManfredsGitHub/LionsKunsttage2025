@@ -27,25 +27,48 @@ app.include_router(kaufanfragen.router)
 
 # ── Auth-Middleware ───────────────────────────────────────────────────────────
 # Pfade, die ohne JWT erreichbar sind
-_OPEN = ("/bilder", "/uploads", "/reservierungen", "/kuenstler",
-         "/merkliste", "/auth", "/docs", "/openapi.json", "/redoc", "/",
-         "/einstellungen")
+_OPEN_PREFIXES = ("/bilder", "/uploads", "/reservierungen", "/kuenstler",
+                  "/merkliste", "/docs", "/openapi.json", "/redoc",
+                  "/einstellungen")
+# Auth-Endpoints, die ohne Token aufrufbar sind (Login, Reset, Setup)
+_OPEN_EXACT = {
+    "/auth/login",
+    "/auth/reset-request",
+    "/auth/reset-confirm",
+    "/auth/setup-confirm",
+}
+_OPEN_EXACT_PREFIX = "/auth/setup"  # GET /auth/setup/verify
 
 
 def _is_open(path: str) -> bool:
+    if path == "/":
+        return True
+    if path in _OPEN_EXACT:
+        return True
+    if path.startswith(_OPEN_EXACT_PREFIX):
+        return True
     return any(
         path == p or path.startswith(p + "/") or path.startswith(p + "?")
-        for p in _OPEN
+        for p in _OPEN_PREFIXES
     )
 
 
 def _orga_erlaubt(method: str, path: str) -> bool:
-    """Orga darf: alle /kaeufe-Endpoints + GET /admin/bilder* (für Aufsteller)."""
+    """Orga: Kasse + Bildverwaltung (lesen + schreiben) + Künstler (lesen + schreiben)."""
     if path.startswith("/kaeufe"):
         return True
-    if path.startswith("/admin/bilder") and method == "GET":
+    if path.startswith("/admin/bilder"):
+        return True
+    if path.startswith("/admin/kuenstler"):
+        return True
+    if path.startswith("/admin/plaetze"):
         return True
     return False
+
+
+def _kasse_erlaubt(method: str, path: str) -> bool:
+    """Kasse: nur Kasse-Endpoints."""
+    return path.startswith("/kaeufe")
 
 
 @app.middleware("http")
@@ -75,7 +98,14 @@ async def auth_middleware(request: Request, call_next):
     if rolle == "admin":
         return await call_next(request)
 
+    # Alle eingeloggten Nutzer dürfen ihr eigenes Passwort ändern
+    if path == "/auth/change-password":
+        return await call_next(request)
+
     if rolle == "orga" and _orga_erlaubt(method, path):
+        return await call_next(request)
+
+    if rolle == "kasse" and _kasse_erlaubt(method, path):
         return await call_next(request)
 
     return JSONResponse({"detail": "Kein Zugriff"}, status_code=403)

@@ -237,6 +237,89 @@ def send_nachfass(betreff: str, text: str, empfaenger: list[tuple[str, str | Non
             s.sendmail(SMTP_USER, email, msg.as_string())
 
 
+_ROLLEN_DE = {
+    "admin": "Administrator",
+    "orga": "Orga-Team",
+    "kasse": "Kasse",
+    "kuenstler": "Künstler-Portal",
+}
+
+
+def send_konto_einrichten(email: str, rolle: str, token: str):
+    link = f"{BASE_URL}/konto-einrichten?token={token}"
+    rolle_de = _ROLLEN_DE.get(rolle, rolle)
+    _send(
+        email,
+        "Ihr Konto wurde eingerichtet – Kunsttage auf der Ludwigshöhe 2026",
+        f"""
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#1f2937">
+          <div style="background:#003087;padding:20px 24px;border-radius:6px 6px 0 0">
+            <h1 style="color:#C8A951;margin:0;font-size:20px">Kunsttage auf der Ludwigshöhe 2026</h1>
+          </div>
+          <div style="background:#f9fafb;padding:24px;border-radius:0 0 6px 6px;border:1px solid #e5e7eb">
+            <p>Für diese E-Mail-Adresse wurde ein Konto mit der Rolle <strong>{rolle_de}</strong> eingerichtet.</p>
+            <p>Bitte klicken Sie auf den folgenden Button, um Ihr persönliches Passwort festzulegen.
+               Der Link ist <strong>48 Stunden</strong> gültig.</p>
+            <p style="text-align:center;margin:28px 0">
+              <a href="{link}"
+                 style="background:#003087;color:#ffffff;padding:12px 28px;border-radius:4px;
+                        text-decoration:none;font-weight:bold;display:inline-block">
+                Passwort festlegen
+              </a>
+            </p>
+            <p style="color:#6b7280;font-size:13px">
+              Falls der Button nicht funktioniert, kopieren Sie diesen Link in Ihren Browser:<br>
+              <a href="{link}" style="color:#003087;word-break:break-all">{link}</a>
+            </p>
+            <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
+            <p style="color:#9ca3af;font-size:12px;margin:0">
+              Kunsttage auf der Ludwigshöhe · Lions Club Villa Ludwigshöhe
+            </p>
+          </div>
+        </div>
+        """,
+    )
+
+
+def send_passwort_reset(email: str, token: str):
+    link = f"{BASE_URL}/passwort-reset/bestaetigen?token={token}"
+    _send(
+        email,
+        "Passwort zurücksetzen – Kunsttage auf der Ludwigshöhe 2026",
+        f"""
+        <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#1f2937">
+          <div style="background:#003087;padding:20px 24px;border-radius:6px 6px 0 0">
+            <h1 style="color:#C8A951;margin:0;font-size:20px">Kunsttage auf der Ludwigshöhe 2026</h1>
+          </div>
+          <div style="background:#f9fafb;padding:24px;border-radius:0 0 6px 6px;border:1px solid #e5e7eb">
+            <p>Sie haben eine Anfrage zum Zurücksetzen Ihres Passworts gestellt.</p>
+            <p>Klicken Sie auf den folgenden Button, um ein neues Passwort festzulegen.
+               Der Link ist <strong>2 Stunden</strong> gültig und kann nur einmal verwendet werden.</p>
+            <p style="text-align:center;margin:28px 0">
+              <a href="{link}"
+                 style="background:#003087;color:#ffffff;padding:12px 28px;border-radius:4px;
+                        text-decoration:none;font-weight:bold;display:inline-block">
+                Passwort zurücksetzen
+              </a>
+            </p>
+            <p style="color:#6b7280;font-size:13px">
+              Falls der Button nicht funktioniert, kopieren Sie diesen Link:<br>
+              <a href="{link}" style="color:#003087;word-break:break-all">{link}</a>
+            </p>
+            <p style="color:#6b7280;font-size:13px">
+              Falls Sie diese Anfrage nicht gestellt haben, können Sie diese E-Mail ignorieren.
+              Ihr Passwort bleibt unverändert.
+            </p>
+            <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0">
+            <p style="color:#9ca3af;font-size:12px;margin:0">
+              Kunsttage auf der Ludwigshöhe · Lions Club Villa Ludwigshöhe
+            </p>
+          </div>
+        </div>
+        """,
+    )
+
+
 def send_kuenstler_login(email: str, name: str, token: str):
     link = f"{BASE_URL}/kuenstler/login?token={token}"
     zeilen = "".join(

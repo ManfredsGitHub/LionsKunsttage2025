@@ -178,6 +178,7 @@ def generate_vita_pdf(kuenstler, bilder: list, upload_dir: str) -> bytes:
         ("E-Mail", kuenstler.db_email or ""),
         ("Insta",  kuenstler.db_instagram or ""),
         ("FB",     kuenstler.db_facebook or ""),
+        ("Pinterest", kuenstler.db_pinterest or ""),
     ]:
         zeile = f"<b>{label}</b>   {text.strip()}" if text.strip() else f"<b>{label}</b>"
         kontakt_rows.append(Paragraph(zeile, S("kk", fontSize=9, leading=16)))

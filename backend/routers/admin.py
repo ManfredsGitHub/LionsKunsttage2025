@@ -5,11 +5,11 @@ from pydantic import BaseModel
 from typing import Optional
 import secrets
 from datetime import datetime, timedelta
-from models import Bild, BildPublic, BildFoto, Kuenstler, KuenstlerCreate, KuenstlerPublic, Reservierung, Kauf, Besucher, MerklisteEintrag, Genre, Verfuegbarkeit, Abrechnungsempfaenger, KuenstlerNachricht, KuenstlerNachrichtGelesen, Platz, PlatzPublic, Raumzuteilung
+from models import Bild, BildPublic, BildFoto, Kuenstler, KuenstlerCreate, KuenstlerPublic, Reservierung, Kauf, Besucher, MerklisteEintrag, Genre, Verfuegbarkeit, Abrechnungsempfaenger, KuenstlerNachricht, KuenstlerNachrichtGelesen, Platz, PlatzPublic, Raumzuteilung, Nutzer, AuthToken, NutzerPublic
 from database import get_session
-from services.import_service import import_csv, import_excel
-from services.auth_service import check_passwort, set_passwort
-from services.email_service import send_merkliste
+from services.import_service import import_csv, import_excel, import_kuenstler_csv, import_kuenstler_excel
+from services.auth_service import hash_password, validate_password_strength, generate_raw_token, hash_token
+from services.email_service import send_merkliste, send_konto_einrichten
 from services.image_service import compress_image, save_image
 from services.price_service import berechne_verkaufspreis
 from services.vita_pdf_service import generate_vita_pdf
@@ -197,6 +197,18 @@ async def import_excel_endpoint(file: UploadFile = File(...), session: Session =
     return import_excel(data, session)
 
 
+@router.post("/import/kuenstler-csv")
+async def import_kuenstler_csv_endpoint(file: UploadFile = File(...), session: Session = Depends(get_session)):
+    data = await file.read()
+    return import_kuenstler_csv(data, session)
+
+
+@router.post("/import/kuenstler-excel")
+async def import_kuenstler_excel_endpoint(file: UploadFile = File(...), session: Session = Depends(get_session)):
+    data = await file.read()
+    return import_kuenstler_excel(data, session)
+
+
 # --- Druckliste ---
 
 @router.get("/druckliste")
@@ -351,7 +363,7 @@ def kuenstler_aktualisieren(kuenstler_id: int, daten: dict = Body(...), session:
         raise HTTPException(404)
     felder = ["db_name","db_vorname","db_email","db_telefon","db_adresse","db_plz","db_ort",
               "db_beruf","db_leben","db_lebenstext","db_kommentar","db_inspiration","db_ausstellungen",
-              "db_instagram","db_facebook","db_webseite","aktiv","vor_ort_anwesend","kuenstler_nr",
+              "db_instagram","db_facebook","db_pinterest","db_webseite","aktiv","vor_ort_anwesend","kuenstler_nr",
               "abrechnungsempf","galerist_id","kuenstlertyp","zur_ausstellung_ansprechen"]
     for f in felder:
         if f in daten:
@@ -657,24 +669,89 @@ Gib nur den fertigen Beschreibungstext aus, ohne Überschrift, Einleitung oder E
     return {"beschreibung": response.content[0].text.strip()}
 
 
-# ── Passwort ändern ───────────────────────────────────────────────────────────
+# ── Nutzerverwaltung ──────────────────────────────────────────────────────────
 
-class PasswortAendernData(BaseModel):
+ERLAUBTE_ROLLEN = {"admin", "orga", "kasse", "kuenstler"}
+
+
+@router.get("/users", response_model=list[NutzerPublic])
+def alle_nutzer(session: Session = Depends(get_session)):
+    return session.exec(select(Nutzer).order_by(Nutzer.rolle, Nutzer.email)).all()
+
+
+class NutzerAnlegenData(BaseModel):
+    email: str
     rolle: str
-    altes_passwort: str
-    neues_passwort: str
+    kuenstler_id: Optional[int] = None
 
 
-@router.patch("/passwort")
-def passwort_aendern(data: PasswortAendernData):
-    if data.rolle not in ("admin", "orga"):
+@router.post("/users", response_model=NutzerPublic)
+def nutzer_anlegen(data: NutzerAnlegenData, session: Session = Depends(get_session)):
+    if data.rolle not in ERLAUBTE_ROLLEN:
         raise HTTPException(status_code=400, detail="Unbekannte Rolle")
-    if not check_passwort(data.rolle, data.altes_passwort):
-        raise HTTPException(status_code=401, detail="Altes Passwort falsch")
-    if len(data.neues_passwort) < 8:
-        raise HTTPException(status_code=400, detail="Passwort zu kurz (mind. 8 Zeichen)")
-    set_passwort(data.rolle, data.neues_passwort)
+    email = data.email.lower().strip()
+    existing = session.exec(select(Nutzer).where(Nutzer.email == email)).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="E-Mail bereits vergeben")
+
+    nutzer = Nutzer(
+        email=email,
+        password_hash="",  # wird beim Setup gesetzt
+        rolle=data.rolle,
+        kuenstler_id=data.kuenstler_id,
+        aktiv=False,  # erst aktiv nach Passwort-Setup
+    )
+    session.add(nutzer)
+    session.commit()
+    session.refresh(nutzer)
+
+    _send_einladung(nutzer, session)
+    return nutzer
+
+
+@router.patch("/users/{nutzer_id}", response_model=NutzerPublic)
+def nutzer_aktualisieren(
+    nutzer_id: int,
+    data: dict,
+    session: Session = Depends(get_session),
+):
+    nutzer = session.get(Nutzer, nutzer_id)
+    if not nutzer:
+        raise HTTPException(status_code=404, detail="Nutzer nicht gefunden")
+    if "rolle" in data and data["rolle"] not in ERLAUBTE_ROLLEN:
+        raise HTTPException(status_code=400, detail="Unbekannte Rolle")
+    for field in ("rolle", "aktiv"):
+        if field in data:
+            setattr(nutzer, field, data[field])
+    session.add(nutzer)
+    session.commit()
+    session.refresh(nutzer)
+    return nutzer
+
+
+@router.post("/users/{nutzer_id}/einladen")
+def nutzer_einladen(nutzer_id: int, session: Session = Depends(get_session)):
+    nutzer = session.get(Nutzer, nutzer_id)
+    if not nutzer:
+        raise HTTPException(status_code=404, detail="Nutzer nicht gefunden")
+    _send_einladung(nutzer, session)
     return {"ok": True}
+
+
+def _send_einladung(nutzer: Nutzer, session: Session):
+    raw = generate_raw_token()
+    token_entry = AuthToken(
+        nutzer_id=nutzer.id,
+        token_hash=hash_token(raw),
+        zweck="setup",
+        expires_at=datetime.utcnow() + timedelta(hours=48),
+    )
+    session.add(token_entry)
+    session.commit()
+    try:
+        send_konto_einrichten(nutzer.email, nutzer.rolle, raw)
+    except Exception:
+        pass
 
 
 # --- Platzplan ---
