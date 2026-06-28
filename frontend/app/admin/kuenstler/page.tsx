@@ -546,8 +546,15 @@ export default function AdminKuenstlerPage() {
   const [bilderByKuenstler, setBilderByKuenstler] = useState<Record<number, Bild[]>>({});
   const [popover, setPopover] = useState<{ id: number; x: number; y: number } | null>(null);
   const [lightbox, setLightbox] = useState<{ bilder: Bild[]; index: number } | null>(null);
+  const [bewerbungen, setBewerbungen] = useState<Kuenstler[]>([]);
   const popoverRef = useRef<HTMLDivElement>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function ladeBewerbungen() {
+    getAlleKuenstler(true).then(ks => setBewerbungen(ks.filter(k => !k.aktiv)));
+  }
+
+  useEffect(() => { ladeBewerbungen(); }, []);
 
   useEffect(() => {
     setLaden(true);
@@ -698,6 +705,62 @@ export default function AdminKuenstlerPage() {
           + Künstler anlegen
         </button>
       </div>
+
+      {/* Bewerbungen */}
+      {bewerbungen.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="bg-amber-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+              {bewerbungen.length}
+            </span>
+            <h2 className="font-semibold text-amber-900 text-sm">Neue Bewerbungen</h2>
+          </div>
+          <div className="space-y-2">
+            {bewerbungen.map(b => (
+              <div key={b.id} className="bg-white rounded-lg border border-amber-100 px-4 py-3 flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="font-medium text-gray-800 text-sm">
+                    {b.db_vorname} {b.db_name}
+                    {(b as any).db_beruf && (
+                      <span className="ml-2 text-xs text-gray-400 font-normal">{(b as any).db_beruf}</span>
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {b.db_email ?? "—"}
+                    {(b as any).db_ort && ` · ${(b as any).db_ort}`}
+                  </p>
+                  {(b as any).db_kommentar && (
+                    <p className="text-xs text-gray-400 mt-1 line-clamp-2 italic">
+                      {(b as any).db_kommentar}
+                    </p>
+                  )}
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => setEditK(b)}
+                    className="px-3 py-1.5 text-xs border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-600">
+                    Details
+                  </button>
+                  <button
+                    onClick={async () => {
+                      await kuenstlerAktualisieren(b.id, { aktiv: true } as any);
+                      setBewerbungen(prev => prev.filter(x => x.id !== b.id));
+                      setKuenstler(prev =>
+                        prev.some(x => x.id === b.id)
+                          ? prev.map(x => x.id === b.id ? { ...x, aktiv: true } : x)
+                          : prev
+                      );
+                      ladeBewerbungen();
+                    }}
+                    className="px-3 py-1.5 text-xs bg-green-600 text-white rounded-lg hover:bg-green-700">
+                    Aktivieren
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Filter & Suche */}
       <div className="flex flex-wrap items-center gap-3">

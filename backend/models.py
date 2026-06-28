@@ -115,6 +115,48 @@ class KuenstlerPublic(KuenstlerBase):
     galerist_id: Optional[int] = None
 
 
+class KuenstlerSelf(SQLModel):
+    """Was ein Künstler über sich selbst sehen darf — keine Orgadaten."""
+    id: int
+    db_name: str
+    db_vorname: str
+    kuenstler_nr: Optional[str] = None
+    db_beruf: Optional[str] = None
+    db_leben: Optional[str] = None
+    db_lebenstext: Optional[str] = None
+    db_kommentar: Optional[str] = None
+    db_inspiration: Optional[str] = None
+    db_ausstellungen: Optional[str] = None
+    db_email: Optional[str] = None
+    db_telefon: Optional[str] = None
+    db_instagram: Optional[str] = None
+    db_facebook: Optional[str] = None
+    db_pinterest: Optional[str] = None
+    db_webseite: Optional[str] = None
+    db_adresse: Optional[str] = None
+    db_plz: Optional[str] = None
+    db_ort: Optional[str] = None
+    portrait_foto: Optional[str] = None
+    dsgvo_einwilligung: bool = False
+    aktiv: bool = True
+
+
+class KuenstlerBewerbungCreate(SQLModel):
+    """Öffentliches Formular: Künstler bewirbt sich selbst."""
+    db_name: str
+    db_vorname: str
+    db_email: str
+    db_telefon: Optional[str] = None
+    db_beruf: Optional[str] = None
+    db_adresse: Optional[str] = None
+    db_plz: Optional[str] = None
+    db_ort: Optional[str] = None
+    db_webseite: Optional[str] = None
+    db_instagram: Optional[str] = None
+    db_pinterest: Optional[str] = None
+    bewerbungstext: Optional[str] = None
+
+
 # --- Bild ---
 
 class BildBase(SQLModel):

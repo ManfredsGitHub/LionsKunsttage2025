@@ -13,7 +13,10 @@ type FormData = {
   db_ausstellungen: string;
   db_leben: string;
   db_adresse: string;
+  db_plz: string;
+  db_ort: string;
   db_email: string;
+  db_telefon: string;
   db_instagram: string;
   db_facebook: string;
   db_pinterest: string;
@@ -110,13 +113,15 @@ function VitaVorschau({ kuenstler, form }: { kuenstler: Kuenstler; form: FormDat
             Kontakt
           </div>
           <div style={{ fontSize: "10pt", lineHeight: "1.7", color: "#222" }}>
-            {form.db_adresse && <div style={{ whiteSpace: "pre-wrap" }}>{form.db_adresse}</div>}
+            {form.db_adresse && <div>{form.db_adresse}</div>}
+            {(form.db_plz || form.db_ort) && <div>{[form.db_plz, form.db_ort].filter(Boolean).join(" ")}</div>}
+            {form.db_telefon && <div>{form.db_telefon}</div>}
             {form.db_email && <div>{form.db_email}</div>}
             {form.db_webseite && <div>{form.db_webseite}</div>}
             {form.db_instagram && <div>{form.db_instagram}</div>}
             {form.db_facebook && <div>{form.db_facebook}</div>}
             {form.db_pinterest && <div>{form.db_pinterest}</div>}
-            {!form.db_adresse && !form.db_email && !form.db_webseite && (
+            {!form.db_adresse && !form.db_email && !form.db_webseite && !form.db_instagram && (
               <div style={{ color: "#ccc" }}>Noch keine Kontaktdaten eingetragen.</div>
             )}
           </div>
@@ -139,7 +144,8 @@ export default function KuenstlerPortalPage() {
   const [kuenstler, setKuenstler] = useState<Kuenstler | null>(null);
   const [form, setForm] = useState<FormData>({
     db_beruf: "", db_kommentar: "", db_ausstellungen: "",
-    db_leben: "", db_adresse: "", db_email: "",
+    db_leben: "", db_adresse: "", db_plz: "", db_ort: "",
+    db_email: "", db_telefon: "",
     db_instagram: "", db_facebook: "", db_pinterest: "", db_webseite: "",
   });
   const [portraitFile, setPortraitFile] = useState<File | null>(null);
@@ -174,7 +180,10 @@ export default function KuenstlerPortalPage() {
         db_ausstellungen: k.db_ausstellungen ?? "",
         db_leben:         k.db_leben         ?? "",
         db_adresse:       k.db_adresse       ?? "",
+        db_plz:           (k as any).db_plz  ?? "",
+        db_ort:           (k as any).db_ort  ?? "",
         db_email:         k.db_email         ?? "",
+        db_telefon:       (k as any).db_telefon ?? "",
         db_instagram:     k.db_instagram     ?? "",
         db_facebook:      k.db_facebook      ?? "",
         db_pinterest:     (k as any).db_pinterest ?? "",
@@ -418,18 +427,48 @@ export default function KuenstlerPortalPage() {
 
               {/* Kontakt */}
               <div className="bg-white rounded-lg shadow p-5 space-y-4">
-                <h2 className="font-semibold text-gray-700 border-b pb-2">Kontakt</h2>
+                <h2 className="font-semibold text-gray-700 border-b pb-2">Kontakt & Erreichbarkeit</h2>
 
-                <Field label="Adresse" hint="Erscheint auf der Vita — nur wenn gewünscht">
-                  <textarea rows={2} value={form.db_adresse} onChange={set("db_adresse")}
-                    placeholder={"Musterstraße 1, 76829 Landau"} className="input" />
+                <Field label="Straße und Hausnummer" hint="Erscheint auf der Vita — nur wenn gewünscht">
+                  <input value={form.db_adresse} onChange={set("db_adresse")}
+                    placeholder="Musterstraße 1" className="input" />
                 </Field>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <Field label="PLZ">
+                    <input value={form.db_plz} onChange={set("db_plz")}
+                      placeholder="76829" className="input" />
+                  </Field>
+                  <div className="col-span-2">
+                    <Field label="Ort">
+                      <input value={form.db_ort} onChange={set("db_ort")}
+                        placeholder="Landau" className="input" />
+                    </Field>
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <Field label="E-Mail">
                     <input type="email" value={form.db_email} onChange={set("db_email")}
                       placeholder="ihre@email.de" className="input" />
                   </Field>
+                  <Field label="Telefon">
+                    <input value={form.db_telefon} onChange={set("db_telefon")}
+                      placeholder="0621 000000" className="input" />
+                  </Field>
+                </div>
+              </div>
+
+              {/* Social Media */}
+              <div className="bg-white rounded-lg shadow p-5 space-y-4">
+                <div className="border-b pb-2">
+                  <h2 className="font-semibold text-gray-700">Social Media & Online-Präsenz</h2>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    Bitte prüfen und ergänzen Sie Ihre Adressen — wir verlinken Sie im Katalog und nutzen sie für gemeinsame Beiträge.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
                   <Field label="Webseite">
                     <input value={form.db_webseite} onChange={set("db_webseite")}
                       placeholder="https://…" className="input" />
@@ -438,13 +477,13 @@ export default function KuenstlerPortalPage() {
                     <input value={form.db_instagram} onChange={set("db_instagram")}
                       placeholder="https://instagram.com/…" className="input" />
                   </Field>
-                  <Field label="Facebook">
-                    <input value={form.db_facebook} onChange={set("db_facebook")}
-                      placeholder="https://facebook.com/…" className="input" />
-                  </Field>
                   <Field label="Pinterest">
                     <input value={form.db_pinterest} onChange={set("db_pinterest")}
                       placeholder="https://pinterest.de/…" className="input" />
+                  </Field>
+                  <Field label="Facebook">
+                    <input value={form.db_facebook} onChange={set("db_facebook")}
+                      placeholder="https://facebook.com/…" className="input" />
                   </Field>
                 </div>
               </div>

@@ -41,6 +41,7 @@ Drei Positionierungssäulen:
 - Wohnen in der Pfalz, Rhein-Neckar, Karlsruhe, Mannheim/Heidelberg
 - Kaufen gelegentlich Originalkunst (bis 2.000 €)
 - Entscheiden sich lieber informiert als spontan → Online-Katalog ist für sie gebaut
+- **Kaufauslöser:** Besonders aktiv bei Wohnungsumzügen und beim Wunsch, die Sammlung zu erweitern — für bezahlte Anzeigen relevant (Facebook/Instagram-Targeting auf Lebenslagenevents)
 - Kanal: Facebook, E-Mail, Presse
 
 ### Sekundär: Kulturinteressierte Tagesausflügler
@@ -175,9 +176,12 @@ Ein Pinterest-Account ist in fünf Minuten eingerichtet — Sie brauchen nur ein
 - [ ] Facebook-Event erstellen: „14. Kunsttage auf der Ludwigshöhe" mit Teilnehmerfunktion
 - [ ] Google-Eintrag (Business Profile) für das Event anlegen
 - [ ] Kooperationsanfragen an 3–5 Weingüter entlang der Weinstraße: Flyer auslegen, gegenseitige Social-Erwähnung
+- [ ] Flyer-Verteilung in lokalen Geschäften, Arztpraxen und Apotheken in Edenkoben, Landau, Bad Bergzabern (Laufkundschaft mit Zeitpuffer)
 - [ ] Rheinpfalz / Pfalz-Express: Vorab-Artikel mit Künstlerportrait und Katalog-Vorschau erbitten
 
 **Content-Idee:** „Werk der Woche" — jeden Dienstag ein Werk aus dem Katalog mit Titel, Technik, Preis und Link. Künstler teilen den Post selbst.
+
+**Optional — Bildungselement:** Geführte Rundgänge durch die Ausstellung oder ein kurzer Künstlergespräch-Slot (z. B. Samstagnachmittag) erhöhen die Verweildauer und liefern authentischen Live-Content für Stories und Reels. Vorankündigung in Phase 2, Dokumentation in Phase 3.
 
 ---
 
@@ -204,6 +208,7 @@ Ein Pinterest-Account ist in fünf Minuten eingerichtet — Sie brauchen nur ein
 - [ ] Nicht verkaufte Werke: Online-Katalog als „Nachkaufmöglichkeit" offen halten (analog lions-kunsttage.de bis Weihnachten)
 - [ ] Künstler teilen: „Meine Werke sind noch bis [Datum] online verfügbar"
 - [ ] Rheinpfalz/Pfalz-Express: Nachbericht mit Erlössumme und Spendenprojekt erbitten
+- [ ] Kurzes Besucher-Feedback einholen (3-Fragen-Formular per QR-Code vor Ort oder Link im Dankes-Post): Was hat gefallen? Was fehlt? Würdest du wiederkommen? → Grundlage für Planung 2027
 
 ---
 

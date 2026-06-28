@@ -57,6 +57,7 @@ export default function LoginPage() {
             </label>
             <input
               type="email"
+              name="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               autoComplete="email"
@@ -74,6 +75,7 @@ export default function LoginPage() {
             <div className="relative">
               <input
                 type={sichtbar ? "text" : "password"}
+                name="password"
                 value={passwort}
                 onChange={e => setPasswort(e.target.value)}
                 autoComplete="current-password"

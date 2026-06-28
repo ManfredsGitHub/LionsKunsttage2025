@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from sqlmodel import Session, select, func
 from pydantic import BaseModel
 from typing import Optional
-from models import Kuenstler, KuenstlerCreate, KuenstlerPublic, Bild, BildPublic, Genre, Abrechnungsempfaenger, KuenstlerNachricht, KuenstlerNachrichtGelesen
+from models import Kuenstler, KuenstlerCreate, KuenstlerPublic, KuenstlerSelf, KuenstlerBewerbungCreate, Bild, BildPublic, Genre, Abrechnungsempfaenger, KuenstlerNachricht, KuenstlerNachrichtGelesen
 from database import get_session
 from services import email_service
 from services.image_service import compress_image, save_image
@@ -94,6 +94,45 @@ def verify_token(token: str, session: Session = Depends(get_session)):
     return {"kuenstler_id": k.id, "name": f"{k.db_vorname} {k.db_name}"}
 
 
+@router.get("/{kuenstler_id}/self", response_model=KuenstlerSelf)
+def kuenstler_self(kuenstler_id: int, session: Session = Depends(get_session)):
+    k = session.get(Kuenstler, kuenstler_id)
+    if not k:
+        raise HTTPException(404)
+    return k
+
+
+@router.post("/bewerben")
+def bewerben(data: KuenstlerBewerbungCreate, session: Session = Depends(get_session)):
+    email_norm = data.db_email.strip().lower()
+    vorhanden = session.exec(
+        select(Kuenstler).where(Kuenstler.db_email == email_norm)
+    ).first()
+    if vorhanden:
+        raise HTTPException(409, "Diese E-Mail-Adresse ist bereits registriert.")
+    db_ident = f"{data.db_name.lower().replace(' ', '_')}_{data.db_vorname.lower().replace(' ', '_')}_{secrets.token_hex(4)}"
+    k = Kuenstler(
+        db_ident=db_ident,
+        db_name=data.db_name.strip(),
+        db_vorname=data.db_vorname.strip(),
+        db_email=email_norm,
+        db_telefon=data.db_telefon,
+        db_beruf=data.db_beruf,
+        db_adresse=data.db_adresse,
+        db_plz=data.db_plz,
+        db_ort=data.db_ort,
+        db_webseite=data.db_webseite,
+        db_instagram=data.db_instagram,
+        db_pinterest=data.db_pinterest,
+        db_kommentar=data.bewerbungstext,
+        aktiv=False,
+    )
+    session.add(k)
+    session.commit()
+    session.refresh(k)
+    return {"status": "bewerbung_eingegangen", "id": k.id}
+
+
 @router.patch("/{kuenstler_id}/profil")
 def profil_aktualisieren(
     kuenstler_id: int,
@@ -103,7 +142,7 @@ def profil_aktualisieren(
     k = session.get(Kuenstler, kuenstler_id)
     if not k:
         raise HTTPException(404)
-    erlaubt = {"db_beruf", "db_leben", "db_kommentar", "db_ausstellungen", "db_adresse", "db_email", "db_instagram", "db_facebook", "db_pinterest", "db_webseite"}
+    erlaubt = {"db_beruf", "db_leben", "db_kommentar", "db_ausstellungen", "db_adresse", "db_plz", "db_ort", "db_telefon", "db_email", "db_instagram", "db_facebook", "db_pinterest", "db_webseite"}
     for key, val in daten.items():
         if key in erlaubt:
             setattr(k, key, val)

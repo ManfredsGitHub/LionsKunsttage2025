@@ -39,6 +39,15 @@ export const getBild = (id: number) => req<Bild>(`/bilder/${id}`);
 // --- Künstler ---
 export const getKuenstler = () => req<Kuenstler[]>("/kuenstler/");
 export const getKuenstlerById = (id: number) => req<Kuenstler>(`/kuenstler/${id}`);
+export const getKuenstlerSelf = (id: number) => req<Kuenstler>(`/kuenstler/${id}/self`);
+export const bewerbungEinreichen = (data: {
+  db_name: string; db_vorname: string; db_email: string;
+  db_telefon?: string; db_beruf?: string; db_adresse?: string;
+  db_plz?: string; db_ort?: string; db_webseite?: string;
+  db_instagram?: string; db_pinterest?: string; bewerbungstext?: string;
+}) => req<{ status: string; id: number }>("/kuenstler/bewerben", {
+  method: "POST", body: JSON.stringify(data),
+});
 export const verifyToken = (token: string) =>
   req<{ kuenstler_id: number; name: string }>(`/kuenstler/login/verify?token=${token}`);
 
