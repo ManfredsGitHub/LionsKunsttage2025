@@ -625,7 +625,7 @@ async def ai_beschreibung_generieren(bild_id: int, session: Session = Depends(ge
 
     prompt = f"""Du bist ein erfahrener Kunstkritiker und Marketing-Texter für eine Benefiz-Kunstausstellung.
 
-Schreibe eine kurze, einladende Beschreibung (2–3 Sätze) für folgendes Kunstwerk, die auf der Ausstellungswebsite veröffentlicht wird. Der Text soll neugierig machen und zum Kauf animieren.
+Schreibe eine kurze, einladende Beschreibung (2–3 Sätze) für folgendes Kunstwerk, die auf der Ausstellungswebsite veröffentlicht wird. Der Text soll neugierig machen und das Werk lebendig beschreiben. Kein Verkaufsaufruf, kein Hinweis auf Kauf oder guten Zweck am Ende.
 
 Kunstwerk:
 - Titel: {bild.bildtitel}
