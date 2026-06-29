@@ -144,7 +144,7 @@ Versionen prüfen:
 ## Phase 9 — Projekt deployen
 
     cd /var/kunsttage
-    git clone https://github.com/ElManfred/KunsttageLudwigshoehe.git app
+    git clone https://github.com/ManfredsGitHub/LionsKunsttage2025.git app
     cd app
 
 ### Backend einrichten
@@ -158,14 +158,26 @@ Versionen prüfen:
 
 Alle Werte eintragen:
 
-    ADMIN_EMAIL=<admin-email@deine-domain.de>
-    ADMIN_PASSWORD=<sicheres-passwort>
+    JWT_SECRET=<64-stelliger-zufallsstring>
+    ADMIN_PASSWORT=<sicheres-admin-passwort>
+    ORGA_PASSWORT=<passwort-fuer-orga-team>
+
+    DATABASE_URL=sqlite:////var/kunsttage/kunsttage.db
+    UPLOAD_DIR=/var/kunsttage/uploads
+    BASE_URL=https://kunsttage-ludwigshoehe.de
+    CORS_ORIGINS=https://kunsttage-ludwigshoehe.de
+
     SMTP_HOST=<smtp-host>
     SMTP_PORT=587
     SMTP_USER=<smtp-user@deine-domain.de>
-    SMTP_PASSWORD=<smtp-passwort>
-    UPLOAD_DIR=/var/kunsttage/uploads
-    BASE_URL=https://kunsttage-ludwigshoehe.de
+    SMTP_PASS=<smtp-passwort>
+    ADMIN_EMAIL=<admin-email@deine-domain.de>
+
+    ANTHROPIC_API_KEY=<api-key>
+
+JWT_SECRET erzeugen (auf dem Server ausführen):
+
+    python3 -c "import secrets; print(secrets.token_hex(32))"
 
 ### Frontend einrichten
 
@@ -262,7 +274,7 @@ E-Mail angeben, Bedingungen mit A akzeptieren, Weiterleitungsabfrage mit 2 best�
     curl -I https://kunsttage-ludwigshoehe.de
 
 Danach: Im Browser https://kunsttage-ludwigshoehe.de/admin/login öffnen
-und mit ADMIN_EMAIL + ADMIN_PASSWORD aus der .env einloggen.
+und mit ADMIN_PASSWORT aus der .env einloggen.
 
 ---
 
