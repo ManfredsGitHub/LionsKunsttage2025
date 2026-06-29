@@ -75,5 +75,10 @@ logs/
 backend/archiv/
 2025 Kunsttage/
 
+# ── Lokale Arbeitsverzeichnisse (nicht im Repo) ───────────────────────────────
+Vorlagen/
+kommunikation/Archiv/
+.playwright-mcp/
+
 # ── Claude Code ───────────────────────────────────────────────────────────────
 .claude/
