@@ -1,4 +1,4 @@
-const COOKIE = "kt_auth";
+const SESSION_KEY = "kt_token";
 
 export type Rolle = "admin" | "orga" | "kasse" | "kuenstler";
 
@@ -10,14 +10,19 @@ export interface TokenPayload {
   exp: number;
 }
 
+// ── Primärspeicher: sessionStorage (cleared on tab close) ─────────────────────
+
+function _readToken(): string | null {
+  if (typeof sessionStorage === "undefined") return null;
+  return sessionStorage.getItem(SESSION_KEY);
+}
+
 export function getToken(): string | null {
-  if (typeof document === "undefined") return null;
-  const m = document.cookie.match(new RegExp(`(?:^|; )${COOKIE}=([^;]*)`));
-  return m ? decodeURIComponent(m[1]) : null;
+  return _readToken();
 }
 
 export function getPayload(): TokenPayload | null {
-  const token = getToken();
+  const token = _readToken();
   if (!token) return null;
   try {
     const payload = JSON.parse(atob(token.split(".")[1])) as TokenPayload;
@@ -37,18 +42,46 @@ export function getNutzerId(): number | null {
   return p ? parseInt(p.sub) : null;
 }
 
-export function setToken(token: string, stunden: number) {
-  const secure = location.protocol === "https:" ? "; Secure" : "";
-  document.cookie =
-    `${COOKIE}=${encodeURIComponent(token)}; path=/; max-age=${stunden * 3600}; SameSite=Strict${secure}`;
+// ── Sekundärspeicher: httpOnly-Cookie (via Next.js API, nicht lesbar per JS) ──
+
+async function _setHttpOnlyCookie(token: string, stunden: number): Promise<void> {
+  try {
+    await fetch("/api/auth/set-cookie", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, stunden }),
+    });
+  } catch {
+    // httpOnly-Cookie ist Security-Bonus, kein showstopper
+  }
 }
 
-export function logout() {
-  document.cookie = `${COOKIE}=; path=/; max-age=0`;
+async function _clearHttpOnlyCookie(): Promise<void> {
+  try {
+    await fetch("/api/auth/logout", { method: "POST" });
+  } catch {
+    // ignorieren
+  }
+}
+
+// ── Öffentliche Auth-Funktionen ───────────────────────────────────────────────
+
+export async function setToken(token: string, stunden: number): Promise<void> {
+  if (typeof sessionStorage !== "undefined") {
+    sessionStorage.setItem(SESSION_KEY, token);
+  }
+  await _setHttpOnlyCookie(token, stunden);
+}
+
+export async function logout(): Promise<void> {
+  if (typeof sessionStorage !== "undefined") {
+    sessionStorage.removeItem(SESSION_KEY);
+  }
+  await _clearHttpOnlyCookie();
 }
 
 export function authHeaders(): Record<string, string> {
-  const token = getToken();
+  const token = _readToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 

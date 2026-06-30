@@ -35,8 +35,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (pathname === "/admin/login") return <>{children}</>;
 
-  function abmelden() {
-    logout();
+  async function abmelden() {
+    await logout();
     router.push("/admin/login");
   }
 

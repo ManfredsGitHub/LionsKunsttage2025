@@ -54,7 +54,7 @@ function SetupForm() {
         return;
       }
       const { token: jwt, stunden, rolle: r } = await resp.json();
-      setToken(jwt, stunden);
+      await setToken(jwt, stunden);
       router.push(redirectNachRolle(r as Rolle));
     } catch {
       setFehler("Server nicht erreichbar");

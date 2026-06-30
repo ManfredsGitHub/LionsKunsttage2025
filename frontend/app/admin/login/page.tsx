@@ -31,7 +31,7 @@ export default function LoginPage() {
         return;
       }
       const { token, stunden, rolle } = await resp.json();
-      setToken(token, stunden);
+      await setToken(token, stunden);
       router.push(redirectNachRolle(rolle as Rolle));
     } catch {
       setFehler("Server nicht erreichbar");
