@@ -559,50 +559,59 @@ export default function KuenstlerPortalPage() {
             <h3 className="font-semibold text-gray-700">Neues Bild einreichen</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bildtitel *</label>
-                <input required value={bildForm.bildtitel} onChange={e => setBildForm(f => ({...f, bildtitel: e.target.value}))}
-                  placeholder="Titel des Werks" className="input" />
+                <Field label="Bildtitel *">
+                  <input required value={bildForm.bildtitel} onChange={e => setBildForm(f => ({...f, bildtitel: e.target.value}))}
+                    placeholder="Titel des Werks" className="input" />
+                </Field>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Technik *</label>
-                <input required value={bildForm.bildtechnik} onChange={e => setBildForm(f => ({...f, bildtechnik: e.target.value}))}
-                  placeholder="z.B. Öl auf Leinwand" className="input" />
+                <Field label="Technik *" hint="z.B. Öl auf Leinwand, Aquarell, Acryl, Pastell, Fotografie">
+                  <input required value={bildForm.bildtechnik} onChange={e => setBildForm(f => ({...f, bildtechnik: e.target.value}))}
+                    placeholder="Öl auf Leinwand" className="input" />
+                </Field>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Genre *</label>
-                <select required value={bildForm.genre} onChange={e => setBildForm(f => ({...f, genre: e.target.value as Genre}))}
-                  className="input">
-                  {(["Abstrakt","Akt","Landschaft","Menschen","Pfalz","Portrait","Städte","Stilleben","Sonstiges"] as Genre[]).map(g => (
-                    <option key={g} value={g}>{g}</option>
-                  ))}
-                </select>
+                <Field label="Genre *">
+                  <select required value={bildForm.genre} onChange={e => setBildForm(f => ({...f, genre: e.target.value as Genre}))}
+                    className="input">
+                    {(["Abstrakt","Akt","Landschaft","Menschen","Pfalz","Portrait","Städte","Stilleben","Sonstiges"] as Genre[]).map(g => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                </Field>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Breite mit Rahmen (cm)</label>
-                <input type="number" min="0" value={bildForm.breite_rahmen_cm} onChange={e => setBildForm(f => ({...f, breite_rahmen_cm: e.target.value}))}
-                  placeholder="70" className="input" />
+                <Field label="Breite mit Rahmen (cm)" hint="Außenmaß inkl. Rahmen">
+                  <input type="number" min="0" value={bildForm.breite_rahmen_cm} onChange={e => setBildForm(f => ({...f, breite_rahmen_cm: e.target.value}))}
+                    placeholder="70" className="input" />
+                </Field>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Höhe mit Rahmen (cm)</label>
-                <input type="number" min="0" value={bildForm.hoehe_rahmen_cm} onChange={e => setBildForm(f => ({...f, hoehe_rahmen_cm: e.target.value}))}
-                  placeholder="50" className="input" />
+                <Field label="Höhe mit Rahmen (cm)" hint="Außenmaß inkl. Rahmen">
+                  <input type="number" min="0" value={bildForm.hoehe_rahmen_cm} onChange={e => setBildForm(f => ({...f, hoehe_rahmen_cm: e.target.value}))}
+                    placeholder="50" className="input" />
+                </Field>
+              </div>
+              <div className="col-span-2">
+                <Field label="Einlieferungspreis (€)"
+                  hint="Ihr Anteil am Verkauf — i.d.R. 60 % des gewünschten Verkaufspreises. Der Ausstellungspreis wird automatisch berechnet: Einlieferungspreis × 1,80 (aufgerundet auf 10 €). Beispiel: 500 € Einlieferungspreis → 900 € Ausstellungspreis.">
+                  <input type="number" min="0" value={bildForm.einlieferungspreis} onChange={e => setBildForm(f => ({...f, einlieferungspreis: e.target.value}))}
+                    placeholder="500" className="input" />
+                </Field>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Einlieferungspreis (€)</label>
-                <input type="number" min="0" value={bildForm.einlieferungspreis} onChange={e => setBildForm(f => ({...f, einlieferungspreis: e.target.value}))}
-                  placeholder="500" className="input" />
+                <Field label="Anmerkung">
+                  <input value={bildForm.anmerkung_bild} onChange={e => setBildForm(f => ({...f, anmerkung_bild: e.target.value}))}
+                    placeholder="Optionale Anmerkung zum Werk" className="input" />
+                </Field>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Anmerkung</label>
-                <input value={bildForm.anmerkung_bild} onChange={e => setBildForm(f => ({...f, anmerkung_bild: e.target.value}))}
-                  placeholder="Optionale Anmerkung" className="input" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Abrechnung über</label>
-                <select value={bildForm.abrechnungsempf} onChange={e => setBildForm(f => ({...f, abrechnungsempf: e.target.value, galerist_id: ""}))} className="input">
-                  <option value="Künstler">Künstler</option>
-                  <option value="Galerist">Galerist / Sammler</option>
-                </select>
+                <Field label="Abrechnung über">
+                  <select value={bildForm.abrechnungsempf} onChange={e => setBildForm(f => ({...f, abrechnungsempf: e.target.value, galerist_id: ""}))} className="input">
+                    <option value="Künstler">Künstler</option>
+                    <option value="Galerist">Galerist / Sammler</option>
+                  </select>
+                </Field>
               </div>
               {bildForm.abrechnungsempf === "Galerist" && (
                 <div>
