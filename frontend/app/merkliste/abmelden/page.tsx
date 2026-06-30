@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
-export default function AbmeldenPage() {
+function AbmeldenInhalt() {
   const params = useSearchParams();
   const token = params.get("token") ?? "";
   const [status, setStatus] = useState<"laden" | "ok" | "fehler">("laden");
@@ -62,5 +62,17 @@ export default function AbmeldenPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AbmeldenPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <p className="text-gray-500 animate-pulse">Einen Moment…</p>
+      </div>
+    }>
+      <AbmeldenInhalt />
+    </Suspense>
   );
 }
