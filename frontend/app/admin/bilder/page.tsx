@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
 import { getAlleBilder, massenFreigeben, bilderFreigeben, preisSetzen, ausstellungToggle, bildAktualisieren } from "@/lib/api";
-import { Bild } from "@/lib/types";
+import { Bild, VERFUEGBARKEIT } from "@/lib/types";
 import { formatBildNr } from "@/lib/utils";
 import { NeuModal } from "./_components/NeuModal";
 import { BildBearbeitenModal } from "./_components/BildBearbeitenModal";
@@ -34,11 +34,11 @@ export default function AdminBilderPage() {
       case "mit_foto":   return bilder.filter(b => !!b.bild_url_web);
       case "ohne_foto":  return bilder.filter(b => !b.bild_url_web);
       case "online":     return bilder.filter(b => b.in_ausstellung === false);
-      case "verfuegbar":       return bilder.filter(b => b.verfuegbarkeit === "Verfügbar");
-      case "nicht_verfuegbar": return bilder.filter(b => b.verfuegbarkeit === "Nicht verfügbar");
-      case "nachfragen":       return bilder.filter(b => b.verfuegbarkeit === "Verfügbarkeit nachfragen");
-      case "reserviert":       return bilder.filter(b => b.verfuegbarkeit === "Reserviert");
-      case "verkauft":         return bilder.filter(b => b.verfuegbarkeit === "Verkauft");
+      case "verfuegbar":       return bilder.filter(b => b.verfuegbarkeit === VERFUEGBARKEIT.VERFUEGBAR);
+      case "nicht_verfuegbar": return bilder.filter(b => b.verfuegbarkeit === VERFUEGBARKEIT.NICHT);
+      case "nachfragen":       return bilder.filter(b => b.verfuegbarkeit === VERFUEGBARKEIT.NACHFRAGEN);
+      case "reserviert":       return bilder.filter(b => b.verfuegbarkeit === VERFUEGBARKEIT.RESERVIERT);
+      case "verkauft":         return bilder.filter(b => b.verfuegbarkeit === VERFUEGBARKEIT.VERKAUFT);
       default:          return bilder;
     }
   }, [bilder, filter]);
@@ -176,11 +176,11 @@ export default function AdminBilderPage() {
     { key: "mit_foto",   label: "Mit Foto",          count: mitFotoCount },
     { key: "ohne_foto",  label: "Ohne Foto",         count: bilder.filter(b => !b.bild_url_web).length },
     { key: "online",     label: "Nur Online",        count: bilder.filter(b => b.in_ausstellung === false).length },
-    { key: "verfuegbar",       label: "Verfügbar",           count: bilder.filter(b => b.verfuegbarkeit === "Verfügbar").length, color: "green" },
-    { key: "nicht_verfuegbar", label: "Nicht verfügbar",     count: bilder.filter(b => b.verfuegbarkeit === "Nicht verfügbar").length, color: "gray" },
-    { key: "nachfragen",       label: "Nachfragen",          count: bilder.filter(b => b.verfuegbarkeit === "Verfügbarkeit nachfragen").length, color: "blue" },
-    { key: "reserviert",       label: "Reserviert",          count: bilder.filter(b => b.verfuegbarkeit === "Reserviert").length, color: "yellow" },
-    { key: "verkauft",         label: "Verkauft",            count: bilder.filter(b => b.verfuegbarkeit === "Verkauft").length, color: "red" },
+    { key: "verfuegbar",       label: "Verfügbar",       count: bilder.filter(b => b.verfuegbarkeit === VERFUEGBARKEIT.VERFUEGBAR).length,  color: "green" },
+    { key: "nicht_verfuegbar", label: "Nicht verfügbar", count: bilder.filter(b => b.verfuegbarkeit === VERFUEGBARKEIT.NICHT).length,        color: "gray" },
+    { key: "nachfragen",       label: "Nachfragen",      count: bilder.filter(b => b.verfuegbarkeit === VERFUEGBARKEIT.NACHFRAGEN).length,   color: "blue" },
+    { key: "reserviert",       label: "Reserviert",      count: bilder.filter(b => b.verfuegbarkeit === VERFUEGBARKEIT.RESERVIERT).length,   color: "yellow" },
+    { key: "verkauft",         label: "Verkauft",        count: bilder.filter(b => b.verfuegbarkeit === VERFUEGBARKEIT.VERKAUFT).length,     color: "red" },
   ];
 
   return (
@@ -412,12 +412,12 @@ export default function AdminBilderPage() {
                 </td>
                 <td className="px-2 py-1.5 text-center">
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    b.verfuegbarkeit === "Verfügbar"                ? "bg-green-100 text-green-700" :
-                    b.verfuegbarkeit === "Nicht verfügbar"          ? "bg-gray-100 text-gray-600" :
-                    b.verfuegbarkeit === "Verfügbarkeit nachfragen" ? "bg-blue-100 text-blue-700" :
-                    b.verfuegbarkeit === "Reserviert"               ? "bg-yellow-100 text-yellow-700" :
+                    b.verfuegbarkeit === VERFUEGBARKEIT.VERFUEGBAR ? "bg-green-100 text-green-700" :
+                    b.verfuegbarkeit === VERFUEGBARKEIT.NICHT       ? "bg-gray-100 text-gray-600" :
+                    b.verfuegbarkeit === VERFUEGBARKEIT.NACHFRAGEN  ? "bg-blue-100 text-blue-700" :
+                    b.verfuegbarkeit === VERFUEGBARKEIT.RESERVIERT  ? "bg-yellow-100 text-yellow-700" :
                     "bg-red-100 text-red-700"
-                  }`}>{b.verfuegbarkeit === "Verfügbarkeit nachfragen" ? "Nachfragen" : b.verfuegbarkeit}</span>
+                  }`}>{b.verfuegbarkeit === VERFUEGBARKEIT.NACHFRAGEN ? "Nachfragen" : b.verfuegbarkeit}</span>
                   <div className="mt-1">
                     <button
                       onClick={() => handleAusstellungToggle(b.id, !(b.in_ausstellung !== false))}

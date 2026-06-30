@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 import os
 import re
@@ -13,7 +14,22 @@ from routers import artworks, reservations, sales, artists, admin, merkliste, ar
 from routers import admin_bilder, admin_kuenstler, admin_kommunikation, admin_nutzer
 from services.auth_service import verify_token
 
-app = FastAPI(title="Kunsttage auf der Ludwigshöhe API", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    secret = os.getenv("JWT_SECRET", "dev-secret-bitte-aendern")
+    if secret == "dev-secret-bitte-aendern":
+        import sys
+        env = os.getenv("ENVIRONMENT", "development")
+        if env == "production":
+            sys.exit("FATAL: JWT_SECRET muss in .env gesetzt werden!")
+        else:
+            print("WARNUNG: JWT_SECRET auf Default-Wert — nur für lokale Entwicklung akzeptabel!")
+    create_db()
+    yield
+
+
+app = FastAPI(title="Kunsttage auf der Ludwigshöhe API", version="1.0.0", lifespan=lifespan)
 
 app.include_router(artworks.router)
 app.include_router(reservations.router)
@@ -152,18 +168,6 @@ UPLOAD_DIR = os.getenv("UPLOAD_DIR", "./uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
-
-@app.on_event("startup")
-def on_startup():
-    secret = os.getenv("JWT_SECRET", "dev-secret-bitte-aendern")
-    if secret == "dev-secret-bitte-aendern":
-        import sys
-        env = os.getenv("ENVIRONMENT", "development")
-        if env == "production":
-            sys.exit("FATAL: JWT_SECRET muss in .env gesetzt werden!")
-        else:
-            print("WARNUNG: JWT_SECRET auf Default-Wert — nur für lokale Entwicklung akzeptabel!")
-    create_db()
 
 
 @app.get("/")

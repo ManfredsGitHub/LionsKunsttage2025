@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { getAlleKuenstler, fotoHochladen, bildAktualisieren, bildLoeschen, aiBeschreibungGenerieren, getZusatzFotos, zusatzFotoHochladen, zusatzFotoLoeschen } from "@/lib/api";
-import { Bild, Kuenstler, BildFoto, Verfuegbarkeit } from "@/lib/types";
+import { Bild, Kuenstler, BildFoto, Verfuegbarkeit, VERFUEGBARKEIT } from "@/lib/types";
 import { formatBildNr } from "@/lib/utils";
 
 const GENRES = ["Abstrakt","Akt","Landschaft","Menschen","Pfalz","Portrait","Städte","Stilleben","Sonstiges"];
@@ -25,7 +25,7 @@ export function BildBearbeitenModal({ bild, onClose, onSaved, onDeleted }: { bil
     freigegeben: bild.freigegeben ?? false,
     abrechnungsempf: bild.abrechnungsempf ?? "Künstler",
     galerist_id: String(bild.galerist_id ?? ""),
-    verfuegbarkeit: bild.verfuegbarkeit ?? "Verfügbar",
+    verfuegbarkeit: bild.verfuegbarkeit ?? VERFUEGBARKEIT.VERFUEGBAR,
   });
   const [kuenstler, setKuenstler] = useState<Kuenstler[]>([]);
   const [laden, setLaden] = useState(false);
@@ -341,18 +341,18 @@ export function BildBearbeitenModal({ bild, onClose, onSaved, onDeleted }: { bil
 
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Verfügbarkeit</label>
-            {(form.verfuegbarkeit === "Reserviert" || form.verfuegbarkeit === "Verkauft") ? (
+            {(form.verfuegbarkeit === VERFUEGBARKEIT.RESERVIERT || form.verfuegbarkeit === VERFUEGBARKEIT.VERKAUFT) ? (
               <div className="flex items-center gap-2">
                 <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  form.verfuegbarkeit === "Reserviert" ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"
+                  form.verfuegbarkeit === VERFUEGBARKEIT.RESERVIERT ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"
                 }`}>{form.verfuegbarkeit}</span>
                 <span className="text-xs text-gray-400">— wird automatisch durch Reservierung / Verkauf gesetzt</span>
               </div>
             ) : (
               <select value={form.verfuegbarkeit} onChange={e => setForm({...form, verfuegbarkeit: e.target.value as Verfuegbarkeit})} className={inp}>
-                <option value="Verfügbar">Verfügbar</option>
-                <option value="Nicht verfügbar">Nicht verfügbar (kein Verkauf, nur Anschauung)</option>
-                <option value="Verfügbarkeit nachfragen">Verfügbarkeit nachfragen (Online-Anfrage klären)</option>
+                <option value={VERFUEGBARKEIT.VERFUEGBAR}>Verfügbar</option>
+                <option value={VERFUEGBARKEIT.NICHT}>Nicht verfügbar (kein Verkauf, nur Anschauung)</option>
+                <option value={VERFUEGBARKEIT.NACHFRAGEN}>Verfügbarkeit nachfragen (Online-Anfrage klären)</option>
               </select>
             )}
           </div>

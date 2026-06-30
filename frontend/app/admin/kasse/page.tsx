@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { getAlleBilder, kaufErfassen, alsBezahltMarkieren } from "@/lib/api";
-import { Bild, KaufCreate } from "@/lib/types";
+import { Bild, KaufCreate, VERFUEGBARKEIT } from "@/lib/types";
 import { formatBildNr } from "@/lib/utils";
 
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? "";
@@ -91,7 +91,7 @@ export default function KassePage() {
 
   const gefunden = bilder.filter(
     (b) =>
-      b.verfuegbarkeit !== "Verkauft" &&
+      b.verfuegbarkeit !== VERFUEGBARKEIT.VERKAUFT &&
       (b.bild_nr.toLowerCase().includes(suche.toLowerCase()) ||
         b.bildtitel.toLowerCase().includes(suche.toLowerCase()))
   );
@@ -177,7 +177,7 @@ export default function KassePage() {
                     <span className="text-sm font-semibold text-lions-blue">{b.verkaufspreis.toFixed(2)} €</span>
                   )}
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    b.verfuegbarkeit === "Verfügbar" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                    b.verfuegbarkeit === VERFUEGBARKEIT.VERFUEGBAR ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
                   }`}>
                     {b.verfuegbarkeit}
                   </span>

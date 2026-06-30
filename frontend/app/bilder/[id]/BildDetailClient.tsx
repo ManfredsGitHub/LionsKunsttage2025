@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getBild, reservieren, getBildFotosPublic, kaufanfrageStellen } from "@/lib/api";
-import { Bild, BildFoto } from "@/lib/types";
+import { Bild, BildFoto, VERFUEGBARKEIT } from "@/lib/types";
 import { formatBildNr, bildAlt } from "@/lib/utils";
 import MerklistenButton from "@/components/MerklistenButton";
 
@@ -147,7 +147,7 @@ export default function BildDetailClient({ id, initialBild }: { id: string; init
         anmerkung: kaufForm.anmerkung || undefined,
       });
       setKaufErfolg(true);
-      setBild({ ...bild, verfuegbarkeit: "Reserviert" });
+      setBild({ ...bild, verfuegbarkeit: VERFUEGBARKEIT.RESERVIERT });
     } catch (err: any) {
       setKaufFehler(err.message);
     } finally {
@@ -162,7 +162,7 @@ export default function BildDetailClient({ id, initialBild }: { id: string; init
     try {
       await reservieren({ bild_id: bild.id, ...form });
       setErfolg(true);
-      setBild({ ...bild, verfuegbarkeit: "Reserviert" });
+      setBild({ ...bild, verfuegbarkeit: VERFUEGBARKEIT.RESERVIERT });
     } catch (err: any) {
       setFehler(err.message);
     } finally {
@@ -316,8 +316,8 @@ export default function BildDetailClient({ id, initialBild }: { id: string; init
 
           <div className="flex flex-wrap gap-2 items-center">
             <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-              bild.verfuegbarkeit === "Verfügbar" ? "bg-green-100 text-green-800" :
-              bild.verfuegbarkeit === "Reserviert" ? "bg-yellow-100 text-yellow-800" :
+              bild.verfuegbarkeit === VERFUEGBARKEIT.VERFUEGBAR  ? "bg-green-100 text-green-800" :
+              bild.verfuegbarkeit === VERFUEGBARKEIT.RESERVIERT  ? "bg-yellow-100 text-yellow-800" :
               "bg-red-100 text-red-800"
             }`}>
               {bild.verfuegbarkeit}
@@ -329,7 +329,7 @@ export default function BildDetailClient({ id, initialBild }: { id: string; init
             )}
           </div>
 
-          {bild.in_ausstellung === false && bild.verfuegbarkeit === "Verfügbar" && !kaufErfolg && (
+          {bild.in_ausstellung === false && bild.verfuegbarkeit === VERFUEGBARKEIT.VERFUEGBAR && !kaufErfolg && (
             <form onSubmit={handleKaufanfrage} className="space-y-4 border-t pt-6">
               <div>
                 <h2 className="font-semibold text-gray-800">Kaufanfrage stellen</h2>
@@ -388,9 +388,9 @@ export default function BildDetailClient({ id, initialBild }: { id: string; init
             </form>
           )}
 
-          {bild.in_ausstellung === false && bild.verfuegbarkeit !== "Verfügbar" && !kaufErfolg && (
+          {bild.in_ausstellung === false && bild.verfuegbarkeit !== VERFUEGBARKEIT.VERFUEGBAR && !kaufErfolg && (
             <div className="border-t pt-6 p-4 bg-blue-50 rounded-lg text-sm text-blue-800">
-              <strong>Nur im Online-Katalog</strong> — dieses Werk ist bereits {bild.verfuegbarkeit === "Reserviert" ? "reserviert" : "verkauft"} und nicht mehr verfügbar.
+              <strong>Nur im Online-Katalog</strong> — dieses Werk ist bereits {bild.verfuegbarkeit === VERFUEGBARKEIT.RESERVIERT ? "reserviert" : "verkauft"} und nicht mehr verfügbar.
             </div>
           )}
 
@@ -400,7 +400,7 @@ export default function BildDetailClient({ id, initialBild }: { id: string; init
             </div>
           )}
 
-          {bild.verfuegbarkeit === "Verfügbar" && bild.in_ausstellung !== false && !erfolg && (
+          {bild.verfuegbarkeit === VERFUEGBARKEIT.VERFUEGBAR && bild.in_ausstellung !== false && !erfolg && (
             <form onSubmit={handleReservieren} className="space-y-4 border-t pt-6">
               <h2 className="font-semibold text-gray-800">Werk reservieren</h2>
               <div className="grid grid-cols-2 gap-3">

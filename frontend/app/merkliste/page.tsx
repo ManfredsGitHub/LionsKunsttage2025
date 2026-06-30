@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMerkliste } from "@/lib/MerklisteContext";
 import { getMerkliste, merklisteZusenden } from "@/lib/api";
 import { formatBildNr, bildAlt } from "@/lib/utils";
-import { Bild } from "@/lib/types";
+import { Bild, VERFUEGBARKEIT } from "@/lib/types";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 
@@ -206,8 +206,8 @@ export default function MerklistePage() {
                       {b.bildtitel}
                     </a>
                     <span className={`flex-shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${
-                      b.verfuegbarkeit === "Verfügbar" ? "bg-green-100 text-green-800" :
-                      b.verfuegbarkeit === "Reserviert" ? "bg-yellow-100 text-yellow-800" :
+                      b.verfuegbarkeit === VERFUEGBARKEIT.VERFUEGBAR  ? "bg-green-100 text-green-800" :
+                      b.verfuegbarkeit === VERFUEGBARKEIT.RESERVIERT ? "bg-yellow-100 text-yellow-800" :
                       "bg-red-100 text-red-800"
                     }`}>{b.verfuegbarkeit}</span>
                   </div>

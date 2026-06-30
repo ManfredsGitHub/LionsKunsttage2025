@@ -1,4 +1,12 @@
 export type Verfuegbarkeit = "Verfügbar" | "Nicht verfügbar" | "Verfügbarkeit nachfragen" | "Reserviert" | "Verkauft";
+
+export const VERFUEGBARKEIT = {
+  VERFUEGBAR:   "Verfügbar"                 as Verfuegbarkeit,
+  NICHT:        "Nicht verfügbar"           as Verfuegbarkeit,
+  NACHFRAGEN:   "Verfügbarkeit nachfragen"  as Verfuegbarkeit,
+  RESERVIERT:   "Reserviert"               as Verfuegbarkeit,
+  VERKAUFT:     "Verkauft"                 as Verfuegbarkeit,
+} as const;
 export type Genre =
   | "Abstrakt" | "Akt" | "Landschaft" | "Menschen"
   | "Pfalz" | "Portrait" | "Städte" | "Stilleben" | "Sonstiges";

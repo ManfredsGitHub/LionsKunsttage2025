@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Bild } from "@/lib/types";
+import { Bild, VERFUEGBARKEIT } from "@/lib/types";
 import { merkliste_admin_zusenden, merklisten_nachfassen } from "@/lib/api";
 import { authHeaders } from "@/lib/auth";
 
@@ -254,8 +254,8 @@ export default function AdminMerklistenPage() {
                                 )}
                               </div>
                               <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                bild.verfuegbarkeit === "Verfügbar" ? "bg-green-100 text-green-700" :
-                                bild.verfuegbarkeit === "Reserviert" ? "bg-yellow-100 text-yellow-700" :
+                                bild.verfuegbarkeit === VERFUEGBARKEIT.VERFUEGBAR  ? "bg-green-100 text-green-700" :
+                                bild.verfuegbarkeit === VERFUEGBARKEIT.RESERVIERT ? "bg-yellow-100 text-yellow-700" :
                                 "bg-red-100 text-red-700"
                               }`}>{bild.verfuegbarkeit}</span>
                               {bild.verkaufspreis && (

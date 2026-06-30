@@ -204,7 +204,7 @@ export const bildAktualisieren = (id: number, data: Partial<{
   anmerkung_bild: string; foto_nr: string;
   in_ausstellung: boolean; freigegeben: boolean;
   abrechnungsempf: string; galerist_id: number | null;
-  verfuegbarkeit: string;
+  verfuegbarkeit: import("./types").Verfuegbarkeit;
 }>) => req<import("./types").Bild>(`/admin/bilder/${id}`, { method: "PATCH", body: JSON.stringify(data) });
 
 // --- Merkliste ---
